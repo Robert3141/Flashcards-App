@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Flashcards</string>
+    <string name="textViewTitle_text">Flashcards by Robert Aries</string>
+    <string name="textViewOutput_text">Please select your file \n(use &amp; to split up each word and definition).</string>
+    <string name="flipFlashcard_text">Flip Flashcard</string>
+    <string name="newFlashcard_text">New Flashcard</string>
+    <string name="selectFile_text">Select File</string>
+    <string name="settingsBtn_description">Setting Button</string>
+</resources>

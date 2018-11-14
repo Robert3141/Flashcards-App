@@ -1,0 +1,36 @@
+<resources>
+    <!-- Main Theme -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="themeColorPrimary">@color/colorPrimary</item>
+        <item name="themeColorAccent">@color/colorAccent</item>
+        <item name="themeColorBright">@color/colorOutput</item>
+        <item name="themeColorText">@color/colorText</item>
+        <item name="themeSettingsImage">@drawable/baseline_color_lens_black_48</item>
+    </style>
+
+    <!-- Dark Theme -->
+    <style name="ActivityTheme.Primary.Base.Dark" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimaryThemeDark</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkThemeDark</item>
+        <item name="colorAccent">@color/colorAccentThemeDark</item>
+        <item name="themeColorPrimary">@color/colorPrimaryThemeDark</item>
+        <item name="themeColorAccent">@color/colorAccentThemeDark</item>
+        <item name="themeColorBright">@color/colorOutputDark</item>
+        <item name="themeColorText">@color/colorTextThemeDark</item>
+        <item name="themeSettingsImage">@drawable/baseline_color_lens_white_48</item>
+    </style>
+
+    <!-- Button Style -->
+    <style name="button_style" parent="android:Widget.Button">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:background">?themeColorAccent</item>
+        <item name="android:textSize">12dp</item>
+        <item name="android:layout_weight">2</item>
+        <item name="android:textColor">?themeColorText</item>
+    </style>
+</resources>
