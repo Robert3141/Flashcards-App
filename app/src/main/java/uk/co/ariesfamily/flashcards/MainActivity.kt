@@ -10,6 +10,7 @@ import android.preference.PreferenceManager
 import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.view.View
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.InputStream
@@ -22,8 +23,8 @@ class MainActivity : AppCompatActivity() {
 
     //create privates
     private val wordsFileRequestCode = 50
-    private val themeFileRequestCode = 51
-    private val recentFileRequestCode = 52
+    private val savedTheme1 = "Theme1"
+    private val savedWordsFile = "wordsFile"
     private var wordsNotDefinition = true
     private var cardSelected = 0
     private var wordsFileArrayCounter = 0
@@ -31,9 +32,13 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        //get saved theme
+        //create locals
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
-        val themeName = pref.getString("Theme1","Default")
+        val themeName = pref.getString(savedTheme1,"Default")
+        val textFileStringSaved = pref.getString(savedWordsFile,"")
+        val editor = pref.edit()
+
+        //get saved theme
         if (themeName == "Dark"){
             setTheme(R.style.ActivityTheme_Primary_Base_Dark)
         } else {
@@ -47,17 +52,41 @@ class MainActivity : AppCompatActivity() {
         //disable buttons
         flipFlashcard.isClickable = false
         newFlashcard.isClickable = false
+
+        //set text file
+        if (textFileStringSaved != ""){
+            //set file
+            textFileString = textFileStringSaved
+
+            //enable button
+            newFlashcard.isClickable = true
+
+            //new flashcard
+            clickNewFlashcard(flipFlashcard)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
+        //word file found
         if (requestCode == wordsFileRequestCode && resultCode == RESULT_OK) {
             val fileSelectedPath = data?.data
             if (fileSelectedPath != null) {
+                //locals
                 val inputStream = contentResolver.openInputStream(fileSelectedPath)
+                val pref = PreferenceManager.getDefaultSharedPreferences(this)
+                var editor = pref.edit()
+
+                //set file
                 textFileString = inputStream.bufferedReader().use { it.readText() }
 
+                //enable button
+                newFlashcard.isClickable = true
+
+                //save text file
+                editor.putString(savedWordsFile,textFileString)
+                editor.commit()
             } else {
                 //output no file exists
                 Toast.makeText(this,"No Data", Toast.LENGTH_LONG).show()
@@ -68,13 +97,13 @@ class MainActivity : AppCompatActivity() {
     fun clickThemeChanger(view:android.view.View){
         //check theme
         var pref = PreferenceManager.getDefaultSharedPreferences(this)
-        var themeName = pref.getString("Theme1","Default")
+        var themeName = pref.getString(savedTheme1,"Default")
         var editor = pref.edit()
 
         if(themeName == "Dark") {
-            editor.putString("Theme1","Default")
+            editor.putString(savedTheme1,"Default")
         } else {
-            editor.putString("Theme1","Dark")
+            editor.putString(savedTheme1,"Dark")
         }
         //push theme
         editor.commit()
@@ -119,14 +148,12 @@ class MainActivity : AppCompatActivity() {
 
         //set displays text
         textViewOutput.text = wordsFileArray[cardSelected]
+
     }
 
     fun clickSelectFile(view: android.view.View){
         //create locals
         val intent = Intent().setType("*/*").setAction(Intent.ACTION_GET_CONTENT)
-
-        //enable button
-        newFlashcard.isClickable = true
 
         //request file
         startActivityForResult(Intent.createChooser(intent, "Select a file"), wordsFileRequestCode)
