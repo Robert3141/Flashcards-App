@@ -6,4 +6,6 @@
     <string name="newFlashcard_text">New Flashcard</string>
     <string name="selectFile_text">Select File</string>
     <string name="settingsBtn_description">Setting Button</string>
+    <string name="themeButton">Change Theme</string>
+    <string name="changeFlashcardFlipper">Flip All Flashcards</string>
 </resources>

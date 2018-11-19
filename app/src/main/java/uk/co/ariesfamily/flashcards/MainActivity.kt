@@ -10,6 +10,7 @@ import android.preference.PreferenceManager
 import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
@@ -25,6 +26,7 @@ class MainActivity : AppCompatActivity() {
     private val wordsFileRequestCode = 50
     private val savedTheme1 = "Theme1"
     private val savedWordsFile = "wordsFile"
+    private val savedFlashcardFlipper = "flashcardFlipper"
     private var wordsNotDefinition = true
     private var cardSelected = 0
     private var wordsFileArrayCounter = 0
@@ -94,12 +96,31 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun clickThemeChanger(view:android.view.View){
-        //check theme
-        var pref = PreferenceManager.getDefaultSharedPreferences(this)
-        var themeName = pref.getString(savedTheme1,"Default")
+    fun clickFlashcardFlipper(item: MenuItem){
+        //create locals
+        val pref = PreferenceManager.getDefaultSharedPreferences(this)
+        val flashcardFlipper = pref.getBoolean(savedFlashcardFlipper, false)
         var editor = pref.edit()
 
+        //check and apply
+        if (flashcardFlipper) {
+            editor.putBoolean(savedFlashcardFlipper, false)
+            item.isChecked = false
+
+        } else {
+            editor.putBoolean(savedFlashcardFlipper, true)
+            item.isChecked = true
+        }
+        editor.commit()
+    }
+
+    fun clickThemeChanger(item: MenuItem){
+        //create locals
+        val pref = PreferenceManager.getDefaultSharedPreferences(this)
+        val themeName = pref.getString(savedTheme1,"Default")
+        var editor = pref.edit()
+
+        //check theme
         if(themeName == "Dark") {
             editor.putString(savedTheme1,"Default")
         } else {
@@ -132,7 +153,8 @@ class MainActivity : AppCompatActivity() {
 
     fun clickNewFlashcard(view: android.view.View){
         //create local variables
-
+        var pref = PreferenceManager.getDefaultSharedPreferences(this)
+        val flashcardFlipper = pref.getBoolean(savedFlashcardFlipper, false)
 
         //read file and put to array
         val wordsFileArray = readWordsFile()
@@ -143,12 +165,18 @@ class MainActivity : AppCompatActivity() {
         } else {
             cardSelected = 0
         }
+
+        //reset variables
         wordsNotDefinition = true
         flipFlashcard.isClickable = true
 
-        //set displays text
-        textViewOutput.text = wordsFileArray[cardSelected]
-
+        //flip flashcard on flashcardFlipper
+        if (flashcardFlipper) {
+            clickFlipFlashcard(flipFlashcard)
+        } else {
+            //set displays text
+            textViewOutput.text = wordsFileArray[cardSelected]
+        }
     }
 
     fun clickSelectFile(view: android.view.View){
