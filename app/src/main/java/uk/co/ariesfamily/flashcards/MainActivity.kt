@@ -103,6 +103,9 @@ class MainActivity : AppCompatActivity() {
             item.isChecked = true
         }
         editor.commit()
+
+        //flip the flashcard to the user
+        clickFlipFlashcard(flipFlashcard)
     }
 
     fun clickThemeChanger(item: MenuItem){
