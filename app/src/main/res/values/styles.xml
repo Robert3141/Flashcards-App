@@ -8,7 +8,8 @@
         <item name="themeColorAccent">@color/colorAccent</item>
         <item name="themeColorBright">@color/colorOutput</item>
         <item name="themeColorText">@color/colorText</item>
-        <item name="themeSettingsImage">@drawable/baseline_color_lens_black_48</item>
+        <item name="themeSettingsImage">@drawable/baseline_color_lens_white_48</item>
+        <item name="android:tint">@color/black</item>
     </style>
 
     <!-- Dark Theme -->
@@ -21,6 +22,20 @@
         <item name="themeColorBright">@color/colorOutputDark</item>
         <item name="themeColorText">@color/colorTextThemeDark</item>
         <item name="themeSettingsImage">@drawable/baseline_color_lens_white_48</item>
+        <item name="android:tint">@color/white</item>
+    </style>
+
+    <!-- Night Theme -->
+    <style name="nightTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimaryThemeDark</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryThemeDark</item>
+        <item name="colorAccent">@color/colorPrimaryThemeDark</item>
+        <item name="themeColorPrimary">@color/colorPrimaryThemeDark</item>
+        <item name="themeColorAccent">@color/colorPrimaryThemeDark</item>
+        <item name="themeColorBright">@color/colorPrimaryThemeDark</item>
+        <item name="themeColorText">@color/red</item>
+        <item name="themeSettingsImage">@drawable/baseline_color_lens_white_48</item>
+        <item name="android:tint">@color/red</item>
     </style>
 
     <!-- Button Style -->

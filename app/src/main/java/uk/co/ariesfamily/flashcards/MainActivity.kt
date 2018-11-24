@@ -1,23 +1,12 @@
 package uk.co.ariesfamily.flashcards
-
-import android.Manifest.permission.READ_EXTERNAL_STORAGE
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.*
-import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
-import android.os.*;
+import android.os.*
 import android.preference.PreferenceManager
-import android.provider.Settings
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
-import java.io.InputStream
-import java.lang.reflect.Array
 import java.util.concurrent.ThreadLocalRandom
-import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
     //create public
@@ -38,13 +27,12 @@ class MainActivity : AppCompatActivity() {
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
         val themeName = pref.getString(savedTheme1,"Default")
         val textFileStringSaved = pref.getString(savedWordsFile,"")
-        val editor = pref.edit()
 
         //get saved theme
-        if (themeName == "Dark"){
-            setTheme(R.style.ActivityTheme_Primary_Base_Dark)
-        } else {
-            setTheme(R.style.AppTheme)
+        when (themeName){
+            "Dark" -> setTheme(R.style.ActivityTheme_Primary_Base_Dark)
+            "Night" -> setTheme(R.style.nightTheme)
+            else -> setTheme(R.style.AppTheme)
         }
 
         //create interface
@@ -121,11 +109,12 @@ class MainActivity : AppCompatActivity() {
         var editor = pref.edit()
 
         //check theme
-        if(themeName == "Dark") {
-            editor.putString(savedTheme1,"Default")
-        } else {
-            editor.putString(savedTheme1,"Dark")
+        when (themeName) {
+            "Dark" -> editor.putString(savedTheme1,"Night")
+            "Night"-> editor.putString(savedTheme1, "Default")
+            else -> editor.putString(savedTheme1,"Dark")
         }
+
         //push theme
         editor.commit()
 
