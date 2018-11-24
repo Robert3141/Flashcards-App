@@ -16,10 +16,12 @@ class MainActivity : AppCompatActivity() {
     private val savedTheme1 = "Theme1"
     private val savedWordsFile = "wordsFile"
     private val savedFlashcardFlipper = "flashcardFlipper"
+    private val savedFlashcardNumber = "flashcardNumber"
     private var wordsNotDefinition = true
     private var cardSelected = 0
     private var wordsFileArrayCounter = 0
     private var textFileString = ""
+    private var justRecreated = true
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +54,7 @@ class MainActivity : AppCompatActivity() {
             newFlashcard.isClickable = true
 
             //new flashcard
+            justRecreated = true
             clickNewFlashcard(flipFlashcard)
         }
     }
@@ -144,15 +147,24 @@ class MainActivity : AppCompatActivity() {
         //create local variables
         var pref = PreferenceManager.getDefaultSharedPreferences(this)
         val flashcardFlipper = pref.getBoolean(savedFlashcardFlipper, false)
+        val flashcardNumber = pref.getInt(savedFlashcardNumber, -1)
+        var editor = pref.edit()
 
         //read file and put to array
         val wordsFileArray = readWordsFile()
 
         //randomly select number and set relevant variables
-        if (wordsFileArrayCounter > 0) {
-            cardSelected = 2 * randomNumberGenerator(0,(wordsFileArrayCounter - 1) / 2)
+        if (flashcardNumber == -1 || !justRecreated) {
+            if (wordsFileArrayCounter > 0) {
+                cardSelected = 2 * randomNumberGenerator(0, (wordsFileArrayCounter - 1) / 2)
+            } else {
+                cardSelected = 0
+            }
+            //save flashcard number
+            editor.putInt(savedFlashcardNumber,cardSelected)
         } else {
-            cardSelected = 0
+            cardSelected = flashcardNumber
+            justRecreated = false
         }
 
         //reset variables
@@ -166,6 +178,9 @@ class MainActivity : AppCompatActivity() {
             //set displays text
             textViewOutput.text = wordsFileArray[cardSelected]
         }
+
+        //save flashcard value
+        editor.commit()
     }
 
     fun clickSelectFile(view: android.view.View){
@@ -184,8 +199,6 @@ class MainActivity : AppCompatActivity() {
 
         //reset variables
         wordsFileArrayCounter = 0
-
-
 
         //string splitting
         for(i in textFileString.indices) {
