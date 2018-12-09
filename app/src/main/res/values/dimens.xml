@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="setting_option_height">75sp</dimen>
+    <dimen name="setting_space">15dp</dimen>
+    <dimen name="toolbar_height">75dp</dimen>
+</resources>

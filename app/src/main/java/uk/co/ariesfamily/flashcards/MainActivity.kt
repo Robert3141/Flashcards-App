@@ -27,13 +27,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         //create locals
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
-        val themeName = pref.getString(savedTheme1,"Default")
+        val themeName = pref.getInt(savedTheme1,0)
         val textFileStringSaved = pref.getString(savedWordsFile,"")
 
         //get saved theme
         when (themeName){
-            "Dark" -> setTheme(R.style.ActivityTheme_Primary_Base_Dark)
-            "Night" -> setTheme(R.style.nightTheme)
+            1 -> setTheme(R.style.ActivityTheme_Primary_Base_Dark)
+            2 -> setTheme(R.style.nightTheme)
             else -> setTheme(R.style.AppTheme)
         }
 
@@ -108,24 +108,9 @@ class MainActivity : AppCompatActivity() {
         clickFlipFlashcard(flipFlashcard)
     }
 
-    fun clickThemeChanger(item: MenuItem){
-        //create locals
-        val pref = PreferenceManager.getDefaultSharedPreferences(this)
-        val themeName = pref.getString(savedTheme1,"Default")
-        var editor = pref.edit()
-
-        //check theme
-        when (themeName) {
-            "Dark" -> editor.putString(savedTheme1,"Night")
-            "Night"-> editor.putString(savedTheme1, "Default")
-            else -> editor.putString(savedTheme1,"Dark")
-        }
-
-        //push theme
-        editor.commit()
-
-        //reload activity
-        recreate()
+    fun clickSettingsBtn(view: android.view.View) {
+        val intent = Intent(this, Settings::class.java).apply {  }
+        startActivity(intent)
     }
 
     fun clickFlipFlashcard(view: android.view.View){

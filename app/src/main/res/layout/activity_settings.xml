@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".Settings">
+
+    <android.support.design.widget.AppBarLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:background="?themeColorAccent">
+
+        <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/toolbar_height"
+                android:background="?themeColorAccent"
+                android:popupTheme="@style/AppTheme.PopupOverlay"
+                android:theme="@style/button_style"/>
+
+    </android.support.design.widget.AppBarLayout>
+    <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="@dimen/toolbar_height"
+            android:background="?themeColorPrimary">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:orientation="vertical">
+            <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/setting_space"/>
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/setting_option_height">
+                <TextView android:id="@+id/textView"
+                          style="@style/textViewStyle"
+                          android:text="@string/setting_Theme"/>
+                <Spinner android:id="@+id/spinnerTheme"
+                         style="@style/spinner_style"
+                         android:entries="@array/setting_ThemeSpinner"/>
+            </LinearLayout>
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/setting_option_height">
+                <TextView android:id="@+id/textView2"
+                          android:text="@string/setting_Flipper"
+                          style="@style/textViewStyle"/>
+                <Switch android:id="@+id/switchFlipCards"
+                        style="@style/switch_style"
+                        android:onClick="itemClicked"/>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+
+</RelativeLayout>

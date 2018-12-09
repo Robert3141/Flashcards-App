@@ -44,8 +44,45 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">8dp</item>
         <item name="android:background">?themeColorAccent</item>
-        <item name="android:textSize">12dp</item>
+        <item name="android:textSize">12sp</item>
         <item name="android:layout_weight">2</item>
         <item name="android:textColor">?themeColorText</item>
     </style>
+
+    <!-- text view style -->
+    <style name="textViewStyle" parent="android:Widget.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textColor">?themeColorText</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:paddingLeft">12dp</item>
+    </style>
+
+    <!-- spinner style -->
+    <style name="spinner_style" parent="android:Widget.Spinner">
+        <item name="android:layout_width">12dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textColor">?themeColorText</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:background">?themeColorPrimary</item>
+    </style>
+
+    <!-- switch style -->
+    <style name="switch_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <!-- toolbar style -->
+    <style name="toolbarStyle" parent="Theme.AppCompat">
+        <item name="android:textColorPrimary">?themeColorText</item>
+        <item name="actionMenuTextColor">?themeColorText</item>
+    </style>
+
+    <!-- separate styles -->
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 </resources>
