@@ -38,6 +38,19 @@
         <item name="android:tint">@color/red</item>
     </style>
 
+    <!-- White Theme -->
+    <style name="whitTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryDark">@color/white</item>
+        <item name="colorAccent">@color/white</item>
+        <item name="themeColorPrimary">@color/white</item>
+        <item name="themeColorAccent">@color/white</item>
+        <item name="themeColorBright">@color/white</item>
+        <item name="themeColorText">@color/black</item>
+        <item name="themeSettingsImage">@drawable/baseline_color_lens_white_48</item>
+        <item name="android:tint">@color/white</item>
+    </style>
+
     <!-- Button Style -->
     <style name="button_style" parent="android:Widget.Button">
         <item name="android:layout_width">match_parent</item>
@@ -57,6 +70,19 @@
         <item name="android:textColor">?themeColorText</item>
         <item name="android:textSize">12sp</item>
         <item name="android:paddingLeft">12dp</item>
+    </style>
+
+    <!-- Page Title Style -->
+    <style name="title_style" parent="android:Widget.TextView">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_weight">2</item>
+        <item name="android:gravity">center_vertical|center_horizontal</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold|italic</item>
+        <item name="android:textColor">?themeColorText</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:padding">8dp</item>
     </style>
 
     <!-- spinner style -->

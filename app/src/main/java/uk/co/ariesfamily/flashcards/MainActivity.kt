@@ -8,6 +8,8 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.concurrent.ThreadLocalRandom
 
+
+
 class MainActivity : AppCompatActivity() {
     //create public
 
@@ -34,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         when (themeName){
             1 -> setTheme(R.style.ActivityTheme_Primary_Base_Dark)
             2 -> setTheme(R.style.nightTheme)
+            3 -> setTheme(R.style.whitTheme)
             else -> setTheme(R.style.AppTheme)
         }
 
@@ -87,29 +90,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun clickFlashcardFlipper(item: MenuItem){
-        //create locals
-        val pref = PreferenceManager.getDefaultSharedPreferences(this)
-        val flashcardFlipper = pref.getBoolean(savedFlashcardFlipper, false)
-        var editor = pref.edit()
-
-        //check and apply
-        if (flashcardFlipper) {
-            editor.putBoolean(savedFlashcardFlipper, false)
-            item.isChecked = false
-
-        } else {
-            editor.putBoolean(savedFlashcardFlipper, true)
-            item.isChecked = true
-        }
-        editor.commit()
-
-        //flip the flashcard to the user
-        clickFlipFlashcard(flipFlashcard)
+    //onclick events for launching activities
+    fun startMain(item: MenuItem) {
+        val intent = Intent(this, MainActivity::class.java).apply {}
+        startActivity(intent)
     }
-
-    fun clickSettingsBtn(view: android.view.View) {
+    fun startSettings(item: MenuItem) {
         val intent = Intent(this, Settings::class.java).apply {  }
+        startActivity(intent)
+    }
+    fun startHelp(item: MenuItem) {
+        val intent = Intent(this, Help::class.java).apply {  }
         startActivity(intent)
     }
 

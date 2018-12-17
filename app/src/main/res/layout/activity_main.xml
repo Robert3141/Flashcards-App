@@ -21,34 +21,11 @@
                       android:orientation="vertical">
 
 
-            <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_gravity="center_horizontal|center_vertical"
-                    android:gravity="center_vertical|center_horizontal">
-
-                <TextView android:id="@+id/textViewTitle"
-                          android:layout_height="wrap_content"
-                          android:padding="8dp"
-                          android:text="@string/textViewTitle_text"
-                          android:gravity="center_vertical|center_horizontal"
-                          android:textSize="20sp"
-                          android:textStyle="bold|italic"
-                          android:textColor="?themeColorText" android:layout_width="wrap_content"
-                          android:textAlignment="center"/>
-                <ImageButton
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:srcCompat="@drawable/baseline_settings_white_48"
-                        android:id="@+id/imageButton"
-                        android:contentDescription="@string/settingsBtn_description"
-                        android:background="?themeColorPrimary"
-                        android:onClick="clickSettingsBtn"/>
+            <TextView android:id="@+id/textViewTitle"
+                      style="@style/title_style"
+                      android:text="@string/textViewTitle_text"/>
 
 
-            </LinearLayout>
 
 
             <TextView android:id="@+id/textViewOutput"
@@ -78,4 +55,12 @@
                     android:onClick="clickSelectFile"/>
         </LinearLayout>
     </FrameLayout>
+
+    <android.support.design.widget.NavigationView android:id="@+id/nav_view"
+                                                  android:layout_width="wrap_content"
+                                                  android:layout_height="match_parent"
+                                                  android:layout_gravity="start"
+                                                  app:menu="@menu/drawer_view"
+                                                  app:headerLayout="@layout/nav_header"
+                                                  android:fitsSystemWindows="true"/>
 </android.support.v4.widget.DrawerLayout>

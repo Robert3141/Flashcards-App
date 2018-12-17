@@ -6,6 +6,7 @@ import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem
+import android.view.View
 import android.widget.Adapter
 import android.widget.AdapterView
 
@@ -27,21 +28,12 @@ class Settings : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         when (themeName){
             1 -> setTheme(R.style.ActivityTheme_Primary_Base_Dark)
             2 -> setTheme(R.style.nightTheme)
+            3 -> setTheme(R.style.whitTheme)
             else -> setTheme(R.style.AppTheme)
         }
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
-
-        //setup toolbar
-        setSupportActionBar(toolbar)
-        toolbar.navigationIcon = getDrawable(R.drawable.baseline_arrow_back_24)
-        toolbar.setNavigationOnClickListener(
-            fun (view: android.view.View){
-                val intent = Intent(this, MainActivity::class.java).apply {  }
-                startActivity(intent)
-            }
-        )
 
         //setup spinner click listener
         spinnerTheme.onItemSelectedListener = this
@@ -49,11 +41,7 @@ class Settings : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         //set the settings
         //spinner
-        when (themeName){
-            1 -> spinnerTheme.setSelection(1)
-            2 -> spinnerTheme.setSelection(2)
-            else -> spinnerTheme.setSelection(0)
-        }
+        spinnerTheme.setSelection(themeName)
         //switch
         switchFlipCards.isChecked = flashcardFlipper
     }
@@ -72,6 +60,25 @@ class Settings : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     override fun onUserInteraction() {
         super.onUserInteraction()
         userIsInteracting = true
+    }
+
+    //onclick events for launching activities
+    fun startMain(item: MenuItem) {
+        val intent = Intent(this, MainActivity::class.java).apply {}
+        startActivity(intent)
+    }
+    fun startSettings(item: MenuItem) {
+        val intent = Intent(this, Settings::class.java).apply {  }
+        startActivity(intent)
+    }
+    fun startHelp(item: MenuItem) {
+        val intent = Intent(this, Help::class.java).apply {  }
+        startActivity(intent)
+    }
+    //back button
+    fun backButtonPress(view: android.view.View){
+        val intent = Intent(this, MainActivity::class.java).apply {}
+        startActivity(intent)
     }
 
     fun itemClicked(view: android.view.View) {
