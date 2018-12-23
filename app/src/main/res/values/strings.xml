@@ -23,6 +23,11 @@
 
     <!-- Flashcard Maker -->
     <string name="noFileSelected_text">Please Select a file</string>
+    <string name="termHint">Term \n \n</string>
+    <string name="defHint">Definition \n \n</string>
+    <string name="buttonPrevious_text">Previous</string>
+    <string name="buttonNext_text">Next</string>
+    <string name="flashcardNumber">1</string>
 
     <!-- Settings Activity -->
     <string name="setting_Theme">Change Theme</string>
@@ -30,7 +35,7 @@
         <item>Default</item>
         <item>Dark</item>
         <item>Night</item>
-        <item>White</item>
+        <item>White (beta)</item>
     </string-array>
     <string name="setting_Flipper">Flip All Flashcards</string>
 

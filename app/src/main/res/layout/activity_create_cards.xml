@@ -46,15 +46,90 @@
                           style="@style/textViewStyle"/>
 
                 <LinearLayout
-                        android:layout_width="@dimen/URL_button_size"
+                        android:layout_width="@dimen/button_size"
                         android:layout_height="wrap_content">
 
                     <Button android:id="@+id/buttonSelectFile"
                             android:text="@string/selectFile_text"
-                            style="@style/button_style"
-                            android:width="@dimen/URL_button_size"/>
+                            style="@style/button_style"/>
 
                 </LinearLayout>
+
+            </LinearLayout>
+
+            <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/setting_space"/>
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+
+                <EditText android:id="@+id/editTextTerm"
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:inputType="textMultiLine"
+                          android:ems="10"
+                          android:layout_weight="1"
+                          tools:ignore="Autofill"
+                          android:hint="@string/termHint"/>
+
+                <EditText android:id="@+id/editTextDef"
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:inputType="textMultiLine"
+                          android:ems="10"
+                          android:layout_weight="1"
+                          tools:ignore="Autofill"
+                          android:hint="@string/defHint"/>
+
+            </LinearLayout>
+
+            <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/setting_space"/>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+                <LinearLayout
+                        android:layout_width="@dimen/button_size"
+                        android:layout_height="wrap_content">
+
+                    <Button android:id="@+id/buttonPrevious"
+                            android:text="@string/selectFile_text"
+                            style="@style/button_style"
+                            android:width="@dimen/button_size"/>
+
+                </LinearLayout>
+
+                <TextView android:id="@+id/textViewNumber"
+                          android:text="@string/flashcardNumber"
+                          style="@style/textViewStyle"
+                          android:gravity="center_vertical|center_horizontal"/>
+
+                <LinearLayout
+                        android:layout_width="@dimen/button_size"
+                        android:layout_height="wrap_content">
+
+                    <Button android:id="@+id/buttonNext"
+                            android:text="@string/buttonNext_text"
+                            style="@style/button_style"
+                            android:width="@dimen/button_size"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/setting_space"/>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+
+                <TextView android:id="@+id/textViewFileData"
+                          android:text="@string/noFileSelected_text"
+                          style="@style/textViewStyle"/>
 
             </LinearLayout>
 
