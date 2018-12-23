@@ -21,6 +21,9 @@
     <string name="changeFlashcardFlipper">Flip All Flashcards</string>
     <string name="title_activity_settings">Settings</string>
 
+    <!-- Flashcard Maker -->
+    <string name="noFileSelected_text">Please Select a file</string>
+
     <!-- Settings Activity -->
     <string name="setting_Theme">Change Theme</string>
     <string-array name="setting_ThemeSpinner">

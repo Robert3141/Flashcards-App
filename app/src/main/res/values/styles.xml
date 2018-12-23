@@ -70,6 +70,7 @@
         <item name="android:textColor">?themeColorText</item>
         <item name="android:textSize">12sp</item>
         <item name="android:paddingLeft">12dp</item>
+        <item name="android:layout_gravity">center_vertical</item>
     </style>
 
     <!-- Page Title Style -->
