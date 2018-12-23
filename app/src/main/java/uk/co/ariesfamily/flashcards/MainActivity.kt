@@ -95,12 +95,21 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, MainActivity::class.java).apply {}
         startActivity(intent)
     }
+    fun startNewCards(item: MenuItem) {
+        val intent = Intent(this, CreateCards::class.java).apply {  }
+        startActivity(intent)
+    }
     fun startSettings(item: MenuItem) {
         val intent = Intent(this, Settings::class.java).apply {  }
         startActivity(intent)
     }
     fun startHelp(item: MenuItem) {
         val intent = Intent(this, Help::class.java).apply {  }
+        startActivity(intent)
+    }
+    //back button
+    fun backButtonPress(view: android.view.View){
+        val intent = Intent(this, MainActivity::class.java).apply {}
         startActivity(intent)
     }
 

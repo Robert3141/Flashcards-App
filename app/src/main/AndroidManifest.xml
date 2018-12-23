@@ -31,6 +31,8 @@
         </activity>
         <activity android:name=".Help">
         </activity>
+        <activity android:name=".CreateCards">
+        </activity>
     </application>
 
 </manifest>

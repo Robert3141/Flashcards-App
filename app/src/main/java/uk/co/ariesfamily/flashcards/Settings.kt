@@ -67,6 +67,10 @@ class Settings : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         val intent = Intent(this, MainActivity::class.java).apply {}
         startActivity(intent)
     }
+    fun startNewCards(item: MenuItem) {
+        val intent = Intent(this, CreateCards::class.java).apply {  }
+        startActivity(intent)
+    }
     fun startSettings(item: MenuItem) {
         val intent = Intent(this, Settings::class.java).apply {  }
         startActivity(intent)

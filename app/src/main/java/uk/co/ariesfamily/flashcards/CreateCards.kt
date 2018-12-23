@@ -1,15 +1,14 @@
 package uk.co.ariesfamily.flashcards
 
+
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.v4.content.ContextCompat
 import android.view.MenuItem
-import kotlinx.android.synthetic.main.activity_help.*
 
 
-class Help : AppCompatActivity() {
+class CreateCards : AppCompatActivity() {
 
     private val savedTheme1 = "Theme1"
 
@@ -27,13 +26,7 @@ class Help : AppCompatActivity() {
         }
 
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_help)
-
-
-        //load URL string
-        val webSettings = webview.settings
-        webSettings.javaScriptEnabled = true
-        webview.loadUrl(getString(R.string.webviewURL))
+        setContentView(R.layout.activity_create_cards)
     }
 
     //onclick events for launching activities
@@ -58,6 +51,4 @@ class Help : AppCompatActivity() {
         val intent = Intent(this, MainActivity::class.java).apply {}
         startActivity(intent)
     }
-
-
 }

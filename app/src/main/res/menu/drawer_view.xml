@@ -7,6 +7,11 @@
               android:onClick="startMain"
               android:icon="@drawable/baseline_filter_none_white_48"/>
 
+        <item android:id="@+id/menuActivityNewCards"
+              android:title="@string/menu_NewCards"
+              android:onClick="startNewCards"
+              android:icon="@drawable/baseline_library_add_white_48" />
+
         <item android:id="@+id/menuActivitySettings"
               android:title="@string/menu_Settings"
               android:onClick="startSettings"

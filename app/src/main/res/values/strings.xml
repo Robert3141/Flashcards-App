@@ -4,6 +4,7 @@
 
     <!-- Menu -->
     <string name="menu_Flashcards">Flashcards</string>
+    <string name="menu_NewCards">Create/Modify Set</string>
     <string name="menu_Settings">Settings</string>
     <string name="menu_Help">Help</string>
 
