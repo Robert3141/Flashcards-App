@@ -94,6 +94,7 @@
         <item name="android:textColor">?themeColorText</item>
         <item name="android:textSize">12sp</item>
         <item name="android:background">?themeColorPrimary</item>
+        <item name="android:layout_gravity">center_vertical</item>
     </style>
 
     <!-- switch style -->
@@ -101,6 +102,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
+        <item name="android:layout_gravity">center_vertical</item>
     </style>
 
     <!-- toolbar style -->
