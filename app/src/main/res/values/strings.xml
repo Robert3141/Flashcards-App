@@ -23,8 +23,8 @@
 
     <!-- Flashcard Maker -->
     <string name="noFileSelected_text">Please Select a file</string>
-    <string name="termHint">Term \n \n</string>
-    <string name="defHint">Definition \n \n</string>
+    <string name="termHint">Term</string>
+    <string name="defHint">Definition</string>
     <string name="buttonPrevious_text">Previous</string>
     <string name="buttonNext_text">Next</string>
     <string name="flashcardNumber">1</string>

@@ -51,7 +51,8 @@
 
                     <Button android:id="@+id/buttonSelectFile"
                             android:text="@string/selectFile_text"
-                            style="@style/button_style"/>
+                            style="@style/button_style"
+                            android:onClick="clickSelectFileButton"/>
 
                 </LinearLayout>
 
@@ -97,9 +98,10 @@
                         android:layout_height="wrap_content">
 
                     <Button android:id="@+id/buttonPrevious"
-                            android:text="@string/selectFile_text"
+                            android:text="@string/buttonPrevious_text"
                             style="@style/button_style"
-                            android:width="@dimen/button_size"/>
+                            android:width="@dimen/button_size"
+                            android:onClick="clickPrevious"/>
 
                 </LinearLayout>
 
@@ -115,7 +117,8 @@
                     <Button android:id="@+id/buttonNext"
                             android:text="@string/buttonNext_text"
                             style="@style/button_style"
-                            android:width="@dimen/button_size"/>
+                            android:width="@dimen/button_size"
+                            android:onClick="clickNext"/>
 
                 </LinearLayout>
 
