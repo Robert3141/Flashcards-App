@@ -1,11 +1,13 @@
 package uk.co.ariesfamily.flashcards
 
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.v4.graphics.PathUtils
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
@@ -13,6 +15,8 @@ import kotlinx.android.synthetic.main.activity_create_cards.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.io.FileOutputStream
+import java.io.OutputStream
+import java.io.OutputStreamWriter
 import java.net.URI
 
 
@@ -209,9 +213,7 @@ class CreateCards : AppCompatActivity() {
 
     fun saveFile(): kotlin.Array<String>{
         //create local variables
-        /*val pfd = contentResolver.openFileDescriptor(fileSelectedPath,"w")
-        val filestream = FileOutputStream(pfd.fileDescriptor)*/
-
+        val file = File(FileUtils.getPath(this, fileSelectedPath))
         var pref = PreferenceManager.getDefaultSharedPreferences(this)
         var editor = pref.edit()
         var pageNo = pref.getInt(savedPageNumber,1)
@@ -229,9 +231,9 @@ class CreateCards : AppCompatActivity() {
         }
 
         //write to file
-        /*filestream.write(textFileString.toByteArray())
-        filestream.close()
-        pfd.close()*/
+        file.printWriter().use { out ->
+            out.println(textFileString)
+        }
 
         return wordsFileArray
     }
