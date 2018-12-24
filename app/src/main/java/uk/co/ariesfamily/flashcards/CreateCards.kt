@@ -145,45 +145,47 @@ class CreateCards : AppCompatActivity() {
     }
 
     fun choosePage(pageNo: Int){
-        //create local variables
-        var pref = PreferenceManager.getDefaultSharedPreferences(this)
-        var editor = pref.edit()
+        //do check first
+        if (pageNo > 0){
 
-        //save previous setup
-        //saveFile()
+            //create local variables
+            var pref = PreferenceManager.getDefaultSharedPreferences(this)
+            var editor = pref.edit()
 
-        //read file and put to array
-        val wordsFileArray = readWordsFile()
+            //read file and put to array
+            val wordsFileArray = saveFile()
 
-        //display flashcards
-        if(wordsFileArrayCounter >= pageNo * 2) {
-            editTextTerm.setText(wordsFileArray[((pageNo+1)*2-1)])
-            editTextDef.setText(wordsFileArray[((pageNo+1)*2)])
-        } else {
-            textFileString += "&&"
-            readWordsFile()
-            editTextTerm.setText(wordsFileArray[((pageNo+1)*2-1)])
-            editTextDef.setText(wordsFileArray[((pageNo+1)*2)])
+            //display flashcards
+            if(wordsFileArrayCounter >= pageNo * 2) {
+                editTextTerm.setText(wordsFileArray[((pageNo+1)*2-1)])
+                editTextDef.setText(wordsFileArray[((pageNo+1)*2)])
+            } else {
+                textFileString += "&&"
+                readWordsFile()
+                editTextTerm.setText(wordsFileArray[((pageNo+1)*2-1)])
+                editTextDef.setText(wordsFileArray[((pageNo+1)*2)])
+            }
+
+            //button click ability
+            buttonNext.isClickable = true
+            buttonPrevious.isClickable = pageNo > 1
+
+            //display other outputs
+            textViewNumber.text = pageNo.toString()
+            textViewFileData.text = textFileString
+            textViewFileURL.text = fileSelectedPath.toString()
+
+            //save page number
+            editor.putInt(savedPageNumber,pageNo)
+            editor.commit()
         }
-
-        //button click ability
-        buttonNext.isClickable = true
-        buttonPrevious.isClickable = pageNo > 1
-
-        //display other outputs
-        textViewNumber.text = pageNo.toString()
-        textViewFileData.text = textFileString
-
-        //save page number
-        editor.putInt(savedPageNumber,pageNo)
-        editor.commit()
     }
 
     private fun readWordsFile(): kotlin.Array<String>{
         //create local variables
         val stringSplit = '&'
         var tempString = ""
-        var wordsFileArray = Array(textFileString.length, {""})
+        var wordsFileArray = Array(textFileString.length/2, {""})
 
         //reset variables
         wordsFileArrayCounter = 0
@@ -205,13 +207,15 @@ class CreateCards : AppCompatActivity() {
         return wordsFileArray
     }
 
-    /*fun saveFile(){
+    fun saveFile(): kotlin.Array<String>{
         //create local variables
+        /*val pfd = contentResolver.openFileDescriptor(fileSelectedPath,"w")
+        val filestream = FileOutputStream(pfd.fileDescriptor)*/
+
         var pref = PreferenceManager.getDefaultSharedPreferences(this)
         var editor = pref.edit()
         var pageNo = pref.getInt(savedPageNumber,1)
-        val pfd = contentResolver.openFileDescriptor(fileSelectedPath,"w")
-        val filestream = FileOutputStream(pfd.fileDescriptor)
+        var wordsFileArray = readWordsFile()
 
 
         //save updates to array
@@ -223,12 +227,13 @@ class CreateCards : AppCompatActivity() {
         for (i in wordsFileArray.indices){
             textFileString += wordsFileArray[i] + "&"
         }
-/*
+
         //write to file
-        grantUriPermission()
-        filestream.write(textFileString.toByteArray())
+        /*filestream.write(textFileString.toByteArray())
         filestream.close()
         pfd.close()*/
-    }*/
+
+        return wordsFileArray
+    }
 
 }
