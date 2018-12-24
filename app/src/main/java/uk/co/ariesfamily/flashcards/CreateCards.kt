@@ -26,7 +26,6 @@ class CreateCards : AppCompatActivity() {
 
     private var textFileString = ""
     private var wordsFileArrayCounter = 0
-    private var wordsFileArray = Array(textFileString.length, {""})
     private var fileSelectedPath = Uri.EMPTY
 
 
@@ -56,16 +55,16 @@ class CreateCards : AppCompatActivity() {
         buttonPrevious.isClickable = false
 
         //set text file
-        /*if (textFileStringSaved != ""){
+        if (textFileStringSaved != ""){
             //set file
             textFileString = textFileStringSaved
-            //fileSelectedPath = Uri.parse(path)
+            fileSelectedPath = Uri.parse(path)
 
             //new flashcard
             choosePage(pageNumberSaved)
         } else {
 
-        }*/
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -82,7 +81,7 @@ class CreateCards : AppCompatActivity() {
                 editor.putString(savedFilePath,fileSelectedPath.toString())
 
                 //set file
-                textFileString = inputStream.bufferedReader().use { it.readText() }
+                textFileString = inputStream.bufferedReader().use { it.readText() }.toString()
 
                 //enable button
                 buttonNext.isClickable = true
@@ -184,6 +183,7 @@ class CreateCards : AppCompatActivity() {
         //create local variables
         val stringSplit = '&'
         var tempString = ""
+        var wordsFileArray = Array(textFileString.length, {""})
 
         //reset variables
         wordsFileArrayCounter = 0
