@@ -18,7 +18,7 @@ import java.io.FileOutputStream
 import java.io.OutputStream
 import java.io.OutputStreamWriter
 import java.net.URI
-
+import android.util.Log
 
 class CreateCards : AppCompatActivity() {
 
@@ -33,18 +33,16 @@ class CreateCards : AppCompatActivity() {
     private var fileSelectedPath = Uri.EMPTY
 
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         //create locals
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
-        val themeName = pref.getInt(savedTheme1,0)
-        val textFileStringSaved = pref.getString(savedWordsFile,"")
-        val pageNumberSaved = pref.getInt(savedPageNumber,0)
-        val path = pref.getString(savedFilePath,"")
+        val themeName = pref.getInt(savedTheme1, 0)
+        val textFileStringSaved = pref.getString(savedWordsFile, "")
+        val pageNumberSaved = pref.getInt(savedPageNumber, 0)
+        val path = pref.getString(savedFilePath, "")
 
         //get saved setup
-        when (themeName){
+        when (themeName) {
             1 -> setTheme(R.style.ActivityTheme_Primary_Base_Dark)
             2 -> setTheme(R.style.nightTheme)
             3 -> setTheme(R.style.whitTheme)
@@ -59,7 +57,7 @@ class CreateCards : AppCompatActivity() {
         buttonPrevious.isClickable = false
 
         //set text file
-        if (textFileStringSaved != ""){
+        if (textFileStringSaved != "") {
             //set file
             textFileString = textFileStringSaved
             fileSelectedPath = Uri.parse(path)
@@ -82,7 +80,7 @@ class CreateCards : AppCompatActivity() {
                 val inputStream = contentResolver.openInputStream(fileSelectedPath)
                 val pref = PreferenceManager.getDefaultSharedPreferences(this)
                 var editor = pref.edit()
-                editor.putString(savedFilePath,fileSelectedPath.toString())
+                editor.putString(savedFilePath, fileSelectedPath.toString())
 
                 //set file
                 textFileString = inputStream.bufferedReader().use { it.readText() }.toString()
@@ -91,7 +89,7 @@ class CreateCards : AppCompatActivity() {
                 buttonNext.isClickable = true
 
                 //save text file
-                editor.putString(savedWordsFile,textFileString)
+                editor.putString(savedWordsFile, textFileString)
                 editor.commit()
 
                 //run choose page
@@ -99,7 +97,7 @@ class CreateCards : AppCompatActivity() {
 
             } else {
                 //output no file exists
-                Toast.makeText(this,"No Data", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "No Data", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -109,26 +107,30 @@ class CreateCards : AppCompatActivity() {
         val intent = Intent(this, MainActivity::class.java).apply {}
         startActivity(intent)
     }
+
     fun startNewCards(item: MenuItem) {
-        val intent = Intent(this, CreateCards::class.java).apply {  }
+        val intent = Intent(this, CreateCards::class.java).apply { }
         startActivity(intent)
     }
+
     fun startSettings(item: MenuItem) {
-        val intent = Intent(this, Settings::class.java).apply {  }
+        val intent = Intent(this, Settings::class.java).apply { }
         startActivity(intent)
     }
+
     fun startHelp(item: MenuItem) {
-        val intent = Intent(this, Help::class.java).apply {  }
+        val intent = Intent(this, Help::class.java).apply { }
         startActivity(intent)
     }
+
     //back button
-    fun backButtonPress(view: android.view.View){
+    fun backButtonPress(view: android.view.View) {
         val intent = Intent(this, MainActivity::class.java).apply {}
         startActivity(intent)
     }
 
 
-    fun clickSelectFileButton(view: android.view.View){
+    fun clickSelectFileButton(view: android.view.View) {
         //create locals
         val intent = Intent().setType("*/*").setAction(Intent.ACTION_GET_CONTENT)
 
@@ -136,21 +138,21 @@ class CreateCards : AppCompatActivity() {
         startActivityForResult(Intent.createChooser(intent, "Select a file"), newwordsFileRequestCode)
     }
 
-    fun clickPrevious(view: android.view.View){
+    fun clickPrevious(view: android.view.View) {
         var pref = PreferenceManager.getDefaultSharedPreferences(this)
-        var pageNo = pref.getInt(savedPageNumber,2)
-        choosePage(pageNo-1)
+        var pageNo = pref.getInt(savedPageNumber, 2)
+        choosePage(pageNo - 1)
     }
 
-    fun clickNext(view: android.view.View){
+    fun clickNext(view: android.view.View) {
         var pref = PreferenceManager.getDefaultSharedPreferences(this)
-        var pageNo = pref.getInt(savedPageNumber,1)
-        choosePage(pageNo+1)
+        var pageNo = pref.getInt(savedPageNumber, 1)
+        choosePage(pageNo + 1)
     }
 
-    fun choosePage(pageNo: Int){
+    fun choosePage(pageNo: Int) {
         //do check first
-        if (pageNo > 0){
+        if (pageNo > 0) {
 
             //create local variables
             var pref = PreferenceManager.getDefaultSharedPreferences(this)
@@ -160,14 +162,14 @@ class CreateCards : AppCompatActivity() {
             val wordsFileArray = saveFile()
 
             //display flashcards
-            if(wordsFileArrayCounter >= pageNo * 2) {
-                editTextTerm.setText(wordsFileArray[((pageNo+1)*2-1)])
-                editTextDef.setText(wordsFileArray[((pageNo+1)*2)])
+            if (wordsFileArrayCounter >= pageNo * 2) {
+                editTextTerm.setText(wordsFileArray[((pageNo + 1) * 2 - 1)])
+                editTextDef.setText(wordsFileArray[((pageNo + 1) * 2)])
             } else {
-                textFileString += "&&"
+                textFileString += " & &"
                 readWordsFile()
-                editTextTerm.setText(wordsFileArray[((pageNo+1)*2-1)])
-                editTextDef.setText(wordsFileArray[((pageNo+1)*2)])
+                editTextTerm.setText(wordsFileArray[((pageNo + 1) * 2 - 1)])
+                editTextDef.setText(wordsFileArray[((pageNo + 1) * 2)])
             }
 
             //button click ability
@@ -180,23 +182,23 @@ class CreateCards : AppCompatActivity() {
             textViewFileURL.text = fileSelectedPath.toString()
 
             //save page number
-            editor.putInt(savedPageNumber,pageNo)
+            editor.putInt(savedPageNumber, pageNo)
             editor.commit()
         }
     }
 
-    private fun readWordsFile(): kotlin.Array<String>{
+    private fun readWordsFile(): kotlin.Array<String> {
         //create local variables
         val stringSplit = '&'
         var tempString = ""
-        var wordsFileArray = Array(textFileString.length/2, {""})
+        var wordsFileArray = Array(textFileString.length / 2, { "" })
 
         //reset variables
         wordsFileArrayCounter = 0
 
         //string splitting
-        for(i in textFileString.indices) {
-            if(textFileString[i] == stringSplit){
+        for (i in textFileString.indices) {
+            if (textFileString[i] == stringSplit) {
 
                 wordsFileArray[wordsFileArrayCounter] = tempString
                 wordsFileArrayCounter++
@@ -211,31 +213,55 @@ class CreateCards : AppCompatActivity() {
         return wordsFileArray
     }
 
-    fun saveFile(): kotlin.Array<String>{
+    fun saveFile(): kotlin.Array<String> {
         //create local variables
-        val file = File(FileUtils.getPath(this, fileSelectedPath))
         var pref = PreferenceManager.getDefaultSharedPreferences(this)
         var editor = pref.edit()
-        var pageNo = pref.getInt(savedPageNumber,1)
+        var pageNo = pref.getInt(savedPageNumber, 1)
         var wordsFileArray = readWordsFile()
-
+        val uristring = fileSelectedPath.toString()
 
         //save updates to array
-        wordsFileArray[((pageNo+1)*2-1)] = editTextTerm.text.toString()
-        wordsFileArray[((pageNo+1)*2)] = editTextTerm.text.toString()
+        wordsFileArray[((pageNo + 1) * 2 - 1)] = editTextTerm.text.toString()
+        wordsFileArray[((pageNo + 1) * 2)] = editTextTerm.text.toString()
 
-        //convert to string
-        textFileString = ""
-        for (i in wordsFileArray.indices){
-            textFileString += wordsFileArray[i] + "&"
+
+
+        //check if we can continue
+        if (fileSelectedPath.toString().substring(0, 67) == "content://com.android.externalstorage.documents/document/primary%3A") {
+            //content://com.android.externalstorage.documents/document/primary%3AFlashcards%2FLatin%2FFull%20Latin%20Vocab.txt
+            //sort out uri string
+            var newPath = "/storage/emulated/0/" + uristring.substring(67, uristring.length)
+            var temp = "abc"
+            var count = 0
+            for (x in newPath){
+                temp += x
+                temp = temp.substring(1,3)
+                if(temp=="%2") {
+                    newPath = newPath.substring(0,count-1) + "/" + newPath.substring(count, newPath.length-1)
+                    count+=1
+                }
+                count++
+            }
+            newPath+=temp
+            val file = File(newPath)
+
+            //convert to string
+            textFileString = ""
+            for (i in wordsFileArray.indices) {
+                textFileString += wordsFileArray[i] + "&"
+            }
+
+            //write to file
+            file.printWriter().use { out ->
+                out.println(textFileString)
+            }
+        } else {
+            Toast.makeText(this, "File location not supported", Toast.LENGTH_LONG).show()
         }
 
-        //write to file
-        file.printWriter().use { out ->
-            out.println(textFileString)
-        }
 
         return wordsFileArray
-    }
 
+    }
 }
