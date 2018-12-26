@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.preference.PreferenceManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
@@ -24,6 +25,7 @@ import java.io.OutputStream
 import java.io.OutputStreamWriter
 import java.net.URI
 import android.util.Log
+import java.nio.charset.Charset
 import java.util.jar.Manifest
 
 class CreateCards : AppCompatActivity() {
@@ -40,6 +42,7 @@ class CreateCards : AppCompatActivity() {
     private var wordsFileArrayCounter = 0
     private var fileSelectedPath = Uri.EMPTY
     private var tempPageNo = 1
+    private var running = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,31 +85,40 @@ class CreateCards : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         //word file found
-        if (requestCode == newwordsFileRequestCode && resultCode == RESULT_OK) {
-            fileSelectedPath = data?.data
-            if (fileSelectedPath != null) {
-                //locals
-                val inputStream = contentResolver.openInputStream(fileSelectedPath)
-                val pref = PreferenceManager.getDefaultSharedPreferences(this)
-                var editor = pref.edit()
-                editor.putString(savedFilePath, fileSelectedPath.toString())
+        if (resultCode == Activity.RESULT_OK){
+            when (requestCode){
+                newwordsFileRequestCode ->{
+                    fileSelectedPath = data?.data
+                    if (fileSelectedPath != null) {
+                        //locals
+                        val inputStream = contentResolver.openInputStream(fileSelectedPath)
+                        val pref = PreferenceManager.getDefaultSharedPreferences(this)
+                        var editor = pref.edit()
+                        editor.putString(savedFilePath, fileSelectedPath.toString())
 
-                //set file
-                textFileString = inputStream.bufferedReader().use { it.readText() }.toString()
+                        //set file
+                        textFileString = inputStream.bufferedReader().use { it.readText() }.toString()
 
-                //enable button
-                buttonNext.isClickable = true
+                        //enable button
+                        buttonNext.isClickable = true
 
-                //save text file
-                editor.putString(savedWordsFile, textFileString)
-                editor.commit()
+                        //save text file
+                        editor.putString(savedWordsFile, textFileString)
+                        editor.commit()
 
-                //run choose page
-                choosePage(1)
+                        //run choose page
+                        choosePage(1)
 
-            } else {
-                //output no file exists
-                Toast.makeText(this, "No Data", Toast.LENGTH_LONG).show()
+                    } else {
+                        //output no file exists
+                        Toast.makeText(this, "No Data", Toast.LENGTH_LONG).show()
+                    }
+                }
+
+                else ->{
+
+                }
+
             }
         }
     }
@@ -163,6 +175,10 @@ class CreateCards : AppCompatActivity() {
         //create locals
         val intent = Intent().setType("*/*").setAction(Intent.ACTION_GET_CONTENT)
 
+        //reset the text inputs
+        editTextTerm.setText("")
+        editTextDef.setText("")
+
         //request file
         startActivityForResult(Intent.createChooser(intent, "Select a file"), newwordsFileRequestCode)
     }
@@ -184,24 +200,24 @@ class CreateCards : AppCompatActivity() {
         if (isPermissionGranted(writePermission)) {
             //permissions granted
             //do check first
-            if (pageNo > 0) {
-
+            if (pageNo > 0 && !running) {
                 //create local variables
-                var pref = PreferenceManager.getDefaultSharedPreferences(this)
-                var editor = pref.edit()
+                val pref = PreferenceManager.getDefaultSharedPreferences(this)
+                val editor = pref.edit()
+                running = true
 
                 //read file and put to array
                 val wordsFileArray = saveFile()
 
                 //display flashcards
                 if (wordsFileArrayCounter >= pageNo * 2) {
-                    editTextTerm.setText(wordsFileArray[(pageNo * 2 - 1)])
-                    editTextDef.setText(wordsFileArray[(pageNo * 2)])
+                    editTextTerm.setText(wordsFileArray[(pageNo * 2 - 2)])
+                    editTextDef.setText(wordsFileArray[(pageNo * 2 - 1)])
                 } else {
                     textFileString += " & &"
                     readWordsFile()
-                    editTextTerm.setText(wordsFileArray[(pageNo * 2 - 1)])
-                    editTextDef.setText(wordsFileArray[(pageNo * 2 )])
+                    editTextTerm.setText(wordsFileArray[(pageNo * 2 - 2)])
+                    editTextDef.setText(wordsFileArray[(pageNo * 2 - 1)])
                 }
 
                 //button click ability
@@ -211,11 +227,13 @@ class CreateCards : AppCompatActivity() {
                 //display other outputs
                 textViewNumber.text = pageNo.toString()
                 textViewFileData.text = textFileString
-                textViewFileURL.text = fileSelectedPath.toString()
+                textViewFileURL.text = getString(R.string.flashcardFile)+ newLine() + RealPathUtil.getRealPath(this,fileSelectedPath)
 
                 //save page number
                 editor.putInt(savedPageNumber, pageNo)
                 editor.commit()
+
+                running = false
             } else {
                 //restart with lowest page number
                 choosePage(1)
@@ -268,14 +286,18 @@ class CreateCards : AppCompatActivity() {
     fun saveFile(): kotlin.Array<String> {
         //create local variables
         var pref = PreferenceManager.getDefaultSharedPreferences(this)
-        var editor = pref.edit()
         var pageNo = pref.getInt(savedPageNumber, 1)
         var wordsFileArray = readWordsFile()
-        val uristring = fileSelectedPath.toString()
+        val test1 = editTextTerm.text
+        val test2 = editTextDef.text
 
         //save updates to array
-        wordsFileArray[(pageNo * 2 - 1)] = editTextTerm.text.toString()
-        wordsFileArray[(pageNo * 2)] = editTextTerm.text.toString()
+        if (editTextTerm.text.toString() !== ""&& editTextTerm.text !== null && editTextTerm.text.toString().length !== 0){
+            wordsFileArray[(pageNo * 2 - 2)] = editTextTerm.text.toString()
+        }
+        if (editTextDef.text.toString() !== "" && editTextDef.text !== null && editTextDef.text.toString().length !== 0){
+            wordsFileArray[(pageNo * 2 - 1)] = editTextDef.text.toString()
+        }
 
         //sort out uri string
         var newPath = RealPathUtil.getRealPath(this,fileSelectedPath)
@@ -298,6 +320,10 @@ class CreateCards : AppCompatActivity() {
 
     }
 
+
+
     private fun isPermissionGranted(permission: String): Boolean = ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+
+    private fun newLine():String = getString(R.string.new_line)
 
 }
