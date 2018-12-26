@@ -1,12 +1,17 @@
 package uk.co.ariesfamily.flashcards
 
 
+import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.PathUtils
 import android.view.MenuItem
 import android.view.View
@@ -19,6 +24,7 @@ import java.io.OutputStream
 import java.io.OutputStreamWriter
 import java.net.URI
 import android.util.Log
+import java.util.jar.Manifest
 
 class CreateCards : AppCompatActivity() {
 
@@ -27,10 +33,13 @@ class CreateCards : AppCompatActivity() {
     private val savedPageNumber = "pageNumber"
     private val savedFilePath = "filepath"
     private val newwordsFileRequestCode = 100
+    private val permissionRequestCode = 150
+    private val writePermission = android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 
     private var textFileString = ""
     private var wordsFileArrayCounter = 0
     private var fileSelectedPath = Uri.EMPTY
+    private var tempPageNo = 1
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -102,6 +111,26 @@ class CreateCards : AppCompatActivity() {
         }
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            permissionRequestCode -> {
+                // If request is cancelled, the result arrays are empty.
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    // permission was granted, yay!
+                    choosePage(tempPageNo)
+                } else {
+                    // permission denied, boo!
+
+                }
+                return
+            }
+
+            else -> {
+                // Ignore all other requests.
+            }
+        }
+    }
+
     //onclick events for launching activities
     fun startMain(item: MenuItem) {
         val intent = Intent(this, MainActivity::class.java).apply {}
@@ -150,41 +179,64 @@ class CreateCards : AppCompatActivity() {
         choosePage(pageNo + 1)
     }
 
-    fun choosePage(pageNo: Int) {
-        //do check first
-        if (pageNo > 0) {
+    private fun choosePage(pageNo: Int) {
+        //check if we can continue
+        if (isPermissionGranted(writePermission)) {
+            //permissions granted
+            //do check first
+            if (pageNo > 0) {
 
-            //create local variables
-            var pref = PreferenceManager.getDefaultSharedPreferences(this)
-            var editor = pref.edit()
+                //create local variables
+                var pref = PreferenceManager.getDefaultSharedPreferences(this)
+                var editor = pref.edit()
 
-            //read file and put to array
-            val wordsFileArray = saveFile()
+                //read file and put to array
+                val wordsFileArray = saveFile()
 
-            //display flashcards
-            if (wordsFileArrayCounter >= pageNo * 2) {
-                editTextTerm.setText(wordsFileArray[((pageNo + 1) * 2 - 1)])
-                editTextDef.setText(wordsFileArray[((pageNo + 1) * 2)])
+                //display flashcards
+                if (wordsFileArrayCounter >= pageNo * 2) {
+                    editTextTerm.setText(wordsFileArray[(pageNo * 2 - 1)])
+                    editTextDef.setText(wordsFileArray[(pageNo * 2)])
+                } else {
+                    textFileString += " & &"
+                    readWordsFile()
+                    editTextTerm.setText(wordsFileArray[(pageNo * 2 - 1)])
+                    editTextDef.setText(wordsFileArray[(pageNo * 2 )])
+                }
+
+                //button click ability
+                buttonNext.isClickable = true
+                buttonPrevious.isClickable = pageNo > 1
+
+                //display other outputs
+                textViewNumber.text = pageNo.toString()
+                textViewFileData.text = textFileString
+                textViewFileURL.text = fileSelectedPath.toString()
+
+                //save page number
+                editor.putInt(savedPageNumber, pageNo)
+                editor.commit()
             } else {
-                textFileString += " & &"
-                readWordsFile()
-                editTextTerm.setText(wordsFileArray[((pageNo + 1) * 2 - 1)])
-                editTextDef.setText(wordsFileArray[((pageNo + 1) * 2)])
+                //restart with lowest page number
+                choosePage(1)
             }
+        } else {
+            //check whether user needs to be prompted
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,writePermission)){
+                //show explanation to the user
+                Toast.makeText(this, "Permissions not given. Saving file will not work...", Toast.LENGTH_LONG).show()
 
-            //button click ability
-            buttonNext.isClickable = true
-            buttonPrevious.isClickable = pageNo > 1
-
-            //display other outputs
-            textViewNumber.text = pageNo.toString()
-            textViewFileData.text = textFileString
-            textViewFileURL.text = fileSelectedPath.toString()
-
-            //save page number
-            editor.putInt(savedPageNumber, pageNo)
-            editor.commit()
+                //request permission
+                tempPageNo = pageNo
+                ActivityCompat.requestPermissions(this, arrayOf(writePermission),permissionRequestCode)
+            } else {
+                //user never offered permission. Request it
+                tempPageNo = pageNo
+                ActivityCompat.requestPermissions(this, arrayOf(writePermission),permissionRequestCode)
+            }
         }
+
+
     }
 
     private fun readWordsFile(): kotlin.Array<String> {
@@ -222,46 +274,30 @@ class CreateCards : AppCompatActivity() {
         val uristring = fileSelectedPath.toString()
 
         //save updates to array
-        wordsFileArray[((pageNo + 1) * 2 - 1)] = editTextTerm.text.toString()
-        wordsFileArray[((pageNo + 1) * 2)] = editTextTerm.text.toString()
+        wordsFileArray[(pageNo * 2 - 1)] = editTextTerm.text.toString()
+        wordsFileArray[(pageNo * 2)] = editTextTerm.text.toString()
 
+        //sort out uri string
+        var newPath = RealPathUtil.getRealPath(this,fileSelectedPath)
+        val file = File(newPath)
 
-
-        //check if we can continue
-        if (fileSelectedPath.toString().substring(0, 67) == "content://com.android.externalstorage.documents/document/primary%3A") {
-            //content://com.android.externalstorage.documents/document/primary%3AFlashcards%2FLatin%2FFull%20Latin%20Vocab.txt
-            //sort out uri string
-            var newPath = "/storage/emulated/0/" + uristring.substring(67, uristring.length)
-            var temp = "abc"
-            var count = 0
-            for (x in newPath){
-                temp += x
-                temp = temp.substring(1,3)
-                if(temp=="%2") {
-                    newPath = newPath.substring(0,count-1) + "/" + newPath.substring(count, newPath.length-1)
-                    count+=1
-                }
-                count++
-            }
-            newPath+=temp
-            val file = File(newPath)
-
-            //convert to string
-            textFileString = ""
-            for (i in wordsFileArray.indices) {
+        //convert to string
+        textFileString = ""
+        for (i in wordsFileArray.indices) {
+            if (wordsFileArray[i] != "") {
                 textFileString += wordsFileArray[i] + "&"
             }
-
-            //write to file
-            file.printWriter().use { out ->
-                out.println(textFileString)
-            }
-        } else {
-            Toast.makeText(this, "File location not supported", Toast.LENGTH_LONG).show()
         }
 
+        //write to file
+        file.printWriter().use { out ->
+            out.println(textFileString)
+        }
 
         return wordsFileArray
 
     }
+
+    private fun isPermissionGranted(permission: String): Boolean = ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+
 }
