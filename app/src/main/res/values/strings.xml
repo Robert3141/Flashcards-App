@@ -1,9 +1,11 @@
 <resources>
     <!-- Entire App -->
     <string name="app_name">Flashcards</string>
+    <string name="new_line">/nl</string>
 
     <!-- Menu -->
     <string name="menu_Flashcards">Flashcards</string>
+    <string name="menu_NewCards">Create/Modify Set</string>
     <string name="menu_Settings">Settings</string>
     <string name="menu_Help">Help</string>
 
@@ -20,13 +22,22 @@
     <string name="changeFlashcardFlipper">Flip All Flashcards</string>
     <string name="title_activity_settings">Settings</string>
 
+    <!-- Flashcard Maker -->
+    <string name="noFileSelected_text">Please Select a file</string>
+    <string name="termHint">Term</string>
+    <string name="defHint">Definition</string>
+    <string name="buttonPrevious_text">Previous</string>
+    <string name="buttonNext_text">Next</string>
+    <string name="flashcardNumber">1</string>
+    <string name="flashcardFile">The Text File:</string>
+
     <!-- Settings Activity -->
     <string name="setting_Theme">Change Theme</string>
     <string-array name="setting_ThemeSpinner">
         <item>Default</item>
         <item>Dark</item>
         <item>Night</item>
-        <item>White</item>
+        <item>White (beta)</item>
     </string-array>
     <string name="setting_Flipper">Flip All Flashcards</string>
 

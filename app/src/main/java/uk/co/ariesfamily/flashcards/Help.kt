@@ -4,6 +4,7 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.v4.content.ContextCompat
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_help.*
 
@@ -28,6 +29,7 @@ class Help : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_help)
 
+
         //load URL string
         val webSettings = webview.settings
         webSettings.javaScriptEnabled = true
@@ -37,6 +39,10 @@ class Help : AppCompatActivity() {
     //onclick events for launching activities
     fun startMain(item: MenuItem) {
         val intent = Intent(this, MainActivity::class.java).apply {}
+        startActivity(intent)
+    }
+    fun startNewCards(item: MenuItem) {
+        val intent = Intent(this, CreateCards::class.java).apply {  }
         startActivity(intent)
     }
     fun startSettings(item: MenuItem) {
@@ -52,4 +58,6 @@ class Help : AppCompatActivity() {
         val intent = Intent(this, MainActivity::class.java).apply {}
         startActivity(intent)
     }
+
+
 }

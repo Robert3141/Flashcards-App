@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     private val savedWordsFile = "wordsFile"
     private val savedFlashcardFlipper = "flashcardFlipper"
     private val savedFlashcardNumber = "flashcardNumber"
+    private val savedFilePath = "filepath"
     private var wordsNotDefinition = true
     private var cardSelected = 0
     private var wordsFileArrayCounter = 0
@@ -68,11 +69,12 @@ class MainActivity : AppCompatActivity() {
         //word file found
         if (requestCode == wordsFileRequestCode && resultCode == RESULT_OK) {
             val fileSelectedPath = data?.data
+            val pref = PreferenceManager.getDefaultSharedPreferences(this)
+            val editor = pref.edit()
+            editor.putString(savedFilePath,fileSelectedPath.toString())
             if (fileSelectedPath != null) {
                 //locals
                 val inputStream = contentResolver.openInputStream(fileSelectedPath)
-                val pref = PreferenceManager.getDefaultSharedPreferences(this)
-                var editor = pref.edit()
 
                 //set file
                 textFileString = inputStream.bufferedReader().use { it.readText() }
@@ -86,6 +88,8 @@ class MainActivity : AppCompatActivity() {
             } else {
                 //output no file exists
                 Toast.makeText(this,"No Data", Toast.LENGTH_LONG).show()
+
+                editor.commit()
             }
         }
     }
@@ -95,12 +99,21 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, MainActivity::class.java).apply {}
         startActivity(intent)
     }
+    fun startNewCards(item: MenuItem) {
+        val intent = Intent(this, CreateCards::class.java).apply {  }
+        startActivity(intent)
+    }
     fun startSettings(item: MenuItem) {
         val intent = Intent(this, Settings::class.java).apply {  }
         startActivity(intent)
     }
     fun startHelp(item: MenuItem) {
         val intent = Intent(this, Help::class.java).apply {  }
+        startActivity(intent)
+    }
+    //back button
+    fun backButtonPress(view: android.view.View){
+        val intent = Intent(this, MainActivity::class.java).apply {}
         startActivity(intent)
     }
 
@@ -202,7 +215,4 @@ class MainActivity : AppCompatActivity() {
 
     private fun IntRange.random() = ThreadLocalRandom.current().nextInt((endInclusive + 1) - start) + start
 
-    /*private fun getSettings(): kotlin.Array<String>{
-        return
-    }*/
 }
