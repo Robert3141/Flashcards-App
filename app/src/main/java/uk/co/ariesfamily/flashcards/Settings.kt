@@ -3,11 +3,8 @@ package uk.co.ariesfamily.flashcards
 import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
-import android.view.View
-import android.widget.Adapter
 import android.widget.AdapterView
 
 import kotlinx.android.synthetic.main.activity_settings.*
@@ -63,36 +60,36 @@ class Settings : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
 
     //onclick events for launching activities
-    fun startMain(item: MenuItem) {
+    fun startMain(@Suppress("UNUSED_PARAMETER")item: MenuItem) {
         val intent = Intent(this, MainActivity::class.java).apply {}
         startActivity(intent)
     }
-    fun startNewCards(item: MenuItem) {
+    fun startNewCards(@Suppress("UNUSED_PARAMETER")item: MenuItem) {
         val intent = Intent(this, CreateCards::class.java).apply {  }
         startActivity(intent)
     }
-    fun startSettings(item: MenuItem) {
+    fun startSettings(@Suppress("UNUSED_PARAMETER")item: MenuItem) {
         val intent = Intent(this, Settings::class.java).apply {  }
         startActivity(intent)
     }
-    fun startHelp(item: MenuItem) {
+    fun startHelp(@Suppress("UNUSED_PARAMETER")item: MenuItem) {
         val intent = Intent(this, Help::class.java).apply {  }
         startActivity(intent)
     }
     //back button
-    fun backButtonPress(view: android.view.View){
+    fun backButtonPress(@Suppress("UNUSED_PARAMETER")view: android.view.View){
         val intent = Intent(this, MainActivity::class.java).apply {}
         startActivity(intent)
     }
 
-    fun itemClicked(view: android.view.View) {
+    fun itemClicked(@Suppress("UNUSED_PARAMETER")view: android.view.View) {
         updateSettings()
     }
 
     private fun updateSettings() {
         //create locals
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
-        var editor = pref.edit()
+        val editor = pref.edit()
         val selectedTheme = spinnerTheme.selectedItemPosition
         val selectedFlipper = switchFlipCards.isChecked
 
@@ -101,7 +98,7 @@ class Settings : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         editor.putBoolean(savedFlashcardFlipper,selectedFlipper)
 
         //push settings
-        editor.commit()
+        editor.apply()
 
         //reload activity
         recreate()

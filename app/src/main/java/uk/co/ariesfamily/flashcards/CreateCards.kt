@@ -131,34 +131,34 @@ class CreateCards : AppCompatActivity() {
     }
 
     //onclick events for launching activities
-    fun startMain(view: MenuItem) {
+    fun startMain(@Suppress("UNUSED_PARAMETER")view: MenuItem) {
         val intent = Intent(this, MainActivity::class.java).apply {}
         startActivity(intent)
     }
 
-    fun startNewCards(view: MenuItem) {
+    fun startNewCards(@Suppress("UNUSED_PARAMETER")view: MenuItem) {
         val intent = Intent(this, CreateCards::class.java).apply { }
         startActivity(intent)
     }
 
-    fun startSettings(view: MenuItem) {
+    fun startSettings(@Suppress("UNUSED_PARAMETER")view: MenuItem) {
         val intent = Intent(this, Settings::class.java).apply { }
         startActivity(intent)
     }
 
-    fun startHelp(view: MenuItem) {
+    fun startHelp(@Suppress("UNUSED_PARAMETER")view: MenuItem) {
         val intent = Intent(this, Help::class.java).apply { }
         startActivity(intent)
     }
 
     //back button
-    fun backButtonPress(view: android.view.View) {
+    fun backButtonPress(@Suppress("UNUSED_PARAMETER")view: android.view.View) {
         val intent = Intent(this, MainActivity::class.java).apply {}
         startActivity(intent)
     }
 
 
-    fun clickSelectFileButton(view: android.view.View) {
+    fun clickSelectFileButton(@Suppress("UNUSED_PARAMETER")view: android.view.View) {
         //create locals
         val intent = Intent().setType("*/*").setAction(Intent.ACTION_GET_CONTENT)
 
@@ -170,13 +170,13 @@ class CreateCards : AppCompatActivity() {
         startActivityForResult(Intent.createChooser(intent, "Select a file"), newwordsFileRequestCode)
     }
 
-    fun clickPrevious(view: android.view.View) {
+    fun clickPrevious(@Suppress("UNUSED_PARAMETER")view: android.view.View) {
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
         val pageNo = pref.getInt(savedPageNumber, 2)
         choosePage(pageNo - 1)
     }
 
-    fun clickNext(view: android.view.View) {
+    fun clickNext(@Suppress("UNUSED_PARAMETER")view: android.view.View) {
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
         val pageNo = pref.getInt(savedPageNumber, 1)
         choosePage(pageNo + 1)
@@ -191,6 +191,7 @@ class CreateCards : AppCompatActivity() {
                 //create local variables
                 val pref = PreferenceManager.getDefaultSharedPreferences(this)
                 val editor = pref.edit()
+                var textOutput: String
                 running = true
 
                 //read file and put to array
@@ -214,7 +215,8 @@ class CreateCards : AppCompatActivity() {
                 //display other outputs
                 textViewNumber.text = pageNo.toString()
                 textViewFileData.text = textFileString
-                textViewFileURL.text = getString(R.string.flashcardFile)+ newLine() + RealPathUtil.getRealPath(this,fileSelectedPath)
+                textOutput = getString(R.string.flashcardFile)+ newLine() + RealPathUtil.getRealPath(this,fileSelectedPath)
+                textViewFileURL.text = textOutput
 
                 //save data
                 editor.putString(savedWordsFile,textFileString)
@@ -271,13 +273,11 @@ class CreateCards : AppCompatActivity() {
         return wordsFileArray
     }
 
-    fun saveFile(): kotlin.Array<String> {
+    private fun saveFile(): kotlin.Array<String> {
         //create local variables
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
         val pageNo = pref.getInt(savedPageNumber, 1)
         val wordsFileArray = readWordsFile()
-        val test1 = editTextTerm.text
-        val test2 = editTextDef.text
 
         //save updates to array
         if (editTextTerm.text.toString() !== ""&& editTextTerm.text !== null && editTextTerm.text.toString().length !== 0){

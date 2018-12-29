@@ -4,7 +4,6 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.v4.content.ContextCompat
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_help.*
 
@@ -31,30 +30,30 @@ class Help : AppCompatActivity() {
 
 
         //load URL string
-        val webSettings = webview.settings
-        webSettings.javaScriptEnabled = true
+        //val webSettings = webview.settings
+        //webSettings.javaScriptEnabled = true
         webview.loadUrl(getString(R.string.webviewURL))
     }
 
     //onclick events for launching activities
-    fun startMain(item: MenuItem) {
+    fun startMain(@Suppress("UNUSED_PARAMETER")item: MenuItem) {
         val intent = Intent(this, MainActivity::class.java).apply {}
         startActivity(intent)
     }
-    fun startNewCards(item: MenuItem) {
+    fun startNewCards(@Suppress("UNUSED_PARAMETER")item: MenuItem) {
         val intent = Intent(this, CreateCards::class.java).apply {  }
         startActivity(intent)
     }
-    fun startSettings(item: MenuItem) {
+    fun startSettings(@Suppress("UNUSED_PARAMETER")item: MenuItem) {
         val intent = Intent(this, Settings::class.java).apply {  }
         startActivity(intent)
     }
-    fun startHelp(item: MenuItem) {
+    fun startHelp(@Suppress("UNUSED_PARAMETER")item: MenuItem) {
         val intent = Intent(this, Help::class.java).apply {  }
         startActivity(intent)
     }
     //back button
-    fun backButtonPress(view: android.view.View){
+    fun backButtonPress(@Suppress("UNUSED_PARAMETER")view: android.view.View){
         val intent = Intent(this, MainActivity::class.java).apply {}
         startActivity(intent)
     }
