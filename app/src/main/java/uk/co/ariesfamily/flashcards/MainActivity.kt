@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         //set text file
         if (textFileStringSaved != ""){
             //set file
-            textFileString = textFileStringSaved
+            textFileString = textFileStringSaved?: ""
 
             //enable button
             newFlashcard.isClickable = true
@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
 
                 //save text file
                 editor.putString(savedWordsFile,textFileString)
-                editor.commit()
+                editor.apply()
             } else {
                 //output no file exists
                 Toast.makeText(this,"No Data", Toast.LENGTH_LONG).show()
@@ -95,63 +95,55 @@ class MainActivity : AppCompatActivity() {
     }
 
     //onclick events for launching activities
-    fun startMain(item: MenuItem) {
+    fun startMain(@Suppress("UNUSED_PARAMETER")item: MenuItem) {
         val intent = Intent(this, MainActivity::class.java).apply {}
         startActivity(intent)
     }
-    fun startNewCards(item: MenuItem) {
+    fun startNewCards(@Suppress("UNUSED_PARAMETER")item: MenuItem) {
         val intent = Intent(this, CreateCards::class.java).apply {  }
         startActivity(intent)
     }
-    fun startSettings(item: MenuItem) {
+    fun startSettings(@Suppress("UNUSED_PARAMETER")item: MenuItem) {
         val intent = Intent(this, Settings::class.java).apply {  }
         startActivity(intent)
     }
-    fun startHelp(item: MenuItem) {
+    fun startHelp(@Suppress("UNUSED_PARAMETER")item: MenuItem) {
         val intent = Intent(this, Help::class.java).apply {  }
         startActivity(intent)
     }
     //back button
-    fun backButtonPress(view: android.view.View){
+    fun backButtonPress(@Suppress("UNUSED_PARAMETER")view: android.view.View){
         val intent = Intent(this, MainActivity::class.java).apply {}
         startActivity(intent)
     }
 
-    fun clickFlipFlashcard(view: android.view.View){
+    fun clickFlipFlashcard(@Suppress("UNUSED_PARAMETER")view: android.view.View){
         //read words file
         val wordsFileArray = readWordsFile()
 
         if(flipFlashcard.isClickable) {
-            if(wordsNotDefinition) {
-                cardSelected++
-                wordsNotDefinition = false
-            } else {
-                cardSelected--
-                wordsNotDefinition = true
-            }
+            cardSelected += if (wordsNotDefinition) 1 else -1
+            wordsNotDefinition = !wordsNotDefinition
 
             //display new flashcard
             textViewOutput.text = wordsFileArray[cardSelected]
         }
     }
 
-    fun clickNewFlashcard(view: android.view.View){
+    fun clickNewFlashcard(@Suppress("UNUSED_PARAMETER")view: android.view.View){
         //create local variables
-        var pref = PreferenceManager.getDefaultSharedPreferences(this)
+        val pref = PreferenceManager.getDefaultSharedPreferences(this)
         val flashcardFlipper = pref.getBoolean(savedFlashcardFlipper, false)
         val flashcardNumber = pref.getInt(savedFlashcardNumber, -1)
-        var editor = pref.edit()
+        val editor = pref.edit()
 
         //read file and put to array
         val wordsFileArray = readWordsFile()
 
         //randomly select number and set relevant variables
         if (flashcardNumber == -1 || !justRecreated) {
-            if (wordsFileArrayCounter > 0) {
-                cardSelected = 2 * randomNumberGenerator(0, (wordsFileArrayCounter - 1) / 2)
-            } else {
-                cardSelected = 0
-            }
+            cardSelected = if (wordsFileArrayCounter > 0) 2 * randomNumberGenerator(0, (wordsFileArrayCounter - 1) / 2) else 0
+
             //save flashcard number
             editor.putInt(savedFlashcardNumber,cardSelected)
         } else {
@@ -172,10 +164,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         //save flashcard value
-        editor.commit()
+        editor.apply()
     }
 
-    fun clickSelectFile(view: android.view.View){
+    fun clickSelectFile(@Suppress("UNUSED_PARAMETER")view: android.view.View){
         //create locals
         val intent = Intent().setType("*/*").setAction(Intent.ACTION_GET_CONTENT)
 
@@ -186,7 +178,7 @@ class MainActivity : AppCompatActivity() {
     private fun readWordsFile(): kotlin.Array<String>{
         //create local variables
         val stringSplit = '&'
-        val wordsFileArray = Array(textFileString.length, {""})
+        val wordsFileArray = Array(textFileString.length,{""})
         var tempString = ""
 
         //reset variables
