@@ -13,6 +13,7 @@ class Settings : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     private val savedTheme1 = "Theme1"
     private val savedFlashcardFlipper = "flashcardFlipper"
+    private val savedFlashcardOrder = "flashcardOrder"
     private var userIsInteracting = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,6 +21,7 @@ class Settings : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
         val themeName = pref.getInt(savedTheme1,0)
         val flashcardFlipper = pref.getBoolean(savedFlashcardFlipper, false)
+        val flashcardOrder = pref.getInt(savedFlashcardOrder,0)
 
         //get saved setup
         when (themeName){
@@ -37,10 +39,12 @@ class Settings : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
 
         //set the settings
-        //spinner
+        //theme spinner
         spinnerTheme.setSelection(themeName)
-        //switch
+        //flip cards switch
         switchFlipCards.isChecked = flashcardFlipper
+        //order spinner
+        spinnerOrder.setSelection(flashcardOrder)
     }
 
     override fun onItemSelected(parent: AdapterView<*>, view: android.view.View?, pos: Int, id: Long) {
@@ -92,10 +96,12 @@ class Settings : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         val editor = pref.edit()
         val selectedTheme = spinnerTheme.selectedItemPosition
         val selectedFlipper = switchFlipCards.isChecked
+        val flashcardOrder = spinnerOrder.selectedItemPosition
 
         //save values
         editor.putInt(savedTheme1,selectedTheme)
         editor.putBoolean(savedFlashcardFlipper,selectedFlipper)
+        editor.putInt(savedFlashcardOrder,flashcardOrder)
 
         //push settings
         editor.apply()

@@ -58,7 +58,7 @@ class CreateCards : AppCompatActivity() {
         //set text file
         if (textFileStringSaved != "") {
             //set file
-            textFileString = textFileStringSaved?:""
+            textFileString = textFileStringSaved?:" & &"
             fileSelectedPath = Uri.parse(path)
 
             //new flashcard

@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     private val savedFlashcardFlipper = "flashcardFlipper"
     private val savedFlashcardNumber = "flashcardNumber"
     private val savedFilePath = "filepath"
+    private val savedFlashcardOrder = "flashcardOrder"
     private var wordsNotDefinition = true
     private var cardSelected = 0
     private var wordsFileArrayCounter = 0
@@ -52,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         //set text file
         if (textFileStringSaved != ""){
             //set file
-            textFileString = textFileStringSaved?: ""
+            textFileString = textFileStringSaved?: " & &"
 
             //enable button
             newFlashcard.isClickable = true
@@ -136,20 +137,49 @@ class MainActivity : AppCompatActivity() {
         val flashcardFlipper = pref.getBoolean(savedFlashcardFlipper, false)
         val flashcardNumber = pref.getInt(savedFlashcardNumber, -1)
         val editor = pref.edit()
+        val flashcardOrder = pref.getInt(savedFlashcardOrder,0)
 
         //read file and put to array
         val wordsFileArray = readWordsFile()
 
-        //randomly select number and set relevant variables
-        if (flashcardNumber == -1 || !justRecreated) {
-            cardSelected = if (wordsFileArrayCounter > 0) 2 * randomNumberGenerator(0, (wordsFileArrayCounter - 1) / 2) else 0
+        //select appropriate output
+        when (flashcardOrder){
+            //random
+            0 ->{
+                //randomly select number and set relevant variables
+                if (flashcardNumber == -1 || !justRecreated) {
+                    cardSelected = if (wordsFileArrayCounter > 0) 2 * randomNumberGenerator(0, (wordsFileArrayCounter - 1) / 2) else 0
 
-            //save flashcard number
-            editor.putInt(savedFlashcardNumber,cardSelected)
-        } else {
-            cardSelected = flashcardNumber
-            justRecreated = false
+                    //save flashcard number
+                    editor.putInt(savedFlashcardNumber,cardSelected)
+                } else {
+                    cardSelected = flashcardNumber
+                    justRecreated = false
+                }
+            }
+
+            //file order
+            1 ->{
+                //randomly select number and set relevant variables
+                if (!justRecreated) {
+                    //choose card selected
+                    cardSelected = if (flashcardNumber != -1)
+                        if (wordsFileArrayCounter > flashcardNumber + 2)
+                            flashcardNumber + 2
+                        else 0
+                    else 0
+
+
+                    //save flashcard number
+                    editor.putInt(savedFlashcardNumber,cardSelected)
+                } else {
+                    cardSelected = flashcardNumber
+                    justRecreated = false
+                }
+            }
         }
+
+
 
         //reset variables
         wordsNotDefinition = true
@@ -178,7 +208,7 @@ class MainActivity : AppCompatActivity() {
     private fun readWordsFile(): kotlin.Array<String>{
         //create local variables
         val stringSplit = '&'
-        val wordsFileArray = Array(textFileString.length,{""})
+        val wordsFileArray = Array(textFileString.length){""}
         var tempString = ""
 
         //reset variables

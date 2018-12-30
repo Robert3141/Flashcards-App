@@ -40,6 +40,11 @@
         <item>White (beta)</item>
     </string-array>
     <string name="setting_Flipper">Flip All Flashcards</string>
+    <string name="setting_order">Change Display Order</string>
+    <string-array name="setting_OrderSpinner">
+        <item>Random</item>
+        <item>File Order</item>
+    </string-array>
 
     <!-- Help Activity -->
     <string name="webviewURL">https://github.com/Robert3141/Flashcards-App/wiki</string>
