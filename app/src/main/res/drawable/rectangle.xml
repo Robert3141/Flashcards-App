@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/listview_background_shape">
+    <stroke android:width="@dimen/rectangle_padding" android:color="?themeColorPrimary" />
+    <padding android:left="@dimen/rectangle_padding"
+             android:top="@dimen/rectangle_padding"
+             android:right="@dimen/rectangle_padding"
+             android:bottom="@dimen/rectangle_padding" />
+    <corners android:radius="@dimen/rectangle_radius" />
+    <solid android:color="@color/white" />
+</shape>

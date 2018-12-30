@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:orientation="vertical">
+
+    <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:tint="?themeColorBright"
+            android:padding="@dimen/flashcard_padding"
+            android:src="@drawable/rectangle"
+            android:contentDescription="@string/card_front"/>
+
+    <TextView android:id="@+id/flashcardFrontText"
+              android:layout_height="match_parent"
+              android:layout_width="match_parent"
+              android:text="@string/textViewOutput_text"
+              android:textColor="?themeColorText"
+              android:gravity="center"/>
+</FrameLayout>

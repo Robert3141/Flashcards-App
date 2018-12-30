@@ -4,4 +4,7 @@
     <dimen name="setting_space">15dp</dimen>
     <dimen name="toolbar_height">75dp</dimen>
     <dimen name="button_size">100dp</dimen>
+    <dimen name="flashcard_padding">16dp</dimen>
+    <dimen name="rectangle_padding">2dp</dimen>
+    <dimen name="rectangle_radius">5dp</dimen>
 </resources>

@@ -55,7 +55,12 @@
                     android:onClick="clickSelectFile"/>
         </LinearLayout>-->
 
-    
+    <FrameLayout android:id="@+id/card_front"
+                 android:layout_height="match_parent"
+                 android:layout_width="match_parent"
+                 android:gravity="center">
+        <include layout="@layout/card_front" />
+    </FrameLayout>
 
     </FrameLayout>
 <!--
