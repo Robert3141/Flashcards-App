@@ -11,7 +11,7 @@
     <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:background="?themeColorPrimary">
+            android:background="?themeColorPrimary"><!--
 
         <LinearLayout android:id="@+id/linear1"
                       android:layout_width="match_parent"
@@ -53,14 +53,18 @@
                     style="@style/button_style"
                     android:text="@string/selectFile_text"
                     android:onClick="clickSelectFile"/>
-        </LinearLayout>
-    </FrameLayout>
+        </LinearLayout>-->
 
+    
+
+    </FrameLayout>
+<!--
     <android.support.design.widget.NavigationView android:id="@+id/nav_view"
                                                   android:layout_width="wrap_content"
                                                   android:layout_height="match_parent"
                                                   android:layout_gravity="start"
                                                   app:menu="@menu/drawer_view"
                                                   app:headerLayout="@layout/nav_header"
-                                                  android:fitsSystemWindows="true"/>
+                                                  android:fitsSystemWindows="true"/>-->
+
 </android.support.v4.widget.DrawerLayout>
