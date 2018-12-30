@@ -35,6 +35,8 @@
                           android:text="@string/menu_Settings"/>
             </LinearLayout>
 
+            <!-- Change Theme -->
+
             <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
@@ -51,6 +53,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/setting_space"/>
 
+            <!-- Flip Flashcards -->
+
             <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
@@ -61,6 +65,20 @@
                 <Switch android:id="@+id/switchFlipCards"
                         style="@style/switch_style"
                         android:onClick="itemClicked"/>
+            </LinearLayout>
+
+            <!-- Flashcard order -->
+
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/setting_option_height">
+                <TextView android:id="@+id/textView3"
+                          style="@style/textViewStyle"
+                          android:text="@string/setting_order"/>
+                <Spinner android:id="@+id/spinnerOrder"
+                         style="@style/spinner_style"
+                         android:entries="@array/setting_OrderSpinner"/>
             </LinearLayout>
 
         </LinearLayout>
