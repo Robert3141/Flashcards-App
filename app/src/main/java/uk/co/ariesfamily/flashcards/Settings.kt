@@ -36,6 +36,7 @@ class Settings : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         //setup spinner click listener
         spinnerTheme.onItemSelectedListener = this
+        spinnerOrder.onItemSelectedListener = this
 
 
         //set the settings
@@ -104,7 +105,7 @@ class Settings : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         editor.putInt(savedFlashcardOrder,flashcardOrder)
 
         //push settings
-        editor.apply()
+        editor.commit()
 
         //reload activity
         recreate()
