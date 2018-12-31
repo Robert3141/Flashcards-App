@@ -36,6 +36,7 @@ class Settings : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         //setup spinner click listener
         spinnerTheme.onItemSelectedListener = this
+        spinnerOrder.onItemSelectedListener = this
 
 
         //set the settings

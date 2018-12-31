@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         //create interface
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        /*
         //disable buttons
         flipFlashcard.isClickable = false
         newFlashcard.isClickable = false
@@ -61,12 +61,12 @@ class MainActivity : AppCompatActivity() {
             //new flashcard
             justRecreated = true
             clickNewFlashcard(flipFlashcard)
-        }
+        }*/
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
+        /*
         //word file found
         if (requestCode == wordsFileRequestCode && resultCode == RESULT_OK) {
             val fileSelectedPath = data?.data
@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
 
                 editor.commit()
             }
-        }
+        }*/
     }
 
     //onclick events for launching activities
@@ -122,17 +122,17 @@ class MainActivity : AppCompatActivity() {
         //read words file
         val wordsFileArray = readWordsFile()
 
-        if(flipFlashcard.isClickable) {
+        /*if(flipFlashcard.isClickable) {
             cardSelected += if (wordsNotDefinition) 1 else -1
             wordsNotDefinition = !wordsNotDefinition
 
             //display new flashcard
             textViewOutput.text = wordsFileArray[cardSelected]
-        }
+        }*/
     }
 
     fun clickNewFlashcard(@Suppress("UNUSED_PARAMETER")view: android.view.View){
-        //create local variables
+        /*//create local variables
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
         val flashcardFlipper = pref.getBoolean(savedFlashcardFlipper, false)
         val flashcardNumber = pref.getInt(savedFlashcardNumber, -1)
@@ -194,7 +194,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         //save flashcard value
-        editor.apply()
+        editor.apply()*/
     }
 
     fun clickSelectFile(@Suppress("UNUSED_PARAMETER")view: android.view.View){
