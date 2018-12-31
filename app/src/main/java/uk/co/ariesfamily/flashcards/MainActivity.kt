@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity() {
 
                 //save text file
                 editor.putString(savedWordsFile,textFileString)
-                editor.apply()
+                editor.commit()
             } else {
                 //output no file exists
                 Toast.makeText(this,"No Data", Toast.LENGTH_LONG).show()
@@ -194,7 +194,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         //save flashcard value
-        editor.apply()
+        editor.commit()
     }
 
     fun clickSelectFile(@Suppress("UNUSED_PARAMETER")view: android.view.View){

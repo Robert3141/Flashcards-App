@@ -91,7 +91,7 @@ class CreateCards : AppCompatActivity() {
 
                         //save text file
                         editor.putString(savedWordsFile, textFileString)
-                        editor.apply()
+                        editor.commit()
 
                         //run choose page
                         choosePage(1)
@@ -221,7 +221,7 @@ class CreateCards : AppCompatActivity() {
                 //save data
                 editor.putString(savedWordsFile,textFileString)
                 editor.putInt(savedPageNumber, pageNo)
-                editor.apply()
+                editor.commit()
 
                 running = false
             } else {
