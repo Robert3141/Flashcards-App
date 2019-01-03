@@ -6,18 +6,26 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".Help">
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/setting_option_height" android:background="?themeColorPrimary">
+        <android.support.v7.widget.AppCompatImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="?themeColorPrimary"
+                android:src="@drawable/baseline_arrow_back_24"
+                android:onClick="backButtonPress"/>
+        <TextView android:id="@+id/textViewTitle"
+                  style="@style/title_style"
+                  android:text="@string/menu_Settings"/>
+    </LinearLayout>
 
-    <WebView android:id="@+id/webview"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"/>
+    <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent" android:layout_marginTop="@dimen/toolbar_height">
+        <WebView android:id="@+id/webview"
+                 android:layout_width="match_parent"
+                 android:layout_height="match_parent"/>
+    </FrameLayout>
 
-
-    <android.support.design.widget.NavigationView android:id="@+id/nav_view"
-                                                  android:layout_width="wrap_content"
-                                                  android:layout_height="match_parent"
-                                                  android:layout_gravity="start"
-                                                  app:menu="@menu/drawer_view"
-                                                  app:headerLayout="@layout/nav_header"
-                                                  android:fitsSystemWindows="true"/>
 
 </android.support.v4.widget.DrawerLayout>

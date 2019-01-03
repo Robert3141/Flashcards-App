@@ -53,20 +53,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/setting_space"/>
 
-            <!-- Flip Flashcards -->
-
-            <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/setting_option_height">
-                <TextView android:id="@+id/textView2"
-                          android:text="@string/setting_Flipper"
-                          style="@style/textViewStyle"/>
-                <Switch android:id="@+id/switchFlipCards"
-                        style="@style/switch_style"
-                        android:onClick="itemClicked"/>
-            </LinearLayout>
-
             <!-- Flashcard order -->
 
             <LinearLayout
@@ -81,14 +67,18 @@
                          android:entries="@array/setting_OrderSpinner"/>
             </LinearLayout>
 
+            <!-- Help -->
+
+            <Button android:id="@+id/HelpButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textColor="?themeColorText"
+                    android:backgroundTint="?themeColorPrimary"
+                    android:text="@string/menu_Help"
+                    android:paddingRight="@dimen/chevron_size"
+                    android:paddingLeft="@dimen/chevron_size"
+                    android:onClick="helpButtonPress"/>
+
         </LinearLayout>
     </ScrollView>
-
-    <android.support.design.widget.NavigationView android:id="@+id/nav_view"
-                                                  android:layout_width="wrap_content"
-                                                  android:layout_height="match_parent"
-                                                  android:layout_gravity="start"
-                                                  app:menu="@menu/drawer_view"
-                                                  app:headerLayout="@layout/nav_header"
-                                                  android:fitsSystemWindows="true"/>
 </android.support.v4.widget.DrawerLayout>

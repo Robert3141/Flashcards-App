@@ -38,7 +38,6 @@ class MainActivity : AppCompatActivity() {
     private var textFileString = ""
     private var justRecreated = false
     private var backOfCardVisible = false
-    private var chevronLeft = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //create locals
@@ -117,28 +116,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-
-    //onclick events for launching activities
-    fun startMain(@Suppress("UNUSED_PARAMETER")item: MenuItem) {
-        val intent = Intent(this, MainActivity::class.java).apply {}
-        startActivity(intent)
-    }
-    fun startNewCards(@Suppress("UNUSED_PARAMETER")item: MenuItem) {
-        val intent = Intent(this, CreateCards::class.java).apply {  }
-        startActivity(intent)
-    }
     fun startSettings(@Suppress("UNUSED_PARAMETER")view: android.view.View) {
-        val intent = Intent(this, Settings::class.java).apply {  }
-        startActivity(intent)
-    }
-    fun startHelp(@Suppress("UNUSED_PARAMETER")item: MenuItem) {
-        val intent = Intent(this, Help::class.java).apply {  }
-        startActivity(intent)
-    }
-    //back button
-    fun backButtonPress(@Suppress("UNUSED_PARAMETER")view: android.view.View){
-        val intent = Intent(this, MainActivity::class.java).apply {}
+        val intent = Intent(this, Settings::class.java).apply { }
         startActivity(intent)
     }
 
