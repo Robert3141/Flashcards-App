@@ -68,30 +68,61 @@
                                                             android:onClick="startSettings"/>
         </LinearLayout>
 
-        <FrameLayout android:id="@+id/CardLayout"
-                     android:layout_height="match_parent"
-                     android:layout_width="match_parent"
-                     android:paddingTop="@dimen/toolbar_height">
-            <FrameLayout android:id="@+id/card-FRONT"
-                         android:layout_height="match_parent"
-                         android:layout_width="match_parent"
-                         android:gravity="center">
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="match_parent"
+                      android:paddingTop="@dimen/toolbar_height"
+                      android:orientation="horizontal">
 
-                <include layout="@layout/card_front" />
+            <android.support.v7.widget.AppCompatImageButton android:id="@+id/chevron_left"
+                                                            android:layout_width="@dimen/chevron_size"
+                                                            android:layout_height="match_parent"
+                                                            android:backgroundTint="?themeColorPrimary"
+                                                            android:src="@drawable/baseline_chevron_left_white_48"
+                                                            android:onClick="clickNewFlashcard"
+                                                            android:layout_gravity="left"
+                                                            android:layout_weight="1"/>
+
+
+
+            <FrameLayout android:id="@+id/CardLayout"
+                         android:layout_height="match_parent"
+                         android:layout_width="wrap_content"
+                         android:layout_weight="20">
+
+                <FrameLayout android:id="@+id/card-FRONT"
+                             android:layout_height="match_parent"
+                             android:layout_width="match_parent"
+                             android:gravity="center">
+
+                    <include layout="@layout/card_front" />
+
+                </FrameLayout>
+
+                <FrameLayout android:id="@+id/card-BACK"
+                             android:layout_height="match_parent"
+                             android:layout_width="match_parent"
+                             android:gravity="center">
+
+                    <include layout="@layout/card_back"/>
+
+                </FrameLayout>
 
             </FrameLayout>
 
-            <FrameLayout android:id="@+id/card-BACK"
-                         android:layout_height="match_parent"
-                         android:layout_width="match_parent"
-                         android:gravity="center">
+            <android.support.v7.widget.AppCompatImageButton android:id="@+id/chevron_right"
+                                                            android:layout_width="@dimen/chevron_size"
+                                                            android:layout_height="match_parent"
+                                                            android:backgroundTint="?themeColorPrimary"
+                                                            android:src="@drawable/baseline_chevron_right_white_48"
+                                                            android:onClick="clickNewFlashcard"
+                                                            android:layout_gravity="right"
+                                                            android:layout_weight="1"/>
 
-                <include layout="@layout/card_back"/>
+        </LinearLayout>
 
-            </FrameLayout>
-
-        </FrameLayout>
     </FrameLayout>
+
+</android.support.v4.widget.DrawerLayout>
 <!--
     <android.support.design.widget.NavigationView android:id="@+id/nav_view"
                                                   android:layout_width="wrap_content"
@@ -100,5 +131,3 @@
                                                   app:menu="@menu/drawer_view"
                                                   app:headerLayout="@layout/nav_header"
                                                   android:fitsSystemWindows="true"/>-->
-
-</android.support.v4.widget.DrawerLayout>

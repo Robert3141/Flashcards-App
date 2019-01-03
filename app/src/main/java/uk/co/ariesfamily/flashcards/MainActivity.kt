@@ -7,13 +7,17 @@ import android.content.*
 import android.support.v7.app.AppCompatActivity
 import android.os.*
 import android.preference.PreferenceManager
+import android.support.v4.view.GestureDetectorCompat
+import android.view.GestureDetector
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.card_back.*
 import kotlinx.android.synthetic.main.card_front.*
 import java.util.concurrent.ThreadLocalRandom
+
 
 
 
@@ -34,13 +38,14 @@ class MainActivity : AppCompatActivity() {
     private var textFileString = ""
     private var justRecreated = false
     private var backOfCardVisible = false
+    private var chevronLeft = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //create locals
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
-        val editor = pref.edit()
-        editor.clear()
-        editor.commit()
+        //val editor = pref.edit()
+        //editor.clear()
+        //editor.commit()
         val themeName = pref.getInt(savedTheme1,0)
         val textFileStringSaved = pref.getString(savedWordsFile,"")
 
@@ -59,10 +64,10 @@ class MainActivity : AppCompatActivity() {
         backOfCardVisible = true
         flipAnimation()
 
-        /*
+
         //disable buttons
-        flipFlashcard.isClickable = false
-        newFlashcard.isClickable = false
+        chevron_left.isClickable = false
+        chevron_right.isClickable = false
 
         //set text file
         if (textFileStringSaved != ""){
@@ -70,12 +75,13 @@ class MainActivity : AppCompatActivity() {
             textFileString = textFileStringSaved?: " & &"
 
             //enable button
-            newFlashcard.isClickable = true
+            chevron_right.isClickable = true
+            chevron_left.isClickable = true
 
             //new flashcard
             justRecreated = true
-            clickNewFlashcard(flipFlashcard)
-        }*/
+            clickNewFlashcard(card_FRONT)
+        }
 
 
 
@@ -111,6 +117,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+
     //onclick events for launching activities
     fun startMain(@Suppress("UNUSED_PARAMETER")item: MenuItem) {
         val intent = Intent(this, MainActivity::class.java).apply {}
@@ -145,7 +153,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun clickNewFlashcard(@Suppress("UNUSED_PARAMETER")view: android.view.View){
+    fun clickNewFlashcard(view: android.view.View){
         //create local variables
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
         val flashcardFlipper = pref.getBoolean(savedFlashcardFlipper, false)
@@ -177,11 +185,16 @@ class MainActivity : AppCompatActivity() {
                 //randomly select number and set relevant variables
                 if (!justRecreated) {
                     //choose card selected
-                    cardSelected = if (flashcardNumber != -1)
-                        if (wordsFileArrayCounter > flashcardNumber + 2)
-                            flashcardNumber + 2
-                        else 0
-                    else 0
+                    cardSelected =
+                            if (flashcardNumber != -1)
+                                if (view == chevron_left)
+                                    if (wordsFileArrayCounter > flashcardNumber - 2)
+                                        flashcardNumber - 2
+                                    else flashcardNumber
+                                else if (wordsFileArrayCounter > flashcardNumber + 2)
+                                    flashcardNumber + 2
+                                else 0
+                            else 0
 
 
                     //save flashcard number
@@ -201,6 +214,10 @@ class MainActivity : AppCompatActivity() {
         //save the values
         flashcardFrontText.text = wordsFileArray[cardSelected]
         flashcardBackText.text = wordsFileArray[cardSelected+1]
+
+        //enable buttons
+        chevron_left.isClickable = true
+        chevron_right.isClickable = true
 
         //flip flashcard on flashcardFlipper
         if (flashcardFlipper) {
@@ -277,3 +294,5 @@ class MainActivity : AppCompatActivity() {
     }
 
 }
+
+
