@@ -8,8 +8,10 @@ import android.support.v7.app.AppCompatActivity
 import android.os.*
 import android.preference.PreferenceManager
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.card_back.*
 import kotlinx.android.synthetic.main.card_front.*
 import java.util.concurrent.ThreadLocalRandom
 
@@ -30,12 +32,15 @@ class MainActivity : AppCompatActivity() {
     private var cardSelected = 0
     private var wordsFileArrayCounter = 0
     private var textFileString = ""
-    private var justRecreated = true
+    private var justRecreated = false
     private var backOfCardVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //create locals
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
+        val editor = pref.edit()
+        editor.clear()
+        editor.commit()
         val themeName = pref.getInt(savedTheme1,0)
         val textFileStringSaved = pref.getString(savedWordsFile,"")
 
@@ -50,6 +55,10 @@ class MainActivity : AppCompatActivity() {
         //create interface
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        backOfCardVisible = true
+        flipAnimation()
+
         /*
         //disable buttons
         flipFlashcard.isClickable = false
@@ -74,7 +83,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        /*
         //word file found
         if (requestCode == wordsFileRequestCode && resultCode == RESULT_OK) {
             val fileSelectedPath = data?.data
@@ -88,19 +96,19 @@ class MainActivity : AppCompatActivity() {
                 //set file
                 textFileString = inputStream.bufferedReader().use { it.readText() }
 
-                //enable button
-                newFlashcard.isClickable = true
-
                 //save text file
                 editor.putString(savedWordsFile,textFileString)
-                editor.apply()
+                editor.commit()
+
+                //render the flashcards
+                clickNewFlashcard(flashcardFrontText)
             } else {
                 //output no file exists
                 Toast.makeText(this,"No Data", Toast.LENGTH_LONG).show()
 
                 editor.commit()
             }
-        }*/
+        }
     }
 
     //onclick events for launching activities
@@ -112,7 +120,7 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, CreateCards::class.java).apply {  }
         startActivity(intent)
     }
-    fun startSettings(@Suppress("UNUSED_PARAMETER")item: MenuItem) {
+    fun startSettings(@Suppress("UNUSED_PARAMETER")view: android.view.View) {
         val intent = Intent(this, Settings::class.java).apply {  }
         startActivity(intent)
     }
@@ -128,24 +136,17 @@ class MainActivity : AppCompatActivity() {
 
     fun clickFlipFlashcard(@Suppress("UNUSED_PARAMETER")view: android.view.View){
         //check whether file has been selected
-        if (flashcardFrontText.text == resources.getString(R.string.textViewOutput_text))
-        //read words file
-        //val wordsFileArray = readWordsFile()
-
-        /*if(flipFlashcard.isClickable) {
-            cardSelected += if (wordsNotDefinition) 1 else -1
-            wordsNotDefinition = !wordsNotDefinition
-
-            //display new flashcard
-            textViewOutput.text = wordsFileArray[cardSelected]
-        }*/
-
-        //run flip animation
-        flipAnimation()
+        if (flashcardFrontText.text == resources.getString(R.string.textViewOutput_text)) {
+            //run new user
+            clickSelectFile(flashcardFrontText)
+        } else {
+            //file selected run as usual
+            flipAnimation()
+        }
     }
 
     fun clickNewFlashcard(@Suppress("UNUSED_PARAMETER")view: android.view.View){
-        /*//create local variables
+        //create local variables
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
         val flashcardFlipper = pref.getBoolean(savedFlashcardFlipper, false)
         val flashcardNumber = pref.getInt(savedFlashcardNumber, -1)
@@ -196,21 +197,21 @@ class MainActivity : AppCompatActivity() {
 
         //reset variables
         wordsNotDefinition = true
-        flipFlashcard.isClickable = true
+
+        //save the values
+        flashcardFrontText.text = wordsFileArray[cardSelected]
+        flashcardBackText.text = wordsFileArray[cardSelected+1]
 
         //flip flashcard on flashcardFlipper
         if (flashcardFlipper) {
-            clickFlipFlashcard(flipFlashcard)
-        } else {
-            //set displays text
-            textViewOutput.text = wordsFileArray[cardSelected]
+            flipAnimation()
         }
 
         //save flashcard value
-        editor.apply()*/
+        editor.commit()
     }
 
-    fun clickSelectFile(@Suppress("UNUSED_PARAMETER")view: android.view.View){
+    private fun clickSelectFile(@Suppress("UNUSED_PARAMETER")view: android.view.View){
         //create locals
         val intent = Intent().setType("*/*").setAction(Intent.ACTION_GET_CONTENT)
 
@@ -221,7 +222,7 @@ class MainActivity : AppCompatActivity() {
     private fun readWordsFile(): kotlin.Array<String>{
         //create local variables
         val stringSplit = '&'
-        val wordsFileArray = Array(textFileString.length){""}
+        val wordsFileArray = Array(textFileString.length/2){""}
         var tempString = ""
 
         //reset variables
