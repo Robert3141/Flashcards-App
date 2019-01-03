@@ -11,12 +11,12 @@
             android:tint="?themeColorBright"
             android:padding="@dimen/flashcard_padding"
             android:src="@drawable/rectangle"
-            android:contentDescription="@string/card_front"/>
+            android:contentDescription="@string/card_back"/>
 
-    <TextView android:id="@+id/flashcardFrontText"
+    <TextView android:id="@+id/flashcardBackText"
               android:layout_height="match_parent"
               android:layout_width="match_parent"
-              android:text="@string/textViewOutput_text"
+              android:text="@string/card_back"
               android:textColor="?themeColorText"
               android:gravity="center"/>
 </FrameLayout>

@@ -1,4 +1,8 @@
 package uk.co.ariesfamily.flashcards
+import android.animation.Animator
+import android.animation.AnimatorInflater
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.*
 import android.support.v7.app.AppCompatActivity
 import android.os.*
@@ -6,6 +10,7 @@ import android.preference.PreferenceManager
 import android.view.MenuItem
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.card_front.*
 import java.util.concurrent.ThreadLocalRandom
 
 
@@ -26,7 +31,7 @@ class MainActivity : AppCompatActivity() {
     private var wordsFileArrayCounter = 0
     private var textFileString = ""
     private var justRecreated = true
-
+    private var backOfCardVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //create locals
@@ -62,6 +67,9 @@ class MainActivity : AppCompatActivity() {
             justRecreated = true
             clickNewFlashcard(flipFlashcard)
         }*/
+
+
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -119,8 +127,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun clickFlipFlashcard(@Suppress("UNUSED_PARAMETER")view: android.view.View){
+        //check whether file has been selected
+        if (flashcardFrontText.text == resources.getString(R.string.textViewOutput_text))
         //read words file
-        val wordsFileArray = readWordsFile()
+        //val wordsFileArray = readWordsFile()
 
         /*if(flipFlashcard.isClickable) {
             cardSelected += if (wordsNotDefinition) 1 else -1
@@ -129,6 +139,9 @@ class MainActivity : AppCompatActivity() {
             //display new flashcard
             textViewOutput.text = wordsFileArray[cardSelected]
         }*/
+
+        //run flip animation
+        flipAnimation()
     }
 
     fun clickNewFlashcard(@Suppress("UNUSED_PARAMETER")view: android.view.View){
@@ -236,5 +249,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun IntRange.random() = ThreadLocalRandom.current().nextInt((endInclusive + 1) - start) + start
+
+    private fun flipAnimation(){
+        //create locals
+        val distance = 8000
+        val scale = resources.displayMetrics.density * distance
+        val firstFlip = AnimatorInflater.loadAnimator(this, R.animator.flashcard_flip1)
+        val secondFlip = AnimatorInflater.loadAnimator(this, R.animator.flashcard_flip2)
+
+        card_FRONT.cameraDistance = scale
+        card_BACK.cameraDistance = scale
+
+        if (!backOfCardVisible){
+            firstFlip.setTarget(card_FRONT)
+            secondFlip.setTarget(card_BACK)
+            firstFlip.start()
+            secondFlip.start()
+            backOfCardVisible = true
+        } else {
+            firstFlip.setTarget(card_BACK)
+            secondFlip.setTarget(card_FRONT)
+            firstFlip.start()
+            secondFlip.start()
+            backOfCardVisible = false
+        }
+    }
 
 }

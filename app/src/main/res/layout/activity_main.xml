@@ -54,14 +54,49 @@
                     android:text="@string/selectFile_text"
                     android:onClick="clickSelectFile"/>
         </LinearLayout>-->
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/setting_option_height">
+            <android.support.v7.widget.AppCompatImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="?themeColorPrimary"
+                    android:src="@drawable/baseline_arrow_back_24"
+                    android:onClick="backButtonPress"/>
+            <TextView android:id="@+id/textViewTitle"
+                      style="@style/title_style"
+                      android:text="@string/textViewTitle_text"/>
+            <android.support.v7.widget.AppCompatImageButton android:layout_width="wrap_content"
+                                                            android:layout_height="wrap_content"
+                                                            android:backgroundTint="?themeColorPrimary"
+                                                            android:src="@drawable/baseline_settings_white_48"
+                                                            android:onClick="startSettings"/>
+        </LinearLayout>
 
-    <FrameLayout android:id="@+id/card_front"
-                 android:layout_height="match_parent"
-                 android:layout_width="match_parent"
-                 android:gravity="center">
-        <include layout="@layout/card_front" />
-    </FrameLayout>
+        <FrameLayout android:id="@+id/CardLayout"
+                     android:layout_height="match_parent"
+                     android:layout_width="match_parent"
+                     android:paddingTop="@dimen/toolbar_height">
+            <FrameLayout android:id="@+id/card-FRONT"
+                         android:layout_height="match_parent"
+                         android:layout_width="match_parent"
+                         android:gravity="center">
 
+                <include layout="@layout/card_front" />
+
+            </FrameLayout>
+
+            <FrameLayout android:id="@+id/card-BACK"
+                         android:layout_height="match_parent"
+                         android:layout_width="match_parent"
+                         android:gravity="center">
+
+                <include layout="@layout/card_back"/>
+
+            </FrameLayout>
+
+        </FrameLayout>
     </FrameLayout>
 <!--
     <android.support.design.widget.NavigationView android:id="@+id/nav_view"
