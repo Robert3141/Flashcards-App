@@ -5,13 +5,14 @@
 
     <!-- Menu -->
     <string name="menu_Flashcards">Flashcards</string>
-    <string name="menu_NewCards">Create/Modify Set</string>
+    <string name="menu_NewCards">New File</string>
+    <string name="menu_OldCards">Load File</string>
     <string name="menu_Settings">Settings</string>
     <string name="menu_Help">Help</string>
 
 
     <!-- Main Activity -->
-    <string name="textViewTitle_text">Flashcards by Robert Aries</string>
+    <string name="textViewTitle_text">Flashcards</string>
     <string name="textViewOutput_text">Please select your file \n(use &amp; to split up each word and definition).
     </string>
     <string name="flipFlashcard_text">Flip Flashcard</string>

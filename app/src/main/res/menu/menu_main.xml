@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_settings"
+          android:title="@string/menu_Settings"
+          android:icon="@drawable/baseline_settings_white_48" />
+
+    <item android:id="@+id/menu_add"
+          android:title="@string/menu_NewCards"
+          android:icon="@drawable/baseline_edit_white_48"/>
+
+    <item android:id="@+id/menu_load"
+          android:title="@string/menu_OldCards"
+          android:icon="@drawable/baseline_file"/>
+</menu>

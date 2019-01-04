@@ -8,14 +8,17 @@ import android.support.v7.app.AppCompatActivity
 import android.os.*
 import android.preference.PreferenceManager
 import android.support.v4.view.GestureDetectorCompat
+import android.util.Log
 import android.view.GestureDetector
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import android.widget.PopupMenu
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.card_back.*
 import kotlinx.android.synthetic.main.card_front.*
+import java.lang.Exception
 import java.util.concurrent.ThreadLocalRandom
 
 
@@ -68,6 +71,46 @@ class MainActivity : AppCompatActivity() {
         chevron_left.isClickable = false
         chevron_right.isClickable = false
 
+        //create menu
+        menu_launch.setOnClickListener{
+            val popupMenu = PopupMenu(this, it)
+            popupMenu.setOnMenuItemClickListener { item ->
+                when (item.itemId){
+                    R.id.menu_settings -> {
+                        startSettings()
+                        true
+                    }
+
+                    R.id.menu_load -> {
+                        clickSelectFile()
+                        true
+                    }
+
+                    R.id.menu_add -> {
+
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+
+            popupMenu.inflate(R.menu.menu_main)
+
+            try {
+                val fieldMPopup = PopupMenu::class.java.getDeclaredField("mPopup")
+                fieldMPopup.isAccessible = true
+                val mPopup = fieldMPopup.get(popupMenu)
+                mPopup.javaClass
+                    .getDeclaredMethod("setForceShowIcon",Boolean::class.java)
+                    .invoke(mPopup, true)
+            } catch (e: Exception) {
+                Log.e("Main", "Error showing menu icons.", e)
+            } finally {
+                popupMenu.show()
+            }
+        }
+
         //set text file
         if (textFileStringSaved != ""){
             //set file
@@ -116,16 +159,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun startSettings(@Suppress("UNUSED_PARAMETER")view: android.view.View) {
-        val intent = Intent(this, Settings::class.java).apply { }
-        startActivity(intent)
-    }
+
 
     fun clickFlipFlashcard(@Suppress("UNUSED_PARAMETER")view: android.view.View){
         //check whether file has been selected
         if (flashcardFrontText.text == resources.getString(R.string.textViewOutput_text)) {
             //run new user
-            clickSelectFile(flashcardFrontText)
+            clickSelectFile()
         } else {
             //file selected run as usual
             flipAnimation()
@@ -207,7 +247,12 @@ class MainActivity : AppCompatActivity() {
         editor.commit()
     }
 
-    private fun clickSelectFile(@Suppress("UNUSED_PARAMETER")view: android.view.View){
+    private fun startSettings() {
+        val intent = Intent(this, Settings::class.java).apply { }
+        startActivity(intent)
+    }
+
+    private fun clickSelectFile(){
         //create locals
         val intent = Intent().setType("*/*").setAction(Intent.ACTION_GET_CONTENT)
 
