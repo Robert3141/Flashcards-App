@@ -31,6 +31,9 @@ class CreateCards : AppCompatActivity() {
     private var tempPageNo = 1
     private var running = false
 
+    //
+    // Overriding public functions
+    //
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //create locals
@@ -130,33 +133,14 @@ class CreateCards : AppCompatActivity() {
         }
     }
 
-    //onclick events for launching activities
-    fun startMain(@Suppress("UNUSED_PARAMETER")view: MenuItem) {
-        val intent = Intent(this, MainActivity::class.java).apply {}
-        startActivity(intent)
-    }
+    //
+    // Public functions
+    //
 
-    fun startNewCards(@Suppress("UNUSED_PARAMETER")view: MenuItem) {
-        val intent = Intent(this, CreateCards::class.java).apply { }
-        startActivity(intent)
-    }
-
-    fun startSettings(@Suppress("UNUSED_PARAMETER")view: MenuItem) {
-        val intent = Intent(this, Settings::class.java).apply { }
-        startActivity(intent)
-    }
-
-    fun startHelp(@Suppress("UNUSED_PARAMETER")view: MenuItem) {
-        val intent = Intent(this, Help::class.java).apply { }
-        startActivity(intent)
-    }
-
-    //back button
     fun backButtonPress(@Suppress("UNUSED_PARAMETER")view: android.view.View) {
         val intent = Intent(this, MainActivity::class.java).apply {}
         startActivity(intent)
     }
-
 
     fun clickSelectFileButton(@Suppress("UNUSED_PARAMETER")view: android.view.View) {
         //create locals
@@ -181,6 +165,10 @@ class CreateCards : AppCompatActivity() {
         val pageNo = pref.getInt(savedPageNumber, 1)
         choosePage(pageNo + 1)
     }
+
+    //
+    // Private Functions
+    //
 
     private fun choosePage(pageNo: Int) {
         //check if we can continue
@@ -307,8 +295,6 @@ class CreateCards : AppCompatActivity() {
         return wordsFileArray
 
     }
-
-
 
     private fun isPermissionGranted(permission: String): Boolean = ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
 

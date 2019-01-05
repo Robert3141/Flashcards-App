@@ -10,4 +10,5 @@
     <item name="match_parent" type="dimen">-1</item>
     <item name="wrap_content" type="dimen">-2</item>
     <dimen name="chevron_size">25dp</dimen>
+    <dimen name="options_width">25dp</dimen>
 </resources>

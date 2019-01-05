@@ -2,6 +2,7 @@
     <!-- Entire App -->
     <string name="app_name">Flashcards</string>
     <string name="new_line">/nl</string>
+    <string name="not_working">Not working yet...</string>
 
     <!-- Menu -->
     <string name="menu_Flashcards">Flashcards</string>
@@ -9,6 +10,7 @@
     <string name="menu_OldCards">Load File</string>
     <string name="menu_Settings">Settings</string>
     <string name="menu_Help">Help</string>
+    <string name="menu_Edit">Edit File</string>
 
 
     <!-- Main Activity -->

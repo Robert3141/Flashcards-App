@@ -42,6 +42,10 @@ class MainActivity : AppCompatActivity() {
     private var justRecreated = false
     private var backOfCardVisible = false
 
+    //
+    // Overriding public functions
+    //
+
     override fun onCreate(savedInstanceState: Bundle?) {
         //create locals
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
@@ -66,50 +70,9 @@ class MainActivity : AppCompatActivity() {
         backOfCardVisible = true
         flipAnimation()
 
-
         //disable buttons
         chevron_left.isClickable = false
         chevron_right.isClickable = false
-
-        //create menu
-        menu_launch.setOnClickListener{
-            val popupMenu = PopupMenu(this, it)
-            popupMenu.setOnMenuItemClickListener { item ->
-                when (item.itemId){
-                    R.id.menu_settings -> {
-                        startSettings()
-                        true
-                    }
-
-                    R.id.menu_load -> {
-                        clickSelectFile()
-                        true
-                    }
-
-                    R.id.menu_add -> {
-
-                        true
-                    }
-
-                    else -> false
-                }
-            }
-
-            popupMenu.inflate(R.menu.menu_main)
-
-            try {
-                val fieldMPopup = PopupMenu::class.java.getDeclaredField("mPopup")
-                fieldMPopup.isAccessible = true
-                val mPopup = fieldMPopup.get(popupMenu)
-                mPopup.javaClass
-                    .getDeclaredMethod("setForceShowIcon",Boolean::class.java)
-                    .invoke(mPopup, true)
-            } catch (e: Exception) {
-                Log.e("Main", "Error showing menu icons.", e)
-            } finally {
-                popupMenu.show()
-            }
-        }
 
         //set text file
         if (textFileStringSaved != ""){
@@ -159,7 +122,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
+    //
+    // Public Functions
+    //
 
     fun clickFlipFlashcard(@Suppress("UNUSED_PARAMETER")view: android.view.View){
         //check whether file has been selected
@@ -247,8 +212,65 @@ class MainActivity : AppCompatActivity() {
         editor.commit()
     }
 
+    fun clickOptionsMenu(it: android.view.View){
+        val popupMenu = PopupMenu(this, it)
+        popupMenu.setOnMenuItemClickListener { item ->
+            when (item.itemId){
+                //Settings
+                R.id.menu_settings -> {
+                    startSettings()
+                    true
+                }
+
+                //New File
+                R.id.menu_add -> {
+                    newFile()
+                    true
+                }
+
+                //Load File
+                R.id.menu_load -> {
+                    clickSelectFile()
+                    true
+                }
+
+                //Edit File
+                R.id.menu_edit -> {
+                    startEditFile()
+                    true
+                }
+
+                else -> false
+            }
+        }
+
+        popupMenu.inflate(R.menu.menu_main)
+
+        try {
+            val fieldMPopup = PopupMenu::class.java.getDeclaredField("mPopup")
+            fieldMPopup.isAccessible = true
+            val mPopup = fieldMPopup.get(popupMenu)
+            mPopup.javaClass
+                .getDeclaredMethod("setForceShowIcon",Boolean::class.java)
+                .invoke(mPopup, true)
+        } catch (e: Exception) {
+            Log.e("Main", "Error showing menu icons.", e)
+        } finally {
+            popupMenu.show()
+        }
+    }
+
+    //
+    // Private Functions
+    //
+
     private fun startSettings() {
         val intent = Intent(this, Settings::class.java).apply { }
+        startActivity(intent)
+    }
+
+    private fun startEditFile() {
+        val intent = Intent(this,CreateCards::class.java).apply {  }
         startActivity(intent)
     }
 
@@ -315,6 +337,14 @@ class MainActivity : AppCompatActivity() {
             secondFlip.start()
             backOfCardVisible = false
         }
+    }
+
+    private fun newFile(){
+        toast(resources.getString(R.string.not_working))
+    }
+
+    private fun toast(message: String){
+        Toast.makeText(this,message,Toast.LENGTH_LONG).show()
     }
 
 }
