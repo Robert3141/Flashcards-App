@@ -37,68 +37,84 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  //set local variables
+  int _currentTabIndex = 0;
+  var _tabTitle = "Main";
 
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
-      appBar: AppBar(
-
-        title: Text(widget.title),
-        centerTitle: true,
-      ),
-      body: Center(
-
-        child: Column(
-          // Column is also layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Card(
-              child: Container(
-                height: 100.0,
-                child: InkWell(
-                  splashColor: Colors.blueAccent,
-                  onTap: (){},
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text("Add new file!"),
-                      Icon(Icons.add),
-                    ],
+    final _tabPages = <Widget>[
+      //Main Tab
+      Container(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Card(
+                  child: Container(
+                    height: 100.0,
+                    child: InkWell(
+                      splashColor: Colors.blueAccent,
+                      onTap: (){},
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text("Add new file!"),
+                          Icon(Icons.add),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            )
-          ]
-        )
+              ],
+          ),
       ),
 
-      bottomNavigationBar: BottomNavigationBar(
+      //Settings
+      Container(
+        child: Text("Settings"),
+      ),
+    ];
+
+    final _appBar = AppBar(
+      title: Text(_tabTitle),
+      centerTitle: true,
+    );
+
+    final bottomNavBar = BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.content_copy),
             title: Text('Flashcards'),
+
           ),
 
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             title: Text('Settings'),
           ),
-        ]
-      ),
+        ],
+      type: BottomNavigationBarType.fixed,
+      onTap: (int index){
+          setState(() {
+            _currentTabIndex = index;
+            switch (index) {
+              case 0:
+                _tabTitle = "Main";
+                break;
+              case 1:
+                _tabTitle = "Settings";
+                break;
+
+            }
+          });
+      },
+    );
+
+    return Scaffold(
+      body: _tabPages[_currentTabIndex],
+      bottomNavigationBar: bottomNavBar,
+      appBar: _appBar,
     );
   }
 }
