@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
 
+final cardHeight = 100.0;
+
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -40,6 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
   //set local variables
   int _currentTabIndex = 0;
   var _tabTitle = "Main";
+  List<String> _flashcardFiles = ['a','b','c','d','e','f'];
 
   @override
   Widget build(BuildContext context) {
@@ -52,18 +55,48 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 Card(
                   child: Container(
-                    height: 100.0,
+                    height: cardHeight,
                     child: InkWell(
-                      splashColor: Colors.blueAccent,
-                      onTap: (){},
+                      splashColor: Theme.of(context).primaryColor,
+                      onTap: (){
+                        setState(() {
+                          _flashcardFiles.add("test");
+                        });
+                      },
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text("Add new file!"),
+                          Text("     Add new file!",overflow: TextOverflow.ellipsis,style: TextStyle(fontWeight: FontWeight.bold)),
                           Icon(Icons.add),
                         ],
                       ),
                     ),
+                  ),
+                ),
+
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _flashcardFiles.length,
+                    itemBuilder: (BuildContext context, int index){
+                      return Card(
+                          child: Container(
+                            height: cardHeight,
+                            child: InkWell(
+                              splashColor: Theme.of(context).primaryColor,
+                                onTap: (){
+
+                              },
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text('     '+_flashcardFiles[index],overflow: TextOverflow.ellipsis,style: TextStyle(fontWeight: FontWeight.bold)),
+                                  Icon(Icons.content_copy)
+                                ],
+                              ),
+                            ),
+                          ),
+                      );
+                    },
                   ),
                 ),
               ],
@@ -82,7 +115,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     final bottomNavBar = BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+      currentIndex: _currentTabIndex,
+      type: BottomNavigationBarType.fixed,
+      items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.content_copy),
             title: Text('Flashcards'),
@@ -94,7 +129,6 @@ class _MyHomePageState extends State<MyHomePage> {
             title: Text('Settings'),
           ),
         ],
-      type: BottomNavigationBarType.fixed,
       onTap: (int index){
           setState(() {
             _currentTabIndex = index;
