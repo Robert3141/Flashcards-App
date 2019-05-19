@@ -1,21 +1,35 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+Future main() async {
+  runApp(new MyApp());
+}
 
 final cardHeight = 100.0;
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+
   // This widget is the root of your application.
   @override
+  _MyAppState createState() => _MyAppState();
+}
+
+
+class _MyAppState extends State<MyApp> {
+
+  bool darkThemeEnabled = false;
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return new MaterialApp(
       title: 'Flashcards',
-      theme: ThemeData(
+      theme: new ThemeData(
         //app theme
         primarySwatch: Colors.blue,
-
+        brightness: darkThemeEnabled?Brightness.dark:Brightness.light,
       ),
-      home: MyHomePage(title: 'Flashcards'),
+      home: new MyHomePage(
+        title: 'Flashcards',
+      ),
     );
   }
 }
@@ -42,10 +56,13 @@ class _MyHomePageState extends State<MyHomePage> {
   //set local variables
   int _currentTabIndex = 0;
   var _tabTitle = "Main";
-  List<String> _flashcardFiles = ['a','b','c','d','e','f'];
+  List<String> _flashcardFiles = ['Latin','Computing'];
+  List<String> _flashcardLengths = ['400','500'];
+
 
   @override
   Widget build(BuildContext context) {
+
 
     final _tabPages = <Widget>[
       //Main Tab
@@ -60,7 +77,29 @@ class _MyHomePageState extends State<MyHomePage> {
                       splashColor: Theme.of(context).primaryColor,
                       onTap: (){
                         setState(() {
-                          _flashcardFiles.add("test");
+                          //Add Cards dialog
+                          showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) => SimpleDialog(
+                              title: Text('Add new Flashcards'),
+                              children: <Widget>[
+                                ListTile(
+                                  leading: Icon(Icons.folder_open),
+                                  title: Text('Import Flashcards'),
+                                  onTap: (){
+
+                                  },
+                                ),
+                                ListTile(
+                                  leading: Icon(Icons.control_point),
+                                  title: Text('Create Flashcards'),
+                                  onTap: (){
+
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
                         });
                       },
                       child: Row(
@@ -83,14 +122,47 @@ class _MyHomePageState extends State<MyHomePage> {
                             height: cardHeight,
                             child: InkWell(
                               splashColor: Theme.of(context).primaryColor,
-                                onTap: (){
+                              onTap: (){
+                                //open cards dialog
+                                setState(() {
+                                  //Add Cards dialog
+                                  showDialog<String>(
+                                    context: context,
+                                    builder: (BuildContext context) => SimpleDialog(
+                                      title: Text(_flashcardFiles[index]),
+                                      children: <Widget>[
+                                        ListTile(
+                                          leading: Icon(Icons.edit),
+                                          title: Text('Edit'),
+                                          onTap: (){
 
+                                          },
+                                        ),
+                                        ListTile(
+                                          leading: Icon(Icons.content_copy),
+                                          title: Text('Load Flashcards'),
+                                          onTap: (){
+
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                });
                               },
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
+
                                   Text('     '+_flashcardFiles[index],overflow: TextOverflow.ellipsis,style: TextStyle(fontWeight: FontWeight.bold)),
-                                  Icon(Icons.content_copy)
+
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Text(_flashcardLengths[index]),
+                                      Icon(Icons.content_copy),
+                                    ],
+                                  ),
                                 ],
                               ),
                             ),
@@ -105,7 +177,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
       //Settings
       Container(
-        child: Text("Settings"),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Text('Settings'),
+            Divider(),
+          ],
+        )
       ),
     ];
 
