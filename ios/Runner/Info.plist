@@ -41,5 +41,10 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>UIBackgroundModes</key>
+	<array>
+	    <string>Fetching File</string>
+	    <string>Importing/Exporting File</string>
+	</array>
 </dict>
 </plist>

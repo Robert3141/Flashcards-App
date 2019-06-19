@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:file_picker/file_picker.dart';
 
 Future main() async {
   runApp(new MyApp());
@@ -59,6 +61,24 @@ class _MyHomePageState extends State<MyHomePage> {
   List<String> _flashcardFiles = ['Latin','Computing'];
   List<String> _flashcardLengths = ['400','500'];
 
+  //functions
+  void clickImportFlashcards() {
+    //local vars
+
+  }
+
+  void clickCreateFlashcards() {
+
+  }
+
+  void clickEditFlashcards(int fileNumber) {
+
+  }
+
+  void clickLoadFlashcards(int fileNumber) {
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -87,14 +107,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                   leading: Icon(Icons.folder_open),
                                   title: Text('Import Flashcards'),
                                   onTap: (){
-
+                                    clickImportFlashcards();
                                   },
                                 ),
                                 ListTile(
                                   leading: Icon(Icons.control_point),
                                   title: Text('Create Flashcards'),
                                   onTap: (){
-
+                                    clickCreateFlashcards();
                                   },
                                 ),
                               ],
@@ -135,14 +155,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                           leading: Icon(Icons.edit),
                                           title: Text('Edit'),
                                           onTap: (){
-
+                                            clickEditFlashcards(index);
                                           },
                                         ),
                                         ListTile(
                                           leading: Icon(Icons.content_copy),
                                           title: Text('Load Flashcards'),
                                           onTap: (){
-
+                                            clickLoadFlashcards(index);
                                           },
                                         ),
                                       ],
