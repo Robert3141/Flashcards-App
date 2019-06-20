@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
@@ -62,8 +64,17 @@ class _MyHomePageState extends State<MyHomePage> {
   List<String> _flashcardLengths = ['400','500'];
 
   //functions
-  void clickImportFlashcards() {
-    //local vars
+  void clickImportFlashcards() async {
+    try {
+      //local vars
+      List<String> _fileTextList;
+      File file = await FilePicker.getFile(type: FileType.CUSTOM, fileExtension: 'txt');
+
+      _fileTextList = splitter(file.toString(), '&');
+
+    } catch(e) {
+      print("Error: " + e.toString());
+    }
 
   }
 
@@ -77,6 +88,23 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void clickLoadFlashcards(int fileNumber) {
 
+  }
+
+  List<String> splitter(String splitText,String splitChar) {
+    //local variables
+    List<String> _fileList;
+    var tempString = "";
+
+    for (var i = 0; i <splitText.length +1; i++) {
+      if (splitText[i] == splitChar){
+        _fileList.add(tempString);
+        tempString = "";
+      } else {
+        tempString += splitText[i];
+      }
+    }
+
+    return _fileList;
   }
 
 
