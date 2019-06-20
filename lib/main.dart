@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future main() async {
   runApp(new MyApp());
@@ -60,23 +61,49 @@ class _MyHomePageState extends State<MyHomePage> {
   //set local variables
   int _currentTabIndex = 0;
   var _tabTitle = "Main";
-  List<String> _flashcardFiles = ['Latin','Computing'];
-  List<String> _flashcardLengths = ['400','500'];
+  List<String> _flashcardFiles = ['example file'];
+  List<String> _flashcardLengths = ['2'];
+  final myController = TextEditingController();
 
   //functions
   void clickImportFlashcards() async {
     try {
       //local vars
-      List<String> _fileTextList;
       File file = await FilePicker.getFile(type: FileType.CUSTOM, fileExtension: 'txt');
+      String fileText = "test";//await file.readAsString();
+      String fileName = file.path;//splitter(file.path, "/").last;
+      int fileCards = /*splitter(fileText,"&").length*/4 ~/ 2;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      List<String> _flashcards = prefs.getStringList('flashcards') ?? [fileText];
+      _flashcardFiles = prefs.getStringList('flashcardFiles') ?? [fileName];
+      _flashcardLengths = prefs.getStringList('flashcardsLengths') ?? [fileCards.toString()];
 
-      _fileTextList = splitter(file.toString(), '&');
+      //add file to prefs
+      if (_flashcards[0] != fileText){
+        _flashcards.add(fileText);
+      }
+      await prefs.setStringList('flashcards',_flashcards);
+      if (_flashcardFiles[0] != fileName){
+        _flashcardFiles.add(fileName);
+      }
+      await prefs.setStringList('flashcardFiles',_flashcardFiles);
+      if (_flashcardLengths[0] != fileCards.toString()) {
+        _flashcardLengths.add('$fileCards');
+      }
+      await prefs.setStringList('flashcardLengths', _flashcardLengths);
+
 
     } catch(e) {
       print("Error: " + e.toString());
     }
 
+    setState(() {
+
+    });
+
   }
+
+
 
   void clickCreateFlashcards() {
 
@@ -90,6 +117,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   }
 
+  void loadFromPreferences() async {
+    //variables
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    //set variables
+    _flashcardFiles = prefs.getStringList('flashcardFiles')?? ['example file'];
+    _flashcardLengths = prefs.getStringList('flashcardLengths')?? ['2'];
+  }
+
   List<String> splitter(String splitText,String splitChar) {
     //local variables
     List<String> _fileList;
@@ -97,11 +133,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
     for (var i = 0; i <splitText.length +1; i++) {
       if (splitText[i] == splitChar){
-        _fileList.add(tempString);
+        if (tempString != ""){
+          _fileList.add(tempString);
+        }
         tempString = "";
       } else {
         tempString += splitText[i];
       }
+    }
+
+    if (tempString != ""){
+      _fileList.add(tempString);
     }
 
     return _fileList;
@@ -110,8 +152,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-
-
+    //build the page with the flashcards
+    loadFromPreferences();
     final _tabPages = <Widget>[
       //Main Tab
       Container(
