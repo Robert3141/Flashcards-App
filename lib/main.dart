@@ -70,9 +70,11 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       //local vars
       File file = await FilePicker.getFile(type: FileType.CUSTOM, fileExtension: 'txt');
-      String fileText = "test";//await file.readAsString();
-      String fileName = file.path;//splitter(file.path, "/").last;
-      int fileCards = /*splitter(fileText,"&").length*/4 ~/ 2;
+      String fileText = await file.readAsString();
+      String fileName = splitter(file.path, "/").last;
+      debugPrint(fileName);
+      int fileCards = splitter(fileText,"&").length ~/ 2;
+      debugPrint(fileCards.toString());
       SharedPreferences prefs = await SharedPreferences.getInstance();
       List<String> _flashcards = prefs.getStringList('flashcards') ?? [fileText];
       _flashcardFiles = prefs.getStringList('flashcardFiles') ?? [fileName];
@@ -117,6 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   }
 
+
   void loadFromPreferences() async {
     //variables
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -128,22 +131,32 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<String> splitter(String splitText,String splitChar) {
     //local variables
-    List<String> _fileList;
-    var tempString = "";
+    List<String> _fileList = [""];
+    var _tempString = "";
+    bool _firstTime = true;
 
-    for (var i = 0; i <splitText.length +1; i++) {
+    for (var i = 0; i < splitText.length; i++) {
       if (splitText[i] == splitChar){
-        if (tempString != ""){
-          _fileList.add(tempString);
+        if (_tempString != null){
+          if(_firstTime){
+            _fileList[0] = _tempString;
+            _firstTime = false;
+          } else {
+            _fileList.add(_tempString);
+          }
         }
-        tempString = "";
+        _tempString = null;
       } else {
-        tempString += splitText[i];
+        if(_tempString == null){
+          _tempString = splitText[i];
+        } else {
+          _tempString += splitText[i];
+        }
       }
     }
 
-    if (tempString != ""){
-      _fileList.add(tempString);
+    if (_tempString != null){
+      _fileList.add(_tempString);
     }
 
     return _fileList;
@@ -205,7 +218,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 Expanded(
                   child: ListView.builder(
-                    itemCount: _flashcardFiles.length,
+                    itemCount: _flashcardFiles.length - 1,
                     itemBuilder: (BuildContext context, int index){
                       return Card(
                           child: Container(
@@ -244,12 +257,19 @@ class _MyHomePageState extends State<MyHomePage> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
 
-                                  Text('     '+_flashcardFiles[index],overflow: TextOverflow.ellipsis,style: TextStyle(fontWeight: FontWeight.bold)),
+                                  Flexible(
+                                    child: Container(
+                                      padding: EdgeInsets.only(right: 4.0),
+                                      child: Text('     '+_flashcardFiles[index],overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold)),
+
+                                    ),
+                                  ),
+
 
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: <Widget>[
-                                      Text(_flashcardLengths[index]),
+                                      Text(_flashcardLengths[index],overflow: TextOverflow.ellipsis),
                                       Icon(Icons.content_copy),
                                     ],
                                   ),
@@ -265,7 +285,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
       ),
 
-      //Settings
+      //Settings Tab
       Container(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
