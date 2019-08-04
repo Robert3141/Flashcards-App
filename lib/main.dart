@@ -26,6 +26,7 @@ class Strings{
   static String addNewCards = "Add New Flashcards";
   static String exampleFileName = "Example File";
   static String exampleFileLength = "3";
+  static String exampleFileData = "card1a&card1b&card2a&card2b&card3a&card3b&";
 
   //Flashcard Options
   static String importFlashcards = "Import File";
@@ -35,11 +36,14 @@ class Strings{
 
   //Shared prefs storage names
   static String prefsFlashcardTitles = "Titles"; //Strings List
-  static String prefsFlashcardData = "Data"; //Strings List
   static String prefsFlashcardLength = "Amount"; //Strings List
+  static String prefsFlashcardData = "Data"; //Strings List
 
   //Error Messages
   static String errorImport = "Error Importing Flashcards:\n";
+  static String errorCreate = "Error Creating Flashcards:\n";
+  static String errorEdit = "Error Editing Flashcards\n";
+  static String errorLoad = "Error Loading Flashcards\n";
 
 }
 
@@ -167,18 +171,47 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void clickCreateFlashcards() {
     // TODO: allow user to create flashcard set from within the app
+    try{
+
+    } catch(e){
+      //in case of error output error
+      outputErrors(Strings.errorCreate, e);
+    }
   }
 
   void clickEditFlashcards(int fileNumber) {
     // TODO: allow user to edit their flashcards
+    try{
+
+    } catch(e){
+      //in case of error output error
+      outputErrors(Strings.errorEdit, e);
+    }
   }
 
-  void clickLoadFlashcards(int fileNumber) {
+  void clickLoadFlashcards(int fileNumber) async {
     // TODO: make flashcards load on screen and appear for testing
+    try{
+      //Get file from shared prefs
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      List<String> flashcardsData = prefs.getStringList(Strings.prefsFlashcardData) ?? [Strings.exampleFileData];
+      List<String> currentFlashcards = splitter(flashcardsData[fileNumber], "&");
+
+    } catch(e){
+      //in case of error output error
+      outputErrors(Strings.errorLoad, e);
+    }
+  }
+
+  void nextFlashcard(){
+
+  }
+
+  void flipFlashcard(){
+
   }
 
   void loadFromPreferences() async {
-    // TODO: make sure preferences are loaded correctly
     //variables
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
