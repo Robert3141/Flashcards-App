@@ -17,10 +17,13 @@ final cardHeight = 100.0;
 class Strings{
   //British strings:
 
-  //App Interface
+  //App Interface Main
   static String appName = "Flashcards";
   static String tabTitleMain = "Main";
   static String tabTitleSettings = "Settings";
+
+  //App interface flashcards
+  static String tabTitleFlashcards = "Flashcards";
 
   //Default cards
   static String addNewCards = "Add New Flashcards";
@@ -28,11 +31,12 @@ class Strings{
   static String exampleFileLength = "3";
   static String exampleFileData = "card1a&card1b&card2a&card2b&card3a&card3b&";
 
-  //Flashcard Options
+  //Dialog Options
   static String importFlashcards = "Import File";
   static String createFlashcards = "Create New";
   static String editFlashcards = "Edit";
   static String loadFlashcards = "Load";
+  static String errorOk = "OK";
 
   //Shared prefs storage names
   static String prefsFlashcardTitles = "Titles"; //Strings List
@@ -108,8 +112,15 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       showDialog<String>(
         context: context,
-        builder: (BuildContext context) => SimpleDialog(
-          title: Text(error + e.toString()),
+        builder: (BuildContext context) => AlertDialog(
+          title: Text(error),
+          content: Text(e.toString()),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(Strings.errorOk),
+              onPressed: () => Navigator.pop(context),
+            )
+          ],
         ),
       );
     });
@@ -197,18 +208,13 @@ class _MyHomePageState extends State<MyHomePage> {
       List<String> flashcardsData = prefs.getStringList(Strings.prefsFlashcardData) ?? [Strings.exampleFileData];
       List<String> currentFlashcards = splitter(flashcardsData[fileNumber], "&");
 
+      //load flashcards page
+      Navigator.push(context, _FlashcardsPage(currentFlashcards));
+
     } catch(e){
       //in case of error output error
       outputErrors(Strings.errorLoad, e);
     }
-  }
-
-  void nextFlashcard(){
-
-  }
-
-  void flipFlashcard(){
-
   }
 
   void loadFromPreferences() async {
@@ -432,4 +438,21 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: _appBar,
     );
   }
+}
+
+class _FlashcardsPage extends MaterialPageRoute<Null> {
+  _FlashcardsPage(List<String> currentFileData)
+  : super(builder: (BuildContext context){
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(Strings.tabTitleFlashcards),
+        elevation: 1.0,
+      ),
+      body: Builder(
+        builder: (BuildContext context) => Container(
+
+        ),
+      )
+    );
+  });
 }
