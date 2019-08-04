@@ -38,6 +38,9 @@ class Strings{
   static String prefsFlashcardData = "Data"; //Strings List
   static String prefsFlashcardLength = "Amount"; //Strings List
 
+  //Error Messages
+  static String errorImport = "Error Importing Flashcards:\n";
+
 }
 
 
@@ -97,42 +100,18 @@ class _MyHomePageState extends State<MyHomePage> {
   final myController = TextEditingController();
 
   //functions
-  void clickImportFlashcards() async {
-    /*try {
-      //local vars
-      File file = await FilePicker.getFile(type: FileType.CUSTOM, fileExtension: 'txt');
-      String fileText = await file.readAsString();
-      String fileName = splitter(file.path, "/").last;
-      debugPrint(fileName);
-      int fileCards = splitter(fileText,"&").length ~/ 2;
-      debugPrint(fileCards.toString());
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      List<String> _flashcards = prefs.getStringList('flashcards') ?? [fileText];
-      _flashcardFiles = prefs.getStringList('flashcardFiles') ?? [fileName];
-      _flashcardLengths = prefs.getStringList('flashcardsLengths') ?? [fileCards.toString()];
-
-      //add file to prefs
-      if (_flashcards[0] != fileText){
-        _flashcards.add(fileText);
-      }
-      await prefs.setStringList('flashcards',_flashcards);
-      if (_flashcardFiles[0] != fileName){
-        _flashcardFiles.add(fileName);
-      }
-      await prefs.setStringList('flashcardFiles',_flashcardFiles);
-      if (_flashcardLengths[0] != fileCards.toString()) {
-        _flashcardLengths.add('$fileCards');
-      }
-      await prefs.setStringList('flashcardLengths', _flashcardLengths);
-
-
-    } catch(e) {
-      print("Error: " + e.toString());
-    }
-
+  void outputErrors(String error,Element e){
     setState(() {
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => SimpleDialog(
+          title: Text(error + e.toString()),
+        ),
+      );
+    });
+  }
 
-    });*/
+  void clickImportFlashcards() async {
     try {
       //user file prompt:
       File _selectedFile = await FilePicker.getFile(type: FileType.CUSTOM, fileExtension: 'txt');
@@ -142,22 +121,44 @@ class _MyHomePageState extends State<MyHomePage> {
 
       //get name of text file from file path
       String fileName = splitter(_selectedFile.path, "/").last;
-      debugPrint("fileName=" + fileName);
 
       //get amount of flashcards from file
       int fileCards = splitter(fileText, "&").length;
       fileCards = fileCards ~/ 2;
-      debugPrint("fileCards=" + fileCards.toString());
 
       //get SharedPrefs file
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      List<String> flashcardTitles = prefs.getStringList(Strings.prefsFlashcardTitles) ?? [fileName];
+      List<String> flashcardLengths = prefs.getStringList(Strings.prefsFlashcardLength) ?? [fileCards.toString()];
+      List<String> flashcardData = prefs.getStringList(Strings.prefsFlashcardData) ?? [fileText];
 
+      //add file to prefs
+      // flashcardData
+      if (flashcardData[0] != fileText){
+        flashcardData.add(fileText);
+      }
+      await prefs.setStringList(Strings.prefsFlashcardData,flashcardData);
+      // flashcardTitles
+      if (flashcardTitles[0] != fileName){
+        flashcardTitles.add(fileName);
+      }
+      await prefs.setStringList(Strings.prefsFlashcardTitles,flashcardTitles);
+      //flashcardLengths
+      if (flashcardLengths[0] != fileCards.toString()) {
+        flashcardLengths.add('$fileCards');
+      }
+      await prefs.setStringList(Strings.prefsFlashcardLength, flashcardLengths);
+
+      setState(() {
+        _flashcardFiles = flashcardTitles;
+        _flashcardLengths = flashcardLengths;
+      });
 
 
     } catch(e) {
-      debugPrint("Error clickImportFlashcards(): " + e.toString());
+      //in case of error output error
+      outputErrors(Strings.errorImport, e);
     }
-    // TODO: get flashcard import setup and working bug free
-
   }
 
 
@@ -174,7 +175,6 @@ class _MyHomePageState extends State<MyHomePage> {
     // TODO: make flashcards load on screen and appear for testing
   }
 
-
   void loadFromPreferences() async {
     // TODO: make sure preferences are loaded correctly
     //variables
@@ -182,7 +182,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
     //set variables
     _flashcardFiles = prefs.getStringList(Strings.prefsFlashcardTitles)?? [Strings.exampleFileName];
+    _flashcardFiles.forEach(temp);
     _flashcardLengths = prefs.getStringList(Strings.prefsFlashcardLength)?? [Strings.exampleFileLength];
+    _flashcardLengths.forEach(temp);
   }
 
   List<String> splitter(String splitText,String splitChar) {
@@ -274,7 +276,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 Expanded(
                   child: ListView.builder(
-                    itemCount: _flashcardFiles.length - 1,
+                    itemCount: _flashcardFiles.length,
                     itemBuilder: (BuildContext context, int index){
                       return Card(
                           child: Container(
