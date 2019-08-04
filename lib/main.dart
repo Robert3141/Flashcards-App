@@ -67,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //functions
   void clickImportFlashcards() async {
-    try {
+    /*try {
       //local vars
       File file = await FilePicker.getFile(type: FileType.CUSTOM, fileExtension: 'txt');
       String fileText = await file.readAsString();
@@ -101,26 +101,28 @@ class _MyHomePageState extends State<MyHomePage> {
 
     setState(() {
 
-    });
+    });*/
+    // TODO: get flashcard import setup and working bug free
 
   }
 
 
 
   void clickCreateFlashcards() {
-
+    // TODO: allow user to create flashcard set from within the app
   }
 
   void clickEditFlashcards(int fileNumber) {
-
+    // TODO: allow user to edit their flashcards
   }
 
   void clickLoadFlashcards(int fileNumber) {
-
+    // TODO: make flashcards load on screen and appear for testing
   }
 
 
   void loadFromPreferences() async {
+    // TODO: make sure preferences are loaded correctly
     //variables
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -286,6 +288,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
 
       //Settings Tab
+      // TODO: make settings page work with dark/light theme and accent colour choice
       Container(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
