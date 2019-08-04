@@ -152,6 +152,8 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         _flashcardFiles = flashcardTitles;
         _flashcardLengths = flashcardLengths;
+
+        Navigator.pop(context);
       });
 
 
@@ -182,9 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     //set variables
     _flashcardFiles = prefs.getStringList(Strings.prefsFlashcardTitles)?? [Strings.exampleFileName];
-    _flashcardFiles.forEach(temp);
     _flashcardLengths = prefs.getStringList(Strings.prefsFlashcardLength)?? [Strings.exampleFileLength];
-    _flashcardLengths.forEach(temp);
   }
 
   List<String> splitter(String splitText,String splitChar) {
