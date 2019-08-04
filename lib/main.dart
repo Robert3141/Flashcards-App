@@ -9,7 +9,38 @@ Future main() async {
   runApp(new MyApp());
 }
 
+//
+// CONSTANTS
+//
+
 final cardHeight = 100.0;
+class Strings{
+  //British strings:
+
+  //App Interface
+  static String appName = "Flashcards";
+  static String tabTitleMain = "Main";
+  static String tabTitleSettings = "Settings";
+
+  //Default cards
+  static String addNewCards = "Add New Flashcards";
+  static String exampleFileName = "Example File";
+  static String exampleFileLength = "3";
+
+  //Flashcard Options
+  static String importFlashcards = "Import File";
+  static String createFlashcards = "Create New";
+  static String editFlashcards = "Edit";
+  static String loadFlashcards = "Load";
+
+  //Shared prefs storage names
+  static String prefsFlashcardTitles = "Titles"; //Strings List
+  static String prefsFlashcardData = "Data"; //Strings List
+  static String prefsFlashcardLength = "Amount"; //Strings List
+
+}
+
+
 
 class MyApp extends StatefulWidget {
 
@@ -26,14 +57,14 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'Flashcards',
+      title: Strings.appName,
       theme: new ThemeData(
         //app theme
         primarySwatch: Colors.blue,
         brightness: darkThemeEnabled?Brightness.dark:Brightness.light,
       ),
       home: new MyHomePage(
-        title: 'Flashcards',
+        title: Strings.appName,
       ),
     );
   }
@@ -58,11 +89,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  //set local variables
+  //set variables for class
   int _currentTabIndex = 0;
-  var _tabTitle = "Main";
-  List<String> _flashcardFiles = ['example file'];
-  List<String> _flashcardLengths = ['2'];
+  var _tabTitle = Strings.tabTitleMain;
+  List<String> _flashcardFiles = ['${Strings.exampleFileName}'];
+  List<String> _flashcardLengths = ['${Strings.exampleFileLength}'];
   final myController = TextEditingController();
 
   //functions
@@ -102,6 +133,29 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
 
     });*/
+    try {
+      //user file prompt:
+      File _selectedFile = await FilePicker.getFile(type: FileType.CUSTOM, fileExtension: 'txt');
+
+      //get text from file
+      String fileText = await _selectedFile.readAsString();
+
+      //get name of text file from file path
+      String fileName = splitter(_selectedFile.path, "/").last;
+      debugPrint("fileName=" + fileName);
+
+      //get amount of flashcards from file
+      int fileCards = splitter(fileText, "&").length;
+      fileCards = fileCards ~/ 2;
+      debugPrint("fileCards=" + fileCards.toString());
+
+      //get SharedPrefs file
+
+
+
+    } catch(e) {
+      debugPrint("Error clickImportFlashcards(): " + e.toString());
+    }
     // TODO: get flashcard import setup and working bug free
 
   }
@@ -127,8 +181,8 @@ class _MyHomePageState extends State<MyHomePage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     //set variables
-    _flashcardFiles = prefs.getStringList('flashcardFiles')?? ['example file'];
-    _flashcardLengths = prefs.getStringList('flashcardLengths')?? ['2'];
+    _flashcardFiles = prefs.getStringList(Strings.prefsFlashcardTitles)?? [Strings.exampleFileName];
+    _flashcardLengths = prefs.getStringList(Strings.prefsFlashcardLength)?? [Strings.exampleFileLength];
   }
 
   List<String> splitter(String splitText,String splitChar) {
@@ -186,18 +240,18 @@ class _MyHomePageState extends State<MyHomePage> {
                           showDialog<String>(
                             context: context,
                             builder: (BuildContext context) => SimpleDialog(
-                              title: Text('Add new Flashcards'),
+                              title: Text(Strings.addNewCards),
                               children: <Widget>[
                                 ListTile(
                                   leading: Icon(Icons.folder_open),
-                                  title: Text('Import Flashcards'),
+                                  title: Text(Strings.importFlashcards),
                                   onTap: (){
                                     clickImportFlashcards();
                                   },
                                 ),
                                 ListTile(
                                   leading: Icon(Icons.control_point),
-                                  title: Text('Create Flashcards'),
+                                  title: Text(Strings.createFlashcards),
                                   onTap: (){
                                     clickCreateFlashcards();
                                   },
@@ -210,7 +264,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text("     Add new file!",overflow: TextOverflow.ellipsis,style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text("     " + Strings.addNewCards,overflow: TextOverflow.ellipsis,style: TextStyle(fontWeight: FontWeight.bold)),
                           Icon(Icons.add),
                         ],
                       ),
@@ -238,14 +292,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                       children: <Widget>[
                                         ListTile(
                                           leading: Icon(Icons.edit),
-                                          title: Text('Edit'),
+                                          title: Text(Strings.editFlashcards),
                                           onTap: (){
                                             clickEditFlashcards(index);
                                           },
                                         ),
                                         ListTile(
                                           leading: Icon(Icons.content_copy),
-                                          title: Text('Load Flashcards'),
+                                          title: Text(Strings.loadFlashcards),
                                           onTap: (){
                                             clickLoadFlashcards(index);
                                           },
@@ -293,7 +347,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Text('Settings'),
+            Text(Strings.tabTitleSettings),
             Divider(),
           ],
         )
@@ -309,6 +363,7 @@ class _MyHomePageState extends State<MyHomePage> {
       currentIndex: _currentTabIndex,
       type: BottomNavigationBarType.fixed,
       items: const <BottomNavigationBarItem>[
+        // TODO: work out why navbar item titles don't accept Strings.tabTitle...
           BottomNavigationBarItem(
             icon: Icon(Icons.content_copy),
             title: Text('Flashcards'),
@@ -325,10 +380,10 @@ class _MyHomePageState extends State<MyHomePage> {
             _currentTabIndex = index;
             switch (index) {
               case 0:
-                _tabTitle = "Main";
+                _tabTitle = Strings.tabTitleMain;
                 break;
               case 1:
-                _tabTitle = "Settings";
+                _tabTitle = Strings.tabTitleSettings;
                 break;
 
             }
