@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flip_card/flip_card.dart';
 
 Future main() async {
   runApp(new MyApp());
@@ -48,6 +49,8 @@ class Strings{
   static String errorCreate = "Error Creating Flashcards:\n";
   static String errorEdit = "Error Editing Flashcards\n";
   static String errorLoad = "Error Loading Flashcards\n";
+  static String errorCardFlip = "Error Flipping Flashcard\n";
+  static String errorNewCard = "Error Getting Next Flashcard\n";
 
 }
 
@@ -107,7 +110,10 @@ class _MyHomePageState extends State<MyHomePage> {
   List<String> _flashcardLengths = ['${Strings.exampleFileLength}'];
   final myController = TextEditingController();
 
-  //functions
+  //
+  // FUNCTIONS:
+  //
+
   void outputErrors(String error,Element e){
     setState(() {
       showDialog<String>(
@@ -201,7 +207,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void clickLoadFlashcards(int fileNumber) async {
-    // TODO: make flashcards load on screen and appear for testing
     try{
       //Get file from shared prefs
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -404,7 +409,7 @@ class _MyHomePageState extends State<MyHomePage> {
       currentIndex: _currentTabIndex,
       type: BottomNavigationBarType.fixed,
       items: const <BottomNavigationBarItem>[
-        // TODO: work out why navbar item titles don't accept Strings.tabTitle...
+        // TODO: work out why nav bar item titles don't accept Strings.tabTitle...
           BottomNavigationBarItem(
             icon: Icon(Icons.content_copy),
             title: Text('Flashcards'),
@@ -443,6 +448,57 @@ class _MyHomePageState extends State<MyHomePage> {
 class _FlashcardsPage extends MaterialPageRoute<Null> {
   _FlashcardsPage(List<String> currentFileData)
   : super(builder: (BuildContext context){
+    //set variables for class
+    bool firstSideOfCard = true;
+    String cardFront = "";
+    String cardRear = "";
+    int currentFlashcard = 0;
+
+    //
+    // FUNCTIONS
+    //
+
+    void outputErrors(String error,Element e){
+      setState(() {
+        showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: Text(error),
+            content: Text(e.toString()),
+            actions: <Widget>[
+              FlatButton(
+                child: Text(Strings.errorOk),
+                onPressed: () => Navigator.pop(context),
+              )
+            ],
+          ),
+        );
+      });
+    }
+
+    void flipCard(){
+      try {
+        //change side of flashcard
+        firstSideOfCard = !firstSideOfCard;
+
+
+      } catch(e) {
+        outputErrors(Strings.errorCardFlip, e);
+      }
+    }
+
+    void newCard(){
+      try {
+        
+      } catch(e) {
+        outputErrors(Strings.errorNewCard, e);
+      }
+    }
+
+    //
+    // LOAD INTERFACE
+    //
+    newCard();
     return Scaffold(
       appBar: AppBar(
         title: Text(Strings.tabTitleFlashcards),
@@ -450,9 +506,52 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
       ),
       body: Builder(
         builder: (BuildContext context) => Container(
-
+          color: Theme.of(context).primaryColor,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Expanded(
+                flex: 4,
+                child: InkWell(
+                  child: Card(
+                    child: FlipCard(
+                      direction: FlipDirection.HORIZONTAL,
+                      speed: 1500,
+                      front: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(8.0))
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text("Front")
+                          ],
+                        ),
+                      ),
+                      back: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(8.0))
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text("Back")
+                          ],
+                        ),
+                      ),
+                      onFlip: flipCard,
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: Container(),
+              )
+            ],
+          ),
         ),
-      )
+      ),
     );
   });
 }
