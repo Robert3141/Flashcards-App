@@ -446,34 +446,147 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class _FlashcardsPage extends MaterialPageRoute<Null> {
-  _FlashcardsPage(List<String> currentFileData)
-  : super(builder: (BuildContext context){
+  /*
+  final List<String> currentFileData;
+
+  _FlashcardsPage(this.currentFileData);
+
+  //set variables for class
+  //bool firstSideOfCard = true;
+  //String cardFront = "";
+  //String cardRear = "";
+  //int currentFlashcard = 0;
+
+  //
+  // FUNCTIONS
+  //
+
+  void outputErrors(String error,Element e){
+    setState(() {
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: Text(error),
+          content: Text(e.toString()),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(Strings.errorOk),
+              onPressed: () => Navigator.pop(context),
+            )
+          ],
+        ),
+      );
+    });
+  }
+
+  void flipCard(){
+    try {
+      //change side of flashcard
+      firstSideOfCard = !firstSideOfCard;
+
+
+    } catch(e) {
+      outputErrors(Strings.errorCardFlip, e);
+    }
+  }
+
+  void newCard(){
+    try {
+
+    } catch(e) {
+      outputErrors(Strings.errorNewCard, e);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(Strings.tabTitleFlashcards),
+        elevation: 1.0,
+      ),
+      body: Builder(
+        builder: (BuildContext context) =>
+            Container(
+              color: Theme
+                  .of(context)
+                  .primaryColor,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Expanded(
+                    flex: 4,
+                    child: InkWell(
+                      child: Card(
+                        child: FlipCard(
+                          direction: FlipDirection.HORIZONTAL,
+                          speed: 1500,
+                          front: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular(8.0))
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text("Front")
+                              ],
+                            ),
+                          ),
+                          back: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular(8.0))
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text("Back")
+                              ],
+                            ),
+                          ),
+                          onFlip: flipCard,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Container(),
+                  )
+                ],
+              ),
+            ),
+
+      ),
+    );
+  }*/
+  _FlashcardsPage(List<String> currentFileData) : super(builder: (BuildContext context){
+
     //set variables for class
     bool firstSideOfCard = true;
-    String cardFront = "";
-    String cardRear = "";
-    int currentFlashcard = 0;
+    //String cardFront = "";
+    //String cardRear = "";
+    //int currentFlashcard = 0;
 
     //
     // FUNCTIONS
     //
 
     void outputErrors(String error,Element e){
-      setState(() {
-        showDialog<String>(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-            title: Text(error),
-            content: Text(e.toString()),
-            actions: <Widget>[
-              FlatButton(
-                child: Text(Strings.errorOk),
-                onPressed: () => Navigator.pop(context),
-              )
-            ],
-          ),
-        );
-      });
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: Text(error),
+          content: Text(e.toString()),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(Strings.errorOk),
+              onPressed: () => Navigator.pop(context),
+            )
+          ],
+        ),
+      );
     }
 
     void flipCard(){
@@ -489,7 +602,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
 
     void newCard(){
       try {
-        
+
       } catch(e) {
         outputErrors(Strings.errorNewCard, e);
       }
@@ -498,7 +611,6 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
     //
     // LOAD INTERFACE
     //
-    newCard();
     return Scaffold(
       appBar: AppBar(
         title: Text(Strings.tabTitleFlashcards),
@@ -551,6 +663,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
             ],
           ),
         ),
+
       ),
     );
   });
