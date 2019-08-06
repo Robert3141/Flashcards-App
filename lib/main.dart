@@ -15,6 +15,8 @@ Future main() async {
 //
 
 final cardHeight = 100.0;
+final cardWidth = 0.95;
+final amountOfCards = 100;
 class Strings{
   //British strings:
 
@@ -574,17 +576,18 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
   _FlashcardsPage(List<String> currentFileData) : super(builder: (BuildContext context){
 
     //set variables for class
-    bool firstSideOfCard = true;
-    List<String> cardFront = ["Front","Front2"];
-    List<String> cardRear = ["Rear","Rear2"];
+    //bool firstSideOfCard = true;
+    List<String> cardFront = [""];
+    List<String> cardRear = [""];
     double screenWidth = MediaQuery.of(context).size.width;
+
 
     //
     // FUNCTIONS
     //
 
-    void outputErrors(String error,Element e){
-      showDialog<String>(
+    void outputErrors(String error,e){
+      /*showDialog<String>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
           title: Text(error),
@@ -596,14 +599,14 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
             )
           ],
         ),
-      );
+      );*/
+      debugPrint(error + e.toString());
     }
 
     void flipCard(){
       try {
         //change side of flashcard
-        firstSideOfCard = !firstSideOfCard;
-
+        //firstSideOfCard = !firstSideOfCard;
 
       } catch(e) {
         outputErrors(Strings.errorCardFlip, e);
@@ -613,14 +616,19 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
     void newCard(){
       try {
         //generate random
-        /*Random rng = new Random();
-        currentFlashcard = rng.nextInt(currentFileData.length ~/ 2);
+        Random rng = new Random();
+        int randomNumber = 0;
+        int amountOfFlashcards = currentFileData.length ~/ 2 - 1;
 
-        debugPrint("currentFlashcard=$currentFlashcard");
-        //extract flashcards
-        cardFront = currentFileData[currentFlashcard * 2];
-        cardRear = currentFileData[currentFlashcard * 2 + 1];*/
-
+        randomNumber = rng.nextInt(amountOfFlashcards * 2);
+        debugPrint("randomNumber=$randomNumber");
+        cardFront[0] = currentFileData[randomNumber];
+        cardRear[0] = currentFileData[randomNumber + 1];
+        for (var i = 0; i < 100; i++) {
+          randomNumber = rng.nextInt(amountOfFlashcards * 2);
+          cardFront.add(currentFileData[randomNumber]);
+          cardRear.add(currentFileData[randomNumber + 1]);
+        }
 
       } catch(e) {
         outputErrors(Strings.errorNewCard, e);
@@ -664,7 +672,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
                       front: InkWell(
                         child: Card(
                           child: Container(
-                            width: screenWidth *0.98,
+                            width: screenWidth *0.95,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.all(Radius.circular(8.0))
                             ),
@@ -680,7 +688,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
                       back: InkWell(
                         child: Card(
                           child: Container(
-                            width: screenWidth * 0.98,
+                            width: screenWidth * 0.95,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.all(Radius.circular(8.0))
                             ),
@@ -709,6 +717,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
                           child: Card(
                             child: Icon(Icons.arrow_back_ios),
                           ),
+                          onTap: newCard,
                         ),
                       ),
                       Expanded(
