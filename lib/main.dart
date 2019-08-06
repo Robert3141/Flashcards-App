@@ -15,8 +15,8 @@ Future main() async {
 //
 
 final cardHeight = 100.0;
-final cardWidth = 0.95;
-final amountOfCards = 100;
+final cardWidth = 0.9;
+final defaultCardAmount = 50;
 class Strings{
   //British strings:
 
@@ -45,13 +45,13 @@ class Strings{
   static String prefsFlashcardTitles = "Titles"; //Strings List
   static String prefsFlashcardLength = "Amount"; //Strings List
   static String prefsFlashcardData = "Data"; //Strings List
+  static String prefsAmountOfCards = "Number"; //Integer
 
   //Error Messages
   static String errorImport = "Error Importing Flashcards:\n";
   static String errorCreate = "Error Creating Flashcards:\n";
   static String errorEdit = "Error Editing Flashcards:\n";
   static String errorLoad = "Error Loading Flashcards:\n";
-  static String errorCardFlip = "Error Flipping Flashcard:\n";
   static String errorNewCard = "Error Getting Next Flashcard:\n";
   static String errorLoadPrefs = "Error Loading Settings:\n";
   static String errorSplitString = "Internal Error:\n";
@@ -458,129 +458,15 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class _FlashcardsPage extends MaterialPageRoute<Null> {
-  /*
-  final List<String> currentFileData;
 
-  _FlashcardsPage(this.currentFileData);
-
-  //set variables for class
-  //bool firstSideOfCard = true;
-  //String cardFront = "";
-  //String cardRear = "";
-  //int currentFlashcard = 0;
-
-  //
-  // FUNCTIONS
-  //
-
-  void outputErrors(String error,Element e){
-    setState(() {
-      showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          title: Text(error),
-          content: Text(e.toString()),
-          actions: <Widget>[
-            FlatButton(
-              child: Text(Strings.errorOk),
-              onPressed: () => Navigator.pop(context),
-            )
-          ],
-        ),
-      );
-    });
-  }
-
-  void flipCard(){
-    try {
-      //change side of flashcard
-      firstSideOfCard = !firstSideOfCard;
-
-
-    } catch(e) {
-      outputErrors(Strings.errorCardFlip, e);
-    }
-  }
-
-  void newCard(){
-    try {
-
-    } catch(e) {
-      outputErrors(Strings.errorNewCard, e);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(Strings.tabTitleFlashcards),
-        elevation: 1.0,
-      ),
-      body: Builder(
-        builder: (BuildContext context) =>
-            Container(
-              color: Theme
-                  .of(context)
-                  .primaryColor,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Expanded(
-                    flex: 4,
-                    child: InkWell(
-                      child: Card(
-                        child: FlipCard(
-                          direction: FlipDirection.HORIZONTAL,
-                          speed: 1500,
-                          front: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(
-                                    Radius.circular(8.0))
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text("Front")
-                              ],
-                            ),
-                          ),
-                          back: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(
-                                    Radius.circular(8.0))
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text("Back")
-                              ],
-                            ),
-                          ),
-                          onFlip: flipCard,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Container(),
-                  )
-                ],
-              ),
-            ),
-
-      ),
-    );
-  }*/
   _FlashcardsPage(List<String> currentFileData) : super(builder: (BuildContext context){
 
     //set variables for class
-    //bool firstSideOfCard = true;
     List<String> cardFront = [""];
     List<String> cardRear = [""];
     double screenWidth = MediaQuery.of(context).size.width;
-
+    int amountOfCards = defaultCardAmount;
+    ScrollController scrollControl = new ScrollController();
 
     //
     // FUNCTIONS
@@ -599,18 +485,8 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
             )
           ],
         ),
-      );*/
+      );*/ // NOT WORKING because it's stateless
       debugPrint(error + e.toString());
-    }
-
-    void flipCard(){
-      try {
-        //change side of flashcard
-        //firstSideOfCard = !firstSideOfCard;
-
-      } catch(e) {
-        outputErrors(Strings.errorCardFlip, e);
-      }
     }
 
     void newCard(){
@@ -621,10 +497,9 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
         int amountOfFlashcards = currentFileData.length ~/ 2 - 1;
 
         randomNumber = rng.nextInt(amountOfFlashcards * 2);
-        debugPrint("randomNumber=$randomNumber");
         cardFront[0] = currentFileData[randomNumber];
         cardRear[0] = currentFileData[randomNumber + 1];
-        for (var i = 0; i < 100; i++) {
+        for (var i = 1; i < amountOfCards; i++) {
           randomNumber = rng.nextInt(amountOfFlashcards * 2);
           cardFront.add(currentFileData[randomNumber]);
           cardRear.add(currentFileData[randomNumber + 1]);
@@ -635,8 +510,13 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
       }
     }
 
-    void loadPreferences() {
+    void loadPreferences() async {
       try {
+        //get prefs
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+
+        //set variables
+        amountOfCards = prefs.getInt(Strings.prefsAmountOfCards) ?? defaultCardAmount;
 
       } catch(e) {
         outputErrors(Strings.errorLoadPrefs, e);
@@ -664,15 +544,15 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
                 child: ListView.builder(
                   itemCount: cardFront.length,//currentFileData.length ~/2 -1,
                   scrollDirection: Axis.horizontal,
+                  controller: scrollControl,
                   itemBuilder: (BuildContext context, int index) {
                     return FlipCard(
                       direction: FlipDirection.HORIZONTAL,
                       speed: 1500,
-                      onFlip: flipCard,
                       front: InkWell(
                         child: Card(
                           child: Container(
-                            width: screenWidth *0.95,
+                            width: screenWidth * cardWidth,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.all(Radius.circular(8.0))
                             ),
@@ -688,7 +568,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
                       back: InkWell(
                         child: Card(
                           child: Container(
-                            width: screenWidth * 0.95,
+                            width: screenWidth * cardWidth,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.all(Radius.circular(8.0))
                             ),
@@ -705,7 +585,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
                   },
                 ),
               ),
-              Expanded(
+              /*Expanded(
                 flex: 1,
                 child: Container(
                   child: Row(
@@ -717,7 +597,6 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
                           child: Card(
                             child: Icon(Icons.arrow_back_ios),
                           ),
-                          onTap: newCard,
                         ),
                       ),
                       Expanded(
@@ -730,7 +609,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
                     ],
                   ),
                 ),
-              )
+              )*/ //Adding buttons later
             ],
           ),
         ),
