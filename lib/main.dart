@@ -47,10 +47,12 @@ class Strings{
   //Error Messages
   static String errorImport = "Error Importing Flashcards:\n";
   static String errorCreate = "Error Creating Flashcards:\n";
-  static String errorEdit = "Error Editing Flashcards\n";
-  static String errorLoad = "Error Loading Flashcards\n";
-  static String errorCardFlip = "Error Flipping Flashcard\n";
-  static String errorNewCard = "Error Getting Next Flashcard\n";
+  static String errorEdit = "Error Editing Flashcards:\n";
+  static String errorLoad = "Error Loading Flashcards:\n";
+  static String errorCardFlip = "Error Flipping Flashcard:\n";
+  static String errorNewCard = "Error Getting Next Flashcard:\n";
+  static String errorLoadPrefs = "Error Loading Settings:\n";
+  static String errorSplitString = "Internal Error:\n";
 
 }
 
@@ -223,42 +225,50 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void loadFromPreferences() async {
-    //variables
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    try {
+      //variables
+      SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    //set variables
-    _flashcardFiles = prefs.getStringList(Strings.prefsFlashcardTitles)?? [Strings.exampleFileName];
-    _flashcardLengths = prefs.getStringList(Strings.prefsFlashcardLength)?? [Strings.exampleFileLength];
+      //set variables
+      _flashcardFiles = prefs.getStringList(Strings.prefsFlashcardTitles)?? [Strings.exampleFileName];
+      _flashcardLengths = prefs.getStringList(Strings.prefsFlashcardLength)?? [Strings.exampleFileLength];
+    } catch(e) {
+      outputErrors(Strings.errorLoadPrefs, e);
+    }
   }
 
   List<String> splitter(String splitText,String splitChar) {
     //local variables
     List<String> _fileList = [""];
-    var _tempString = "";
-    bool _firstTime = true;
+    try {
+      var _tempString = "";
+      bool _firstTime = true;
 
-    for (var i = 0; i < splitText.length; i++) {
-      if (splitText[i] == splitChar){
-        if (_tempString != null){
-          if(_firstTime){
-            _fileList[0] = _tempString;
-            _firstTime = false;
+      for (var i = 0; i < splitText.length; i++) {
+        if (splitText[i] == splitChar){
+          if (_tempString != null){
+            if(_firstTime){
+              _fileList[0] = _tempString;
+              _firstTime = false;
+            } else {
+              _fileList.add(_tempString);
+            }
+          }
+          _tempString = null;
+        } else {
+          if(_tempString == null){
+            _tempString = splitText[i];
           } else {
-            _fileList.add(_tempString);
+            _tempString += splitText[i];
           }
         }
-        _tempString = null;
-      } else {
-        if(_tempString == null){
-          _tempString = splitText[i];
-        } else {
-          _tempString += splitText[i];
-        }
       }
-    }
 
-    if (_tempString != null){
-      _fileList.add(_tempString);
+      if (_tempString != null){
+        _fileList.add(_tempString);
+      }
+    } catch(e) {
+      outputErrors(Strings.errorSplitString, e);
     }
 
     return _fileList;
@@ -565,9 +575,9 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
 
     //set variables for class
     bool firstSideOfCard = true;
-    String cardFront = "Front";
-    String cardRear = "Rear";
-    int currentFlashcard = 0;
+    List<String> cardFront = ["Front","Front2"];
+    List<String> cardRear = ["Rear","Rear2"];
+    double screenWidth = MediaQuery.of(context).size.width;
 
     //
     // FUNCTIONS
@@ -603,16 +613,25 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
     void newCard(){
       try {
         //generate random
-        Random rng = new Random();
+        /*Random rng = new Random();
         currentFlashcard = rng.nextInt(currentFileData.length ~/ 2);
 
         debugPrint("currentFlashcard=$currentFlashcard");
         //extract flashcards
         cardFront = currentFileData[currentFlashcard * 2];
-        cardRear = currentFileData[currentFlashcard * 2 + 1];
+        cardRear = currentFileData[currentFlashcard * 2 + 1];*/
+
 
       } catch(e) {
         outputErrors(Strings.errorNewCard, e);
+      }
+    }
+
+    void loadPreferences() {
+      try {
+
+      } catch(e) {
+        outputErrors(Strings.errorLoadPrefs, e);
       }
     }
 
@@ -620,6 +639,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
     // LOAD INTERFACE
     //
     newCard();
+    loadPreferences();
     return Scaffold(
       appBar: AppBar(
         title: Text(Strings.tabTitleFlashcards),
@@ -633,40 +653,48 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
             children: <Widget>[
               Expanded(
                 flex: 4,
-                child: FlipCard(
-                  direction: FlipDirection.HORIZONTAL,
-                  speed: 1500,
-                  onFlip: flipCard,
-                  front: InkWell(
-                    child: Card(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(8.0))
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(cardFront),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  back: InkWell(
-                    child: Card(
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(8.0))
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(cardRear),
-                          ],
+                child: ListView.builder(
+                  itemCount: cardFront.length,//currentFileData.length ~/2 -1,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (BuildContext context, int index) {
+                    return FlipCard(
+                      direction: FlipDirection.HORIZONTAL,
+                      speed: 1500,
+                      onFlip: flipCard,
+                      front: InkWell(
+                        child: Card(
+                          child: Container(
+                            width: screenWidth *0.98,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(8.0))
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(cardFront[index]),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
+                      back: InkWell(
+                        child: Card(
+                          child: Container(
+                            width: screenWidth * 0.98,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(8.0))
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(cardRear[index]),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
               Expanded(
