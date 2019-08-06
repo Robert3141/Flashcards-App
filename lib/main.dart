@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
@@ -565,9 +565,9 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
 
     //set variables for class
     bool firstSideOfCard = true;
-    //String cardFront = "";
-    //String cardRear = "";
-    //int currentFlashcard = 0;
+    String cardFront = "Front";
+    String cardRear = "Rear";
+    int currentFlashcard = 0;
 
     //
     // FUNCTIONS
@@ -602,6 +602,14 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
 
     void newCard(){
       try {
+        //generate random
+        Random rng = new Random();
+        currentFlashcard = rng.nextInt(currentFileData.length ~/ 2);
+
+        debugPrint("currentFlashcard=$currentFlashcard");
+        //extract flashcards
+        cardFront = currentFileData[currentFlashcard * 2];
+        cardRear = currentFileData[currentFlashcard * 2 + 1];
 
       } catch(e) {
         outputErrors(Strings.errorNewCard, e);
@@ -611,6 +619,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
     //
     // LOAD INTERFACE
     //
+    newCard();
     return Scaffold(
       appBar: AppBar(
         title: Text(Strings.tabTitleFlashcards),
@@ -624,41 +633,66 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
             children: <Widget>[
               Expanded(
                 flex: 4,
-                child: InkWell(
-                  child: Card(
-                    child: FlipCard(
-                      direction: FlipDirection.HORIZONTAL,
-                      speed: 1500,
-                      front: Container(
+                child: FlipCard(
+                  direction: FlipDirection.HORIZONTAL,
+                  speed: 1500,
+                  onFlip: flipCard,
+                  front: InkWell(
+                    child: Card(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(8.0))
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text(cardFront),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  back: InkWell(
+                    child: Card(
+                      child: Container(
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.all(Radius.circular(8.0))
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Text("Front")
+                            Text(cardRear),
                           ],
                         ),
                       ),
-                      back: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(8.0))
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text("Back")
-                          ],
-                        ),
-                      ),
-                      onFlip: flipCard,
                     ),
                   ),
                 ),
               ),
               Expanded(
                 flex: 1,
-                child: Container(),
+                child: Container(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    //mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Expanded(
+                        child: InkWell(
+                          child: Card(
+                            child: Icon(Icons.arrow_back_ios),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: InkWell(
+                          child: Card(
+                            child: Icon(Icons.arrow_forward_ios),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               )
             ],
           ),
