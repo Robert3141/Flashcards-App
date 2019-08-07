@@ -264,7 +264,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void settingsOrderedCards(orderedCard) async {
     //set up prefs and save to prefs
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(Strings.prefsCardsOrdered, orderedCard);
+    prefs.setBool(Strings.prefsCardsOrdered, !orderedCard);
+    loadFromPreferences();
   }
 
   List<String> splitter(String splitText,String splitChar) {
