@@ -14,9 +14,16 @@ Future main() async {
 // CONSTANTS
 //
 
+// Default settings
 final cardHeight = 100.0;
 final cardWidth = 0.9;
 final defaultCardAmount = 50;
+final defaultCardsOrdered = false;
+
+//prefs for flashcards page
+int amountOfCards;
+bool cardsOrdered;
+
 class Strings{
   //British strings:
 
@@ -27,6 +34,7 @@ class Strings{
 
   //App interface flashcards
   static String tabTitleFlashcards = "Flashcards";
+  static String paddingAsText = "     ";
 
   //Default cards
   static String addNewCards = "Add New Flashcards";
@@ -46,6 +54,11 @@ class Strings{
   static String prefsFlashcardLength = "Amount"; //Strings List
   static String prefsFlashcardData = "Data"; //Strings List
   static String prefsAmountOfCards = "Number"; //Integer
+  static String prefsCardsOrdered = "Ordered"; //Boolean
+
+  //Settings Options
+  static String settingsCardsOrdered = "Shuffle Cards";
+  static String settingsAmountOfCards = "Amount Of Cards (Only when in shuffle)";
 
   //Error Messages
   static String errorImport = "Error Importing Flashcards:\n";
@@ -112,6 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var _tabTitle = Strings.tabTitleMain;
   List<String> _flashcardFiles = ['${Strings.exampleFileName}'];
   List<String> _flashcardLengths = ['${Strings.exampleFileLength}'];
+  bool _flashcardsOrdered = defaultCardsOrdered;
   final myController = TextEditingController();
 
   //
@@ -234,9 +248,23 @@ class _MyHomePageState extends State<MyHomePage> {
       //set variables
       _flashcardFiles = prefs.getStringList(Strings.prefsFlashcardTitles)?? [Strings.exampleFileName];
       _flashcardLengths = prefs.getStringList(Strings.prefsFlashcardLength)?? [Strings.exampleFileLength];
+      _flashcardsOrdered = prefs.getBool(Strings.prefsCardsOrdered) ?? defaultCardsOrdered;
+      amountOfCards = prefs.getInt(Strings.prefsAmountOfCards) ?? defaultCardAmount;
+      cardsOrdered = prefs.getBool(Strings.prefsCardsOrdered) ?? defaultCardsOrdered;
+
     } catch(e) {
       outputErrors(Strings.errorLoadPrefs, e);
     }
+  }
+
+  //
+  // PREFERENCE UPDATES
+  //
+
+  void settingsOrderedCards(orderedCard) async {
+    //set up prefs and save to prefs
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool(Strings.prefsCardsOrdered, orderedCard);
   }
 
   List<String> splitter(String splitText,String splitChar) {
@@ -322,7 +350,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text("     " + Strings.addNewCards,overflow: TextOverflow.ellipsis,style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text(Strings.paddingAsText + Strings.addNewCards,overflow: TextOverflow.ellipsis,style: TextStyle(fontWeight: FontWeight.bold)),
                           Icon(Icons.add),
                         ],
                       ),
@@ -374,7 +402,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   Flexible(
                                     child: Container(
                                       padding: EdgeInsets.only(right: 4.0),
-                                      child: Text('     '+_flashcardFiles[index],overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold)),
+                                      child: Text(Strings.paddingAsText + _flashcardFiles[index],overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold)),
 
                                     ),
                                   ),
@@ -401,11 +429,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
       //Settings Tab
       // TODO: make settings page work with dark/light theme and accent colour choice
+      // TODO: add preferences/settings for all the necessary settings
       Container(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Text(Strings.tabTitleSettings),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(Strings.paddingAsText + Strings.settingsCardsOrdered,style: TextStyle(fontWeight: FontWeight.bold),),
+                Switch(value: _flashcardsOrdered, onChanged: settingsOrderedCards,),
+              ],
+            ),
             Divider(),
           ],
         )
@@ -465,7 +500,6 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
     List<String> cardFront = [""];
     List<String> cardRear = [""];
     double screenWidth = MediaQuery.of(context).size.width;
-    int amountOfCards = defaultCardAmount;
     ScrollController scrollControl = new ScrollController();
 
     //
@@ -489,37 +523,46 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
       debugPrint(error + e.toString());
     }
 
-    void newCard(){
+    void newCard() {
       try {
-        //generate random
-        Random rng = new Random();
-        int randomNumber = 0;
-        int amountOfFlashcards = currentFileData.length ~/ 2 - 1;
+        //cards ordered?
+        if (cardsOrdered){
+          //Cards need to be displayed in an ordered fashion
 
-        randomNumber = rng.nextInt(amountOfFlashcards * 2);
-        cardFront[0] = currentFileData[randomNumber];
-        cardRear[0] = currentFileData[randomNumber + 1];
-        for (var i = 1; i < amountOfCards; i++) {
-          randomNumber = rng.nextInt(amountOfFlashcards) * 2;
-          cardFront.add(currentFileData[randomNumber]);
-          cardRear.add(currentFileData[randomNumber + 1]);
+          //loop through array and add the flashcards
+          cardFront[0] = currentFileData[0];
+          cardRear[0] = currentFileData[1];
+          for (var i = 2; i < currentFileData.length; i++) {
+            //add to front if even and rear if odd
+            if (i % 2 == 0) {
+              cardFront.add(currentFileData[i]);
+            } else {
+              cardRear.add(currentFileData[i]);
+            }
+          }
+        } else {
+          //Cards can be outputted randomly with a limit
+
+          //generate random
+          Random rng = new Random();
+          int randomNumber = 0;
+          int amountOfFlashcards = currentFileData.length ~/ 2 - 1;
+
+          // make random flashcard as next in list
+          randomNumber = rng.nextInt(amountOfFlashcards * 2);
+          cardFront[0] = currentFileData[randomNumber];
+          cardRear[0] = currentFileData[randomNumber + 1];
+          for (var i = 1; i < amountOfCards; i++) {
+            randomNumber = rng.nextInt(amountOfFlashcards) * 2;
+            cardFront.add(currentFileData[randomNumber]);
+            cardRear.add(currentFileData[randomNumber + 1]);
+          }
+          
         }
+
 
       } catch(e) {
         outputErrors(Strings.errorNewCard, e);
-      }
-    }
-
-    void loadPreferences() async {
-      try {
-        //get prefs
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-
-        //set variables
-        amountOfCards = prefs.getInt(Strings.prefsAmountOfCards) ?? defaultCardAmount;
-
-      } catch(e) {
-        outputErrors(Strings.errorLoadPrefs, e);
       }
     }
 
@@ -527,7 +570,6 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
     // LOAD INTERFACE
     //
     newCard();
-    loadPreferences();
     return Scaffold(
       appBar: AppBar(
         title: Text(Strings.tabTitleFlashcards),
@@ -545,8 +587,10 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
                   itemCount: cardFront.length,//currentFileData.length ~/2 -1,
                   scrollDirection: Axis.horizontal,
                   controller: scrollControl,
+                  key: Key("test"),
                   itemBuilder: (BuildContext context, int index) {
                     return FlipCard(
+                      key: UniqueKey(),
                       direction: FlipDirection.HORIZONTAL,
                       speed: 1500,
                       front: InkWell(
