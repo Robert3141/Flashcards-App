@@ -500,7 +500,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
         cardFront[0] = currentFileData[randomNumber];
         cardRear[0] = currentFileData[randomNumber + 1];
         for (var i = 1; i < amountOfCards; i++) {
-          randomNumber = rng.nextInt(amountOfFlashcards * 2);
+          randomNumber = rng.nextInt(amountOfFlashcards) * 2;
           cardFront.add(currentFileData[randomNumber]);
           cardRear.add(currentFileData[randomNumber + 1]);
         }
