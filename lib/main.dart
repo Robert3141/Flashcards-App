@@ -57,7 +57,7 @@ class Strings{
   static String prefsCardsOrdered = "Ordered"; //Boolean
 
   //Settings Options
-  static String settingsCardsOrdered = "Shuffle Cards";
+  static String settingsCardsOrdered = "Order Cards";
   static String settingsAmountOfCards = "Amount Of Cards (Only when in shuffle)";
 
   //Error Messages
@@ -125,7 +125,6 @@ class _MyHomePageState extends State<MyHomePage> {
   var _tabTitle = Strings.tabTitleMain;
   List<String> _flashcardFiles = ['${Strings.exampleFileName}'];
   List<String> _flashcardLengths = ['${Strings.exampleFileLength}'];
-  bool _flashcardsOrdered = defaultCardsOrdered;
   final myController = TextEditingController();
 
   //
@@ -248,10 +247,8 @@ class _MyHomePageState extends State<MyHomePage> {
       //set variables
       _flashcardFiles = prefs.getStringList(Strings.prefsFlashcardTitles)?? [Strings.exampleFileName];
       _flashcardLengths = prefs.getStringList(Strings.prefsFlashcardLength)?? [Strings.exampleFileLength];
-      _flashcardsOrdered = prefs.getBool(Strings.prefsCardsOrdered) ?? defaultCardsOrdered;
       amountOfCards = prefs.getInt(Strings.prefsAmountOfCards) ?? defaultCardAmount;
       cardsOrdered = prefs.getBool(Strings.prefsCardsOrdered) ?? defaultCardsOrdered;
-
     } catch(e) {
       outputErrors(Strings.errorLoadPrefs, e);
     }
@@ -264,8 +261,12 @@ class _MyHomePageState extends State<MyHomePage> {
   void settingsOrderedCards(orderedCard) async {
     //set up prefs and save to prefs
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(Strings.prefsCardsOrdered, !orderedCard);
-    loadFromPreferences();
+    prefs.setBool(Strings.prefsCardsOrdered, orderedCard);
+    cardsOrdered = orderedCard;
+    setState(() {
+      cardsOrdered = orderedCard;
+    });
+
   }
 
   List<String> splitter(String splitText,String splitChar) {
@@ -435,13 +436,21 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(Strings.paddingAsText + Strings.settingsCardsOrdered,style: TextStyle(fontWeight: FontWeight.bold),),
-                Switch(value: _flashcardsOrdered, onChanged: settingsOrderedCards,),
-              ],
+            InkWell(
+              splashColor: Theme.of(context).primaryColor,
+              onTap: (){
+                settingsOrderedCards(!cardsOrdered);
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(Strings.paddingAsText + Strings.settingsCardsOrdered,style: TextStyle(fontWeight: FontWeight.bold),),
+                  Switch(value: cardsOrdered, onChanged: settingsOrderedCards,),
+
+                ],
+              ),
             ),
+
             Divider(),
           ],
         )
