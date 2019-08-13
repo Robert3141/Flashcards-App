@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flip_card/flip_card.dart';
+import 'package:dynamic_theme/dynamic_theme.dart';
 
 Future main() async {
   runApp(new MyApp());
@@ -19,6 +20,8 @@ final cardHeight = 100.0;
 final cardWidth = 0.9;
 final defaultCardAmount = 50;
 final defaultCardsOrdered = false;
+final defaultThemeColor = Colors.blue;
+final defaultBrightness = Brightness.light;
 
 //prefs for flashcards page
 int amountOfCards;
@@ -59,6 +62,8 @@ class Strings{
   //Settings Options
   static String settingsCardsOrdered = "Order Cards";
   static String settingsAmountOfCards = "Amount Of Cards (Only when in shuffle)";
+  static String settingsDarkTheme = "Dark Theme";
+  static String settingsThemeColour = "Theme Colour";
 
   //Error Messages
   static String errorImport = "Error Importing Flashcards:\n";
@@ -87,16 +92,20 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      title: Strings.appName,
-      theme: new ThemeData(
-        //app theme
-        primarySwatch: Colors.blue,
-        brightness: darkThemeEnabled?Brightness.dark:Brightness.light,
+
+    return new DynamicTheme(
+      defaultBrightness: defaultBrightness,
+      data: (brightness) => new ThemeData(
+        primarySwatch: defaultThemeColor,
+        brightness: brightness,
       ),
-      home: new MyHomePage(
-        title: Strings.appName,
-      ),
+      themedWidgetBuilder: (context, theme) {
+        return new MaterialApp(
+          title: Strings.appName,
+          theme: theme,
+          home: new MyHomePage(title: Strings.appName,),
+        );
+      },
     );
   }
 }
@@ -279,6 +288,11 @@ class _MyHomePageState extends State<MyHomePage> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setInt(Strings.prefsAmountOfCards, num.parse(cardAmountInput.toString()));
     }
+  }
+
+  void settingsDarkTheme(darkTheme) async {
+    //set up prefs and save to prefs
+    DynamicTheme.of(context).setBrightness(darkTheme? Brightness.dark : Brightness.light);
   }
 
   List<String> splitter(String splitText,String splitChar) {
@@ -466,9 +480,6 @@ class _MyHomePageState extends State<MyHomePage> {
             //Cards to show
             InkWell(
               splashColor: Theme.of(context).primaryColor,
-              onTap: (){
-
-              },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -489,7 +500,25 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 ],
               ),
-            )
+            ),
+            Divider(),
+            //set brightness
+            InkWell(
+              splashColor: Theme.of(context).primaryColor,
+              onTap: (){
+                settingsDarkTheme(!(Theme.of(context).brightness == Brightness.dark));
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(Strings.paddingAsText + Strings.settingsDarkTheme, style: TextStyle(fontWeight: FontWeight.bold),),
+                  Switch(value: Theme.of(context).brightness == Brightness.dark, onChanged: settingsDarkTheme,),
+                ],
+              ),
+            ),
+            //Divider(),
+            //set theme
+            //InkWell(),
           ],
         )
       ),
