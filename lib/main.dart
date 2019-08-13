@@ -123,9 +123,11 @@ class _MyHomePageState extends State<MyHomePage> {
   //set variables for class
   int _currentTabIndex = 0;
   var _tabTitle = Strings.tabTitleMain;
+  bool _cardsAmountEnabled = defaultCardsOrdered;
   List<String> _flashcardFiles = ['${Strings.exampleFileName}'];
   List<String> _flashcardLengths = ['${Strings.exampleFileLength}'];
   final myController = TextEditingController();
+  final _controllerAmountOfCards = TextEditingController();
 
   //
   // FUNCTIONS:
@@ -248,7 +250,9 @@ class _MyHomePageState extends State<MyHomePage> {
       _flashcardFiles = prefs.getStringList(Strings.prefsFlashcardTitles)?? [Strings.exampleFileName];
       _flashcardLengths = prefs.getStringList(Strings.prefsFlashcardLength)?? [Strings.exampleFileLength];
       amountOfCards = prefs.getInt(Strings.prefsAmountOfCards) ?? defaultCardAmount;
+      _controllerAmountOfCards.text = amountOfCards.toString();
       cardsOrdered = prefs.getBool(Strings.prefsCardsOrdered) ?? defaultCardsOrdered;
+      _cardsAmountEnabled = !cardsOrdered;
     } catch(e) {
       outputErrors(Strings.errorLoadPrefs, e);
     }
@@ -265,8 +269,16 @@ class _MyHomePageState extends State<MyHomePage> {
     cardsOrdered = orderedCard;
     setState(() {
       cardsOrdered = orderedCard;
+      _cardsAmountEnabled = !orderedCard;
     });
+  }
 
+  void settingsCardAmount(cardAmountInput) async {
+    if (num.tryParse(cardAmountInput.toString()) != null){
+      //set up prefs and save to prefs
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setInt(Strings.prefsAmountOfCards, num.parse(cardAmountInput.toString()));
+    }
   }
 
   List<String> splitter(String splitText,String splitChar) {
@@ -436,6 +448,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
+            // Cards Ordered
             InkWell(
               splashColor: Theme.of(context).primaryColor,
               onTap: (){
@@ -444,14 +457,39 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(Strings.paddingAsText + Strings.settingsCardsOrdered,style: TextStyle(fontWeight: FontWeight.bold),),
+                  Text(Strings.paddingAsText + Strings.settingsCardsOrdered, style: TextStyle(fontWeight: FontWeight.bold),),
                   Switch(value: cardsOrdered, onChanged: settingsOrderedCards,),
-
                 ],
               ),
             ),
-
             Divider(),
+            //Cards to show
+            InkWell(
+              splashColor: Theme.of(context).primaryColor,
+              onTap: (){
+
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    Strings.paddingAsText + Strings.settingsAmountOfCards,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Expanded(
+                    child: TextField(
+                      decoration: InputDecoration(contentPadding: EdgeInsets.all(10.0)),
+                      enabled: _cardsAmountEnabled,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: <TextInputFormatter>[WhitelistingTextInputFormatter.digitsOnly],
+                      onChanged: settingsCardAmount,
+                      controller: _controllerAmountOfCards,
+                    ),
+                  ),
+
+                ],
+              ),
+            )
           ],
         )
       ),
