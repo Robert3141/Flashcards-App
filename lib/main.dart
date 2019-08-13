@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
+import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 
 Future main() async {
   runApp(new MyApp());
@@ -51,6 +52,7 @@ class Strings{
   static String editFlashcards = "Edit";
   static String loadFlashcards = "Load";
   static String errorOk = "OK";
+  static String errorCancel = "CANCEL";
 
   //Shared prefs storage names
   static String prefsFlashcardTitles = "Titles"; //Strings List
@@ -63,7 +65,7 @@ class Strings{
   static String settingsCardsOrdered = "Order Cards";
   static String settingsAmountOfCards = "Amount Of Cards (Only when in shuffle)";
   static String settingsDarkTheme = "Dark Theme";
-  static String settingsThemeColour = "Theme Colour";
+  static String settingsThemeColour = "Theme Colour (Only when in light theme)";
 
   //Error Messages
   static String errorImport = "Error Importing Flashcards:\n";
@@ -290,9 +292,41 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void settingsDarkTheme(darkTheme) async {
+  void settingsDarkTheme(darkTheme) {
     //set up prefs and save to prefs
     DynamicTheme.of(context).setBrightness(darkTheme? Brightness.dark : Brightness.light);
+  }
+
+  void settingsThemeColor() {
+    //local var
+    Color _tempColor = Theme.of(context).primaryColor;
+    showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: Text(Strings.settingsThemeColour),
+          content: MaterialColorPicker(
+            selectedColor: Theme.of(context).primaryColor,
+            allowShades: false,
+            onMainColorChange: (newColor) => _tempColor = Color(newColor.value),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(Strings.errorCancel),
+              onPressed: Navigator.of(context).pop,
+            ),
+            FlatButton(
+              child: Text(Strings.errorOk),
+              onPressed: (){
+                debugPrint(_tempColor.toString());
+                DynamicTheme.of(context).setThemeData(new ThemeData(primaryColor: _tempColor,accentColor: _tempColor));
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      }
+    );
   }
 
   List<String> splitter(String splitText,String splitChar) {
@@ -506,7 +540,7 @@ class _MyHomePageState extends State<MyHomePage> {
             InkWell(
               splashColor: Theme.of(context).primaryColor,
               onTap: (){
-                settingsDarkTheme(!(Theme.of(context).brightness == Brightness.dark));
+                settingsDarkTheme(Theme.of(context).brightness == Brightness.light);
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -516,9 +550,21 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
-            //Divider(),
+            Divider(),
             //set theme
-            //InkWell(),
+            InkWell(
+              splashColor: Theme.of(context).primaryColor,
+              onTap: (){
+                settingsThemeColor();
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(Strings.paddingAsText + Strings.settingsThemeColour, style: TextStyle(fontWeight: FontWeight.bold),),
+                  CircleAvatar(backgroundColor: Theme.of(context).accentColor,),
+                ],
+              ),
+            ),
           ],
         )
       ),
