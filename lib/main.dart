@@ -224,9 +224,16 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void clickEditFlashcards(int fileNumber) {
+  void clickEditFlashcards(int _fileNumber) async {
     // TODO: allow user to edit their flashcards
     try{
+      //Get file from shared prefs
+      SharedPreferences _prefs = await SharedPreferences.getInstance();
+      List<String> _flashcardData = _prefs.getStringList(Strings.prefsFlashcardData) ?? [Strings.exampleFileData];
+      List<String> _currentFlashcards = splitter(_flashcardData[_fileNumber], "&");
+
+      //load edit page
+      //Navigator.push(context, _editCardsPage(_currentFlashcards));
 
     } catch(e){
       //in case of error output error
