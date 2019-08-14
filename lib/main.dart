@@ -506,7 +506,14 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(Strings.paddingAsText + Strings.settingsCardsOrdered, style: TextStyle(fontWeight: FontWeight.bold),),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(padding: EdgeInsets.only(left: defaultPadding),),
+                      Icon(Icons.reorder),
+                      Text(Strings.paddingAsText + Strings.settingsCardsOrdered, style: TextStyle(fontWeight: FontWeight.bold),),
+                    ],
+                  ),
                   Switch(value: cardsOrdered, onChanged: settingsOrderedCards,),
                 ],
               ),
@@ -518,10 +525,18 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(
-                    Strings.paddingAsText + Strings.settingsAmountOfCards,
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(padding: EdgeInsets.only(left: defaultPadding),),
+                      Icon(Icons.shuffle),
+                      Text(
+                        Strings.paddingAsText + Strings.settingsAmountOfCards,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
+
                   Expanded(
                     child: Padding(
                       padding: EdgeInsets.all(defaultPadding),
@@ -548,7 +563,18 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(Strings.paddingAsText + Strings.settingsDarkTheme, style: TextStyle(fontWeight: FontWeight.bold),),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(padding: EdgeInsets.only(left: defaultPadding),),
+                      Icon(Icons.brightness_3),
+                      Text(
+                        Strings.paddingAsText + Strings.settingsDarkTheme,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+
                   Switch(value: Theme.of(context).brightness == Brightness.dark, onChanged: settingsDarkTheme,),
                 ],
               ),
@@ -563,7 +589,17 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(Strings.paddingAsText + Strings.settingsThemeColour, style: TextStyle(fontWeight: FontWeight.bold),),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(padding: EdgeInsets.only(left: defaultPadding),),
+                      Icon(Icons.color_lens),
+                      Text(
+                        Strings.paddingAsText + Strings.settingsThemeColour,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
                   CircleAvatar(backgroundColor: Theme.of(context).accentColor,),
                 ],
               ),
