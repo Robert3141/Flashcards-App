@@ -36,9 +36,8 @@ class Strings{
   static String appName = "Flashcards";
   static String tabTitleMain = "Main";
   static String tabTitleSettings = "Settings";
-
-  //App interface flashcards
   static String tabTitleFlashcards = "Flashcards";
+  static String tabTitleEditCards = "Edit Cards";
   static String paddingAsText = "     ";
 
   //Default cards
@@ -232,7 +231,7 @@ class _MyHomePageState extends State<MyHomePage> {
       List<String> _currentFlashcards = splitter(_flashcardData[_fileNumber], "&");
 
       //load edit page
-      //Navigator.push(context, _editCardsPage(_currentFlashcards));
+      Navigator.push(context, _EditCardsPage(_currentFlashcards));
 
     } catch(e){
       //in case of error output error
@@ -303,7 +302,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void settingsThemeColor() {
     //local var
-    Color _tempColor = Theme.of(context).primaryColor;
+    Color _oldTheme = Theme.of(context).primaryColor;
+    Brightness _oldBrightness = Theme.of(context).brightness;
     showDialog(
       context: context,
       builder: (_) {
@@ -312,20 +312,27 @@ class _MyHomePageState extends State<MyHomePage> {
           content: MaterialColorPicker(
             selectedColor: Theme.of(context).primaryColor,
             allowShades: true,
-            onColorChange: (newColor) => _tempColor = Color(newColor.value),
-            onMainColorChange: (newColor) => _tempColor = Color(newColor.value),
+            onColorChange: (newColor) {
+              DynamicTheme.of(context).setBrightness(Brightness.light);
+              DynamicTheme.of(context).setThemeData(new ThemeData(primaryColor: Color(newColor.value),accentColor: Color(newColor.value)));
+            },
+            onMainColorChange: (newColor) {
+              DynamicTheme.of(context).setBrightness(Brightness.light);
+              DynamicTheme.of(context).setThemeData(new ThemeData(primaryColor: Color(newColor.value),accentColor: Color(newColor.value)));
+            },
           ),
           actions: <Widget>[
             FlatButton(
               child: Text(Strings.errorCancel),
-              onPressed: Navigator.of(context).pop,
+              onPressed: (){
+                DynamicTheme.of(context).setThemeData(new ThemeData(primaryColor: _oldTheme, accentColor: _oldTheme));
+                DynamicTheme.of(context).setBrightness(_oldBrightness);
+                Navigator.of(context).pop();
+              },
             ),
             FlatButton(
               child: Text(Strings.errorOk),
               onPressed: (){
-                debugPrint(_tempColor.toString());
-                DynamicTheme.of(context).setBrightness(Brightness.light);
-                DynamicTheme.of(context).setThemeData(new ThemeData(primaryColor: _tempColor,accentColor: _tempColor));
                 Navigator.of(context).pop();
               },
             ),
@@ -828,6 +835,33 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
           ),
         ),
 
+      ),
+    );
+  });
+}
+
+class _EditCardsPage extends MaterialPageRoute<Null> {
+
+  _EditCardsPage(List<String> _currentFileData) : super(builder: (BuildContext context){
+
+    //
+    // LOAD INTERFACE
+    //
+    return Scaffold(
+      appBar: AppBar(
+        title:Text(Strings.tabTitleEditCards),
+        elevation: 1.0,
+      ),
+      body: Builder(
+        builder: (BuildContext context) => Container(
+          color: Theme.of(context).primaryColor,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+
+            ],
+          ),
+        ),
       ),
     );
   });
