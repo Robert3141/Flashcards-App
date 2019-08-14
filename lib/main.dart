@@ -19,6 +19,7 @@ Future main() async {
 // Default settings
 final cardHeight = 100.0;
 final cardWidth = 0.9;
+final defaultPadding = 12.0;
 final defaultCardAmount = 50;
 final defaultCardsOrdered = false;
 final defaultThemeColor = Colors.blue;
@@ -522,16 +523,18 @@ class _MyHomePageState extends State<MyHomePage> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(contentPadding: EdgeInsets.all(10.0)),
-                      enabled: _cardsAmountEnabled,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[WhitelistingTextInputFormatter.digitsOnly],
-                      onChanged: settingsCardAmount,
-                      controller: _controllerAmountOfCards,
+                    child: Padding(
+                      padding: EdgeInsets.all(defaultPadding),
+                      child: TextField(
+                        decoration: InputDecoration(contentPadding: EdgeInsets.all(defaultPadding)),
+                        enabled: _cardsAmountEnabled,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[WhitelistingTextInputFormatter.digitsOnly],
+                        onChanged: settingsCardAmount,
+                        controller: _controllerAmountOfCards,
+                      ),
                     ),
                   ),
-
                 ],
               ),
             ),
@@ -726,7 +729,10 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                Text(cardFront[index]),
+                                Padding(
+                                  padding: EdgeInsets.all(defaultPadding),
+                                  child: Text(cardFront[index]),
+                                ),
                               ],
                             ),
                           ),
@@ -742,7 +748,10 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                Text(cardRear[index]),
+                                Padding(
+                                  padding: EdgeInsets.all(defaultPadding),
+                                  child: Text(cardRear[index]),
+                                ),
                               ],
                             ),
                           ),
