@@ -135,20 +135,19 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _cardsAmountEnabled = defaultCardsOrdered;
   List<String> _flashcardFiles = ['${Strings.exampleFileName}'];
   List<String> _flashcardLengths = ['${Strings.exampleFileLength}'];
-  final myController = TextEditingController();
   final _controllerAmountOfCards = TextEditingController();
 
   //
   // FUNCTIONS:
   //
 
-  void outputErrors(String error,Element e){
+  void outputErrors(String _error,Element _e){
     setState(() {
       showDialog<String>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          title: Text(error),
-          content: Text(e.toString()),
+          title: Text(_error),
+          content: Text(_e.toString()),
           actions: <Widget>[
             FlatButton(
               child: Text(Strings.errorOk),
@@ -166,41 +165,41 @@ class _MyHomePageState extends State<MyHomePage> {
       File _selectedFile = await FilePicker.getFile(type: FileType.CUSTOM, fileExtension: 'txt');
 
       //get text from file
-      String fileText = await _selectedFile.readAsString();
+      String _fileText = await _selectedFile.readAsString();
 
       //get name of text file from file path
-      String fileName = splitter(_selectedFile.path, "/").last;
+      String _fileName = splitter(_selectedFile.path, "/").last;
 
       //get amount of flashcards from file
-      int fileCards = splitter(fileText, "&").length;
-      fileCards = fileCards ~/ 2;
+      int _fileCards = splitter(_fileText, "&").length;
+      _fileCards = _fileCards ~/ 2;
 
       //get SharedPrefs file
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      List<String> flashcardTitles = prefs.getStringList(Strings.prefsFlashcardTitles) ?? [fileName];
-      List<String> flashcardLengths = prefs.getStringList(Strings.prefsFlashcardLength) ?? [fileCards.toString()];
-      List<String> flashcardData = prefs.getStringList(Strings.prefsFlashcardData) ?? [fileText];
+      SharedPreferences _prefs = await SharedPreferences.getInstance();
+      List<String> _flashcardTitles = _prefs.getStringList(Strings.prefsFlashcardTitles) ?? [_fileName];
+      List<String> _flashcardLengths = _prefs.getStringList(Strings.prefsFlashcardLength) ?? [_fileCards.toString()];
+      List<String> _flashcardData = _prefs.getStringList(Strings.prefsFlashcardData) ?? [_fileText];
 
       //add file to prefs
       // flashcardData
-      if (flashcardData[0] != fileText){
-        flashcardData.add(fileText);
+      if (_flashcardData[0] != _fileText){
+        _flashcardData.add(_fileText);
       }
-      await prefs.setStringList(Strings.prefsFlashcardData,flashcardData);
+      await _prefs.setStringList(Strings.prefsFlashcardData,_flashcardData);
       // flashcardTitles
-      if (flashcardTitles[0] != fileName){
-        flashcardTitles.add(fileName);
+      if (_flashcardTitles[0] != _fileName){
+        _flashcardTitles.add(_fileName);
       }
-      await prefs.setStringList(Strings.prefsFlashcardTitles,flashcardTitles);
+      await _prefs.setStringList(Strings.prefsFlashcardTitles,_flashcardTitles);
       //flashcardLengths
-      if (flashcardLengths[0] != fileCards.toString()) {
-        flashcardLengths.add('$fileCards');
+      if (_flashcardLengths[0] != _fileCards.toString()) {
+        _flashcardLengths.add('$_fileCards');
       }
-      await prefs.setStringList(Strings.prefsFlashcardLength, flashcardLengths);
+      await _prefs.setStringList(Strings.prefsFlashcardLength, _flashcardLengths);
 
       setState(() {
-        _flashcardFiles = flashcardTitles;
-        _flashcardLengths = flashcardLengths;
+        _flashcardFiles = _flashcardTitles;
+        _flashcardLengths = _flashcardLengths;
 
         Navigator.pop(context);
       });
@@ -241,15 +240,15 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void clickLoadFlashcards(int fileNumber) async {
+  void clickLoadFlashcards(int _fileNumber) async {
     try{
       //Get file from shared prefs
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      List<String> flashcardsData = prefs.getStringList(Strings.prefsFlashcardData) ?? [Strings.exampleFileData];
-      List<String> currentFlashcards = splitter(flashcardsData[fileNumber], "&");
+      SharedPreferences _prefs = await SharedPreferences.getInstance();
+      List<String> _flashcardsData = _prefs.getStringList(Strings.prefsFlashcardData) ?? [Strings.exampleFileData];
+      List<String> _currentFlashcards = splitter(_flashcardsData[_fileNumber], "&");
 
       //load flashcards page
-      Navigator.push(context, _FlashcardsPage(currentFlashcards));
+      Navigator.push(context, _FlashcardsPage(_currentFlashcards));
 
     } catch(e){
       //in case of error output error
@@ -260,14 +259,14 @@ class _MyHomePageState extends State<MyHomePage> {
   void loadFromPreferences() async {
     try {
       //variables
-      SharedPreferences prefs = await SharedPreferences.getInstance();
+      SharedPreferences _prefs = await SharedPreferences.getInstance();
 
       //set variables
-      _flashcardFiles = prefs.getStringList(Strings.prefsFlashcardTitles)?? [Strings.exampleFileName];
-      _flashcardLengths = prefs.getStringList(Strings.prefsFlashcardLength)?? [Strings.exampleFileLength];
-      amountOfCards = prefs.getInt(Strings.prefsAmountOfCards) ?? defaultCardAmount;
+      _flashcardFiles = _prefs.getStringList(Strings.prefsFlashcardTitles)?? [Strings.exampleFileName];
+      _flashcardLengths = _prefs.getStringList(Strings.prefsFlashcardLength)?? [Strings.exampleFileLength];
+      amountOfCards = _prefs.getInt(Strings.prefsAmountOfCards) ?? defaultCardAmount;
       _controllerAmountOfCards.text = amountOfCards.toString();
-      cardsOrdered = prefs.getBool(Strings.prefsCardsOrdered) ?? defaultCardsOrdered;
+      cardsOrdered = _prefs.getBool(Strings.prefsCardsOrdered) ?? defaultCardsOrdered;
       _cardsAmountEnabled = !cardsOrdered;
     } catch(e) {
       outputErrors(Strings.errorLoadPrefs, e);
@@ -278,28 +277,28 @@ class _MyHomePageState extends State<MyHomePage> {
   // PREFERENCE UPDATES
   //
 
-  void settingsOrderedCards(orderedCard) async {
+  void settingsOrderedCards(_orderedCard) async {
     //set up prefs and save to prefs
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(Strings.prefsCardsOrdered, orderedCard);
-    cardsOrdered = orderedCard;
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    _prefs.setBool(Strings.prefsCardsOrdered, _orderedCard);
+    cardsOrdered = _orderedCard;
     setState(() {
-      cardsOrdered = orderedCard;
-      _cardsAmountEnabled = !orderedCard;
+      cardsOrdered = _orderedCard;
+      _cardsAmountEnabled = !_orderedCard;
     });
   }
 
-  void settingsCardAmount(cardAmountInput) async {
-    if (num.tryParse(cardAmountInput.toString()) != null){
+  void settingsCardAmount(_cardAmountInput) async {
+    if (num.tryParse(_cardAmountInput.toString()) != null){
       //set up prefs and save to prefs
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setInt(Strings.prefsAmountOfCards, num.parse(cardAmountInput.toString()));
+      SharedPreferences _prefs = await SharedPreferences.getInstance();
+      _prefs.setInt(Strings.prefsAmountOfCards, num.parse(_cardAmountInput.toString()));
     }
   }
 
-  void settingsDarkTheme(darkTheme) {
+  void settingsDarkTheme(_darkTheme) {
     //set up prefs and save to prefs
-    DynamicTheme.of(context).setBrightness(darkTheme? Brightness.dark : Brightness.light);
+    DynamicTheme.of(context).setBrightness(_darkTheme? Brightness.dark : Brightness.light);
   }
 
   void settingsThemeColor() {
@@ -336,15 +335,15 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  List<String> splitter(String splitText,String splitChar) {
+  List<String> splitter(String _splitText,String _splitChar) {
     //local variables
     List<String> _fileList = [""];
     try {
       var _tempString = "";
       bool _firstTime = true;
 
-      for (var i = 0; i < splitText.length; i++) {
-        if (splitText[i] == splitChar){
+      for (var i = 0; i < _splitText.length; i++) {
+        if (_splitText[i] == _splitChar){
           if (_tempString != null){
             if(_firstTime){
               _fileList[0] = _tempString;
@@ -356,9 +355,9 @@ class _MyHomePageState extends State<MyHomePage> {
           _tempString = null;
         } else {
           if(_tempString == null){
-            _tempString = splitText[i];
+            _tempString = _splitText[i];
           } else {
-            _tempString += splitText[i];
+            _tempString += _splitText[i];
           }
         }
       }
@@ -659,24 +658,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class _FlashcardsPage extends MaterialPageRoute<Null> {
 
-  _FlashcardsPage(List<String> currentFileData) : super(builder: (BuildContext context){
+  _FlashcardsPage(List<String> _currentFileData) : super(builder: (BuildContext context){
 
     //set variables for class
-    List<String> cardFront = [""];
-    List<String> cardRear = [""];
-    double screenWidth = MediaQuery.of(context).size.width;
-    ScrollController scrollControl = new ScrollController();
+    List<String> _cardFront = [""];
+    List<String> _cardRear = [""];
+    double _screenWidth = MediaQuery.of(context).size.width;
+    ScrollController _scrollControl = new ScrollController();
 
     //
     // FUNCTIONS
     //
 
-    void outputErrors(String error,e){
+    void outputErrors(String _error,_e){
       /*showDialog<String>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          title: Text(error),
-          content: Text(e.toString()),
+          title: Text(_error),
+          content: Text(_e.toString()),
           actions: <Widget>[
             FlatButton(
               child: Text(Strings.errorOk),
@@ -685,7 +684,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
           ],
         ),
       );*/ // NOT WORKING because it's stateless
-      debugPrint(error + e.toString());
+      debugPrint(_error + _e.toString());
     }
 
     void newCard() {
@@ -695,32 +694,32 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
           //Cards need to be displayed in an ordered fashion
 
           //loop through array and add the flashcards
-          cardFront[0] = currentFileData[0];
-          cardRear[0] = currentFileData[1];
-          for (var i = 2; i < currentFileData.length; i++) {
+          _cardFront[0] = _currentFileData[0];
+          _cardRear[0] = _currentFileData[1];
+          for (var i = 2; i < _currentFileData.length; i++) {
             //add to front if even and rear if odd
             if (i % 2 == 0) {
-              cardFront.add(currentFileData[i]);
+              _cardFront.add(_currentFileData[i]);
             } else {
-              cardRear.add(currentFileData[i]);
+              _cardRear.add(_currentFileData[i]);
             }
           }
         } else {
           //Cards can be outputted randomly with a limit
 
           //generate random
-          Random rng = new Random();
-          int randomNumber = 0;
-          int amountOfFlashcards = currentFileData.length ~/ 2 - 1;
+          Random _rng = new Random();
+          int _randomNumber = 0;
+          int _amountOfFlashcards = _currentFileData.length ~/ 2 - 1;
 
           // make random flashcard as next in list
-          randomNumber = rng.nextInt(amountOfFlashcards * 2);
-          cardFront[0] = currentFileData[randomNumber];
-          cardRear[0] = currentFileData[randomNumber + 1];
+          _randomNumber = _rng.nextInt(_amountOfFlashcards * 2);
+          _cardFront[0] = _currentFileData[_randomNumber];
+          _cardRear[0] = _currentFileData[_randomNumber + 1];
           for (var i = 1; i < amountOfCards; i++) {
-            randomNumber = rng.nextInt(amountOfFlashcards) * 2;
-            cardFront.add(currentFileData[randomNumber]);
-            cardRear.add(currentFileData[randomNumber + 1]);
+            _randomNumber = _rng.nextInt(_amountOfFlashcards) * 2;
+            _cardFront.add(_currentFileData[_randomNumber]);
+            _cardRear.add(_currentFileData[_randomNumber + 1]);
           }
           
         }
@@ -749,9 +748,9 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
               Expanded(
                 flex: 4,
                 child: ListView.builder(
-                  itemCount: cardFront.length,//currentFileData.length ~/2 -1,
+                  itemCount: _cardFront.length,//currentFileData.length ~/2 -1,
                   scrollDirection: Axis.horizontal,
-                  controller: scrollControl,
+                  controller: _scrollControl,
                   key: Key("test"),
                   itemBuilder: (BuildContext context, int index) {
                     return FlipCard(
@@ -761,7 +760,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
                       front: InkWell(
                         child: Card(
                           child: Container(
-                            width: screenWidth * cardWidth,
+                            width: _screenWidth * cardWidth,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.all(Radius.circular(8.0))
                             ),
@@ -770,7 +769,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
                               children: <Widget>[
                                 Padding(
                                   padding: EdgeInsets.all(defaultPadding),
-                                  child: Text(cardFront[index]),
+                                  child: Text(_cardFront[index]),
                                 ),
                               ],
                             ),
@@ -780,7 +779,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
                       back: InkWell(
                         child: Card(
                           child: Container(
-                            width: screenWidth * cardWidth,
+                            width: _screenWidth * cardWidth,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.all(Radius.circular(8.0))
                             ),
@@ -789,7 +788,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
                               children: <Widget>[
                                 Padding(
                                   padding: EdgeInsets.all(defaultPadding),
-                                  child: Text(cardRear[index]),
+                                  child: Text(_cardRear[index]),
                                 ),
                               ],
                             ),
