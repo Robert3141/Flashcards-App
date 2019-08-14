@@ -90,9 +90,6 @@ class MyApp extends StatefulWidget {
 
 
 class _MyAppState extends State<MyApp> {
-
-  bool darkThemeEnabled = false;
-
   @override
   Widget build(BuildContext context) {
 
@@ -308,7 +305,8 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text(Strings.settingsThemeColour),
           content: MaterialColorPicker(
             selectedColor: Theme.of(context).primaryColor,
-            allowShades: false,
+            allowShades: true,
+            onColorChange: (newColor) => _tempColor = Color(newColor.value),
             onMainColorChange: (newColor) => _tempColor = Color(newColor.value),
           ),
           actions: <Widget>[
@@ -320,6 +318,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text(Strings.errorOk),
               onPressed: (){
                 debugPrint(_tempColor.toString());
+                DynamicTheme.of(context).setBrightness(Brightness.light);
                 DynamicTheme.of(context).setThemeData(new ThemeData(primaryColor: _tempColor,accentColor: _tempColor));
                 Navigator.of(context).pop();
               },
@@ -491,8 +490,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
 
       //Settings Tab
-      // TODO: make settings page work with dark/light theme and accent colour choice
-      // TODO: add preferences/settings for all the necessary settings
       Container(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -617,17 +614,16 @@ class _MyHomePageState extends State<MyHomePage> {
     final bottomNavBar = BottomNavigationBar(
       currentIndex: _currentTabIndex,
       type: BottomNavigationBarType.fixed,
-      items: const <BottomNavigationBarItem>[
-        // TODO: work out why nav bar item titles don't accept Strings.tabTitle...
+      items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.content_copy),
-            title: Text('Flashcards'),
+            title: Text(Strings.tabTitleFlashcards),
 
           ),
 
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
-            title: Text('Settings'),
+            title: Text(Strings.tabTitleSettings),
           ),
         ],
       onTap: (int index){
