@@ -48,6 +48,7 @@ class Strings{
 
   //Dialog Options
   static String importFlashcards = "Import File";
+  static String openFlashcardsFile = "Open File";
   static String createFlashcards = "Create New";
   static String editFlashcards = "Edit";
   static String loadFlashcards = "Load";
@@ -102,6 +103,10 @@ class _MyAppState extends State<MyApp> {
         return new MaterialApp(
           title: Strings.appName,
           theme: theme,
+          darkTheme: new ThemeData(
+            primarySwatch: defaultThemeColor,
+            brightness: Brightness.dark,
+          ),
           home: new MyHomePage(title: Strings.appName,),
         );
       },
@@ -210,7 +215,24 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void clickOpenFlashcards() async {
+    try {
+      //user file prompt:
+      File _selectedFile = await FilePicker.getFile(type: FileType.CUSTOM, fileExtension: 'txt');
 
+      //get text from file
+      String _fileText = await _selectedFile.readAsString();
+
+      //get list from file
+      List<String> _currentFlashcards = splitter(_fileText, "&");
+
+      //load flashcards page
+      Navigator.push(context, _FlashcardsPage(_currentFlashcards));
+
+    } catch(e) {
+      outputErrors(Strings.errorLoad, e);
+    }
+  }
 
   void clickCreateFlashcards() {
     // TODO: allow user to create flashcard set from within the app
@@ -302,8 +324,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void settingsThemeColor() {
     //local var
-    Color _oldTheme = Theme.of(context).primaryColor;
-    Brightness _oldBrightness = Theme.of(context).brightness;
+    Color _tempColor = Theme.of(context).primaryColor;
     showDialog(
       context: context,
       builder: (_) {
@@ -313,26 +334,25 @@ class _MyHomePageState extends State<MyHomePage> {
             selectedColor: Theme.of(context).primaryColor,
             allowShades: true,
             onColorChange: (newColor) {
-              DynamicTheme.of(context).setBrightness(Brightness.light);
-              DynamicTheme.of(context).setThemeData(new ThemeData(primaryColor: Color(newColor.value),accentColor: Color(newColor.value)));
+              _tempColor = Color(newColor.value);
             },
+
             onMainColorChange: (newColor) {
-              DynamicTheme.of(context).setBrightness(Brightness.light);
-              DynamicTheme.of(context).setThemeData(new ThemeData(primaryColor: Color(newColor.value),accentColor: Color(newColor.value)));
+              _tempColor = Color(newColor.value);
             },
           ),
           actions: <Widget>[
             FlatButton(
               child: Text(Strings.errorCancel),
               onPressed: (){
-                DynamicTheme.of(context).setThemeData(new ThemeData(primaryColor: _oldTheme, accentColor: _oldTheme));
-                DynamicTheme.of(context).setBrightness(_oldBrightness);
                 Navigator.of(context).pop();
               },
             ),
             FlatButton(
               child: Text(Strings.errorOk),
               onPressed: (){
+                DynamicTheme.of(context).setBrightness(Brightness.light);
+                DynamicTheme.of(context).setThemeData(new ThemeData(primaryColor: _tempColor, accentColor: _tempColor));
                 Navigator.of(context).pop();
               },
             ),
@@ -408,6 +428,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                   title: Text(Strings.importFlashcards),
                                   onTap: (){
                                     clickImportFlashcards();
+                                  },
+                                ),
+                                ListTile(
+                                  leading: Icon(Icons.library_books),
+                                  title: Text(Strings.openFlashcardsFile),
+                                  onTap: (){
+                                    clickOpenFlashcards();
                                   },
                                 ),
                                 ListTile(
