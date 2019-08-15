@@ -500,7 +500,6 @@ class _MyHomePageState extends State<MyHomePage> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-
                                   Flexible(
                                     child: Container(
                                       padding: EdgeInsets.only(right: 4.0),
@@ -508,8 +507,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
                                     ),
                                   ),
-
-
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: <Widget>[
@@ -870,6 +867,17 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
 class _EditCardsPage extends MaterialPageRoute<Null> {
 
   _EditCardsPage(List<String> _currentFileData) : super(builder: (BuildContext context){
+    // LOCAL VARS
+    final _controllerFront = TextEditingController();
+    final _controllerRear = TextEditingController();
+
+    void _cardFrontChanged(String _newCard) {
+
+    }
+
+    void _cardRearChanged(String _newCard) {
+
+    }
 
     //
     // LOAD INTERFACE
@@ -883,9 +891,64 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
         builder: (BuildContext context) => Container(
           color: Theme.of(context).primaryColor,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _currentFileData.length ~/ 2,
+                  itemBuilder: (BuildContext context, int index){
+                    return Card(
+                      child: Container(
+                        height: cardHeight,
+                        child: InkWell(
+                          splashColor: Theme.of(context).primaryColor,
+                          onTap: (){
+                            //set text of dialog
+                            _controllerFront.text = _currentFileData[index * 2];
+                            _controllerRear.text = _currentFileData[index * 2 + 1];
 
+                            //open cards dialog
+                            showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => SimpleDialog(
+                                title: Text("Card no. " + (index + 1).toString()),
+                                children: <Widget>[
+                                    Padding(
+                                      padding: EdgeInsets.all(defaultPadding),
+                                      child: TextField(
+                                        decoration: InputDecoration(hintText: "Front of card"),
+                                        onChanged: _cardFrontChanged,
+                                        controller: _controllerFront,
+                                      ),
+                                    ),
+                                    Divider(),
+                                    Padding(
+                                      padding: EdgeInsets.all(defaultPadding),
+                                      child: TextField(
+                                        decoration: InputDecoration(hintText: "Rear of card"),
+                                        onChanged: _cardRearChanged,
+                                        controller: _controllerRear,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            );
+
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(Strings.paddingAsText + _currentFileData[index * 2], overflow: TextOverflow.ellipsis,),
+                              Text(_currentFileData[index * 2 + 1] + Strings.paddingAsText, overflow: TextOverflow.ellipsis,),
+                              //Text(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              )
             ],
           ),
         ),
@@ -893,3 +956,29 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
     );
   });
 }
+
+/*class EditCardsPopup extends StatefulWidget {
+  EditCardsPopup({
+    Key key,
+    int index,
+    List<String> flashcardFile,
+}) : super (key: key);
+
+  @override
+  _EditCardsPopupState createState() => new _EditCardsPopupState();
+}
+
+class _EditCardsPopupState extends State<EditCardsPopup> {
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Builder(builder: (BuildContext context) => SimpleDialog(
+      title: Text('Edit cards no.'),
+    ));
+  }
+}*/
