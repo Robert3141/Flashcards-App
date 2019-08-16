@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
@@ -127,6 +128,7 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
+
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
@@ -203,21 +205,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
       //add file to prefs
       // flashcardData
-      if (_flashcardData[0] != _fileText){
+      if (_flashcardData != null){
         _flashcardData.add(_fileText);
       } else {
         _flashcardData = [_fileText];
       }
       await _prefs.setStringList(Strings.prefsFlashcardData,_flashcardData);
       // flashcardTitles
-      if (_flashcardTitles[0] != _fileName){
+      if (_flashcardTitles != null){
         _flashcardTitles.add(_fileName);
       } else {
         _flashcardTitles = [_fileName];
       }
       await _prefs.setStringList(Strings.prefsFlashcardTitles,_flashcardTitles);
       //flashcardLengths
-      if (_flashcardLengths[0] != _fileCards.toString()) {
+      if (_flashcardLengths != null) {
         _flashcardLengths.add('$_fileCards');
       } else {
         _flashcardLengths = [_fileCards.toString()];
@@ -268,7 +270,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       //add file to sharedPrefs
       // flashcardData
-      if (_flashcardsData[0] != null) {
+      if (_flashcardsData != null) {
         _flashcardsData.add(Strings.exampleFileData);
         _newFileNumber = _flashcardsData.length - 1;
       } else {
@@ -276,14 +278,14 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       await _prefs.setStringList(Strings.prefsFlashcardData, _flashcardsData);
       // flashcardLengths
-      if (_flashcardLengths[0] != null) {
+      if (_flashcardLengths != null) {
         _flashcardLengths.add(Strings.exampleFileLength);
       } else {
         _flashcardLengths = [Strings.exampleFileLength];
       }
       await _prefs.setStringList(Strings.prefsFlashcardLength, _flashcardLengths);
       //flashcardTitle
-      if (_flashcardTitle[0] != null) {
+      if (_flashcardTitle != null) {
         _flashcardTitle.add(Strings.newFileName);
       } else {
         _flashcardTitle = [Strings.newFileName];
@@ -370,6 +372,12 @@ class _MyHomePageState extends State<MyHomePage> {
       //remove number
       _flashcardLengths.removeAt(_fileNumber);
       _prefs.setStringList(Strings.prefsFlashcardLength, _flashcardLengths);
+
+      //reload interface
+      Navigator.pop(context);
+      setState(() {
+
+      });
     }
 
   }
