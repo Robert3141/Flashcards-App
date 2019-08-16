@@ -145,7 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // FUNCTIONS:
   //
 
-  void outputErrors(String _error,Element _e){
+  void outputErrors(String _error,_e){
     setState(() {
       showDialog<String>(
         context: context,
@@ -249,11 +249,20 @@ class _MyHomePageState extends State<MyHomePage> {
     try{
       //Get file from shared prefs
       SharedPreferences _prefs = await SharedPreferences.getInstance();
-      List<String> _flashcardData = _prefs.getStringList(Strings.prefsFlashcardData) ?? [Strings.exampleFileData];
+      List<String> _flashcardData = _prefs.getStringList(Strings.prefsFlashcardData);
+
+      //add example file to shared prefs
+      if (_flashcardData == null) {
+        debugPrint("YAY");
+        _flashcardData = [Strings.exampleFileData];
+        _prefs.setStringList(Strings.prefsFlashcardData, [Strings.exampleFileData]);
+      }
+
+      //split from file
       List<String> _currentFlashcards = splitter(_flashcardData[_fileNumber], "&");
 
       //load edit page
-      Navigator.push(context, _EditCardsPage(_currentFlashcards));
+      Navigator.push(context, _EditCardsPage(_currentFlashcards, _fileNumber));
 
     } catch(e){
       //in case of error output error
@@ -866,17 +875,39 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
 
 class _EditCardsPage extends MaterialPageRoute<Null> {
 
-  _EditCardsPage(List<String> _currentFileData) : super(builder: (BuildContext context){
+  _EditCardsPage(List<String> _currentFileData, int _currentFileNo) : super(builder: (BuildContext context){
     // LOCAL VARS
     final _controllerFront = TextEditingController();
     final _controllerRear = TextEditingController();
 
-    void _cardFrontChanged(String _newCard) {
+    void _cardChanged(String _newCard, int _index, bool _frontOfCard) async {
+      //local vars
+      String _currentFileDataString = "" ;
 
-    }
+      //update current card
+      if(_frontOfCard){
+        _currentFileData[_index * 2] = _newCard;
+      } else {
+        _currentFileData[_index * 2 + 1] = _newCard;
+      }
 
-    void _cardRearChanged(String _newCard) {
 
+      //compress string to list
+      for (var i = 0; i < _currentFileData.length; i++) {
+        _currentFileDataString += _currentFileData[i] + "&";
+      }
+
+      //load prefs
+      SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+      //get string list
+      List<String> _currentFlashcardData = _prefs.getStringList(Strings.prefsFlashcardData);
+
+      //update string list
+      _currentFlashcardData[_currentFileNo] = _currentFileDataString;
+
+      //save to prefs
+      _prefs.setStringList(Strings.prefsFlashcardData, _currentFlashcardData);
     }
 
     //
@@ -917,7 +948,9 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
                                       padding: EdgeInsets.all(defaultPadding),
                                       child: TextField(
                                         decoration: InputDecoration(hintText: "Front of card"),
-                                        onChanged: _cardFrontChanged,
+                                        onChanged: (_newCard){
+                                          _cardChanged(_newCard, index, true);
+                                        },
                                         controller: _controllerFront,
                                       ),
                                     ),
@@ -926,7 +959,9 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
                                       padding: EdgeInsets.all(defaultPadding),
                                       child: TextField(
                                         decoration: InputDecoration(hintText: "Rear of card"),
-                                        onChanged: _cardRearChanged,
+                                        onChanged: (_newCard){
+                                          _cardChanged(_newCard, index, false);
+                                        },
                                         controller: _controllerRear,
                                       ),
                                     ),
