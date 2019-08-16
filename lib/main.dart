@@ -71,6 +71,7 @@ class Strings{
 
   //Error Messages
   static String errorImport = "Error Importing Flashcards:\n";
+  static String errorNoFile = "The app did not receive the file.\n Are you sure you selected a file?";
   static String errorCreate = "Error Creating Flashcards:\n";
   static String errorEdit = "Error Editing Flashcards:\n";
   static String errorLoad = "Error Loading Flashcards:\n";
@@ -169,6 +170,12 @@ class _MyHomePageState extends State<MyHomePage> {
       //user file prompt:
       File _selectedFile = await FilePicker.getFile(type: FileType.CUSTOM, fileExtension: 'txt');
 
+      //error avoid
+      if (_selectedFile == null) {
+        outputErrors(Strings.errorImport, Strings.errorNoFile);
+        return;
+      }
+
       //get text from file
       String _fileText = await _selectedFile.readAsString();
 
@@ -181,24 +188,30 @@ class _MyHomePageState extends State<MyHomePage> {
 
       //get SharedPrefs file
       SharedPreferences _prefs = await SharedPreferences.getInstance();
-      List<String> _flashcardTitles = _prefs.getStringList(Strings.prefsFlashcardTitles) ?? [_fileName];
-      List<String> _flashcardLengths = _prefs.getStringList(Strings.prefsFlashcardLength) ?? [_fileCards.toString()];
-      List<String> _flashcardData = _prefs.getStringList(Strings.prefsFlashcardData) ?? [_fileText];
+      List<String> _flashcardTitles = _prefs.getStringList(Strings.prefsFlashcardTitles);
+      List<String> _flashcardLengths = _prefs.getStringList(Strings.prefsFlashcardLength);
+      List<String> _flashcardData = _prefs.getStringList(Strings.prefsFlashcardData);
 
       //add file to prefs
       // flashcardData
       if (_flashcardData[0] != _fileText){
         _flashcardData.add(_fileText);
+      } else {
+        _flashcardData = [_fileText];
       }
       await _prefs.setStringList(Strings.prefsFlashcardData,_flashcardData);
       // flashcardTitles
       if (_flashcardTitles[0] != _fileName){
         _flashcardTitles.add(_fileName);
+      } else {
+        _flashcardTitles = [_fileName];
       }
       await _prefs.setStringList(Strings.prefsFlashcardTitles,_flashcardTitles);
       //flashcardLengths
       if (_flashcardLengths[0] != _fileCards.toString()) {
         _flashcardLengths.add('$_fileCards');
+      } else {
+        _flashcardLengths = [_fileCards.toString()];
       }
       await _prefs.setStringList(Strings.prefsFlashcardLength, _flashcardLengths);
 
@@ -240,25 +253,31 @@ class _MyHomePageState extends State<MyHomePage> {
       // Get file from shared prefs
       int _newFileNumber = 0;
       SharedPreferences _prefs = await SharedPreferences.getInstance();
-      List<String> _flashcardsData = _prefs.getStringList(Strings.prefsFlashcardData) ?? [Strings.exampleFileData];
-      List<String> _flashcardLengths = _prefs.getStringList(Strings.prefsFlashcardLength) ?? [Strings.exampleFileLength];
-      List<String> _flashcardTitle = _prefs.getStringList(Strings.prefsFlashcardTitles) ?? [Strings.newFileName];
+      List<String> _flashcardsData = _prefs.getStringList(Strings.prefsFlashcardData);
+      List<String> _flashcardLengths = _prefs.getStringList(Strings.prefsFlashcardLength);
+      List<String> _flashcardTitle = _prefs.getStringList(Strings.prefsFlashcardTitles);
 
       //add file to sharedPrefs
       // flashcardData
-      if (_flashcardsData[0] != Strings.exampleFileData) {
+      if (_flashcardsData[0] != null) {
         _flashcardsData.add(Strings.exampleFileData);
         _newFileNumber = _flashcardsData.length - 1;
+      } else {
+        _flashcardsData = [Strings.exampleFileData];
       }
       await _prefs.setStringList(Strings.prefsFlashcardData, _flashcardsData);
       // flashcardLengths
-      if (_flashcardLengths[0] != Strings.exampleFileLength) {
+      if (_flashcardLengths[0] != null) {
         _flashcardLengths.add(Strings.exampleFileLength);
+      } else {
+        _flashcardLengths = [Strings.exampleFileLength];
       }
       await _prefs.setStringList(Strings.prefsFlashcardLength, _flashcardLengths);
       //flashcardTitle
-      if (_flashcardTitle[0] != Strings.newFileName) {
+      if (_flashcardTitle[0] != null) {
         _flashcardTitle.add(Strings.newFileName);
+      } else {
+        _flashcardTitle = [Strings.newFileName];
       }
       await _prefs.setStringList(Strings.prefsFlashcardTitles, _flashcardTitle);
 
@@ -284,6 +303,10 @@ class _MyHomePageState extends State<MyHomePage> {
       if (_flashcardData == null) {
         _flashcardData = [Strings.exampleFileData];
         _prefs.setStringList(Strings.prefsFlashcardData, [Strings.exampleFileData]);
+
+        //add title and amount of cards
+        _prefs.setStringList(Strings.prefsFlashcardTitles, [Strings.exampleFileName]);
+        _prefs.setStringList(Strings.prefsFlashcardLength, [Strings.exampleFileLength]);
       }
 
       //split from file
@@ -907,6 +930,33 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
     // LOCAL VARS
     final _controllerFront = TextEditingController();
     final _controllerRear = TextEditingController();
+    final _controllerTitle = TextEditingController();
+
+    //
+    // FUNCTIONS
+    //
+
+    void _onLoad() async {
+      //get shared prefs
+      SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+      //get title
+      _controllerTitle.text = _prefs.getStringList(Strings.prefsFlashcardTitles)[_currentFileNo];
+    }
+
+    void _titleChanged(String _newTitle) async {
+      //get shared prefs
+      SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+      //get titles list
+      List<String> _titlesList = _prefs.getStringList(Strings.prefsFlashcardTitles);
+
+      //set titles lsit
+      _titlesList[_currentFileNo] = _newTitle;
+
+      //save to prefs
+      _prefs.setStringList(Strings.prefsFlashcardTitles, _titlesList);
+    }
 
     void _cardChanged(String _newCard, int _index, bool _frontOfCard) async {
       //local vars
@@ -941,6 +991,7 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
     //
     // LOAD INTERFACE
     //
+    _onLoad();
     return Scaffold(
       appBar: AppBar(
         title:Text(Strings.tabTitleEditCards),
@@ -952,6 +1003,30 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
+              Card(
+                child: Container(
+                  height: cardHeight,
+                  child: InkWell(
+                    splashColor: Theme.of(context).primaryColor,
+                    onTap: () {},
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Text(Strings.paddingAsText + "FileName:"),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.all(defaultPadding),
+                            child: TextField(
+                              onChanged: _titleChanged,
+                              controller: _controllerTitle,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
               Expanded(
                 child: ListView.builder(
                   itemCount: _currentFileData.length ~/ 2,
@@ -1002,8 +1077,8 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               Text(Strings.paddingAsText + _currentFileData[index * 2], overflow: TextOverflow.ellipsis,),
+                              Divider(),
                               Text(_currentFileData[index * 2 + 1] + Strings.paddingAsText, overflow: TextOverflow.ellipsis,),
-                              //Text(),
                             ],
                           ),
                         ),
@@ -1019,7 +1094,7 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
     );
   });
 }
-
+// Stateful widget should I need it
 /*class EditCardsPopup extends StatefulWidget {
   EditCardsPopup({
     Key key,
