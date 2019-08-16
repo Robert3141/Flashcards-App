@@ -69,6 +69,12 @@ class Strings{
   static String settingsDarkTheme = "Dark Theme";
   static String settingsThemeColour = "Theme Colour (Only when in light theme)";
 
+  //Edit Cards Options
+  static String editCardsFileName = "File name: ";
+  static String editCardsCardNo = "Card Number: ";
+  static String editCardsFront = "Front of Card";
+  static String editCardsRear = "Back of Card";
+
   //Error Messages
   static String errorImport = "Error Importing Flashcards:\n";
   static String errorNoFile = "The app did not receive the file.\n Are you sure you selected a file?";
@@ -1012,7 +1018,7 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                        Text(Strings.paddingAsText + "FileName:"),
+                        Text(Strings.paddingAsText + Strings.editCardsFileName),
                         Expanded(
                           child: Padding(
                             padding: EdgeInsets.all(defaultPadding),
@@ -1045,12 +1051,12 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
                             showDialog<String>(
                               context: context,
                               builder: (BuildContext context) => SimpleDialog(
-                                title: Text("Card no. " + (index + 1).toString()),
+                                title: Text(Strings.editCardsCardNo + (index + 1).toString()),
                                 children: <Widget>[
                                     Padding(
                                       padding: EdgeInsets.all(defaultPadding),
                                       child: TextField(
-                                        decoration: InputDecoration(hintText: "Front of card"),
+                                        decoration: InputDecoration(hintText: Strings.editCardsFront),
                                         onChanged: (_newCard){
                                           _cardChanged(_newCard, index, true);
                                         },
@@ -1061,7 +1067,7 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
                                     Padding(
                                       padding: EdgeInsets.all(defaultPadding),
                                       child: TextField(
-                                        decoration: InputDecoration(hintText: "Rear of card"),
+                                        decoration: InputDecoration(hintText: Strings.editCardsRear),
                                         onChanged: (_newCard){
                                           _cardChanged(_newCard, index, false);
                                         },
