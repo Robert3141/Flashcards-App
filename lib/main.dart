@@ -42,6 +42,7 @@ class Strings{
 
   //Default cards
   static String addNewCards = "Add New Flashcards";
+  static String newFileName = "New File";
   static String exampleFileName = "Example File";
   static String exampleFileLength = "3";
   static String exampleFileData = "card1a&card1b&card2a&card2b&card3a&card3b&";
@@ -234,9 +235,38 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void clickCreateFlashcards() {
-    // TODO: allow user to create flashcard set from within the app
+  void clickCreateFlashcards() async {
     try{
+      // Get file from shared prefs
+      int _newFileNumber = 0;
+      SharedPreferences _prefs = await SharedPreferences.getInstance();
+      List<String> _flashcardsData = _prefs.getStringList(Strings.prefsFlashcardData) ?? [Strings.exampleFileData];
+      List<String> _flashcardLengths = _prefs.getStringList(Strings.prefsFlashcardLength) ?? [Strings.exampleFileLength];
+      List<String> _flashcardTitle = _prefs.getStringList(Strings.prefsFlashcardTitles) ?? [Strings.newFileName];
+
+      //add file to sharedPrefs
+      // flashcardData
+      if (_flashcardsData[0] != Strings.exampleFileData) {
+        _flashcardsData.add(Strings.exampleFileData);
+        _newFileNumber = _flashcardsData.length - 1;
+      }
+      await _prefs.setStringList(Strings.prefsFlashcardData, _flashcardsData);
+      // flashcardLengths
+      if (_flashcardLengths[0] != Strings.exampleFileLength) {
+        _flashcardLengths.add(Strings.exampleFileLength);
+      }
+      await _prefs.setStringList(Strings.prefsFlashcardLength, _flashcardLengths);
+      //flashcardTitle
+      if (_flashcardTitle[0] != Strings.newFileName) {
+        _flashcardTitle.add(Strings.newFileName);
+      }
+      await _prefs.setStringList(Strings.prefsFlashcardTitles, _flashcardTitle);
+
+      //split from file
+      List<String> _currentFlashcards = splitter(Strings.exampleFileData, "&");
+
+      //load edit page
+      Navigator.push(context, _EditCardsPage(_currentFlashcards, _newFileNumber));
 
     } catch(e){
       //in case of error output error
@@ -245,7 +275,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void clickEditFlashcards(int _fileNumber) async {
-    // TODO: allow user to edit their flashcards
     try{
       //Get file from shared prefs
       SharedPreferences _prefs = await SharedPreferences.getInstance();
@@ -253,7 +282,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
       //add example file to shared prefs
       if (_flashcardData == null) {
-        debugPrint("YAY");
         _flashcardData = [Strings.exampleFileData];
         _prefs.setStringList(Strings.prefsFlashcardData, [Strings.exampleFileData]);
       }
