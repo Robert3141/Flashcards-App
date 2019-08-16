@@ -53,6 +53,7 @@ class Strings{
   static String createFlashcards = "Create New";
   static String editFlashcards = "Edit";
   static String loadFlashcards = "Load";
+  static String deleteFlashcards = "Delete";
   static String errorOk = "OK";
   static String errorCancel = "CANCEL";
 
@@ -86,6 +87,10 @@ class Strings{
   static String errorSplitString = "Internal Error:\n";
 
 }
+
+//GLOBAL VARS
+List<String> _flashcardFiles = ['${Strings.exampleFileName}'];
+List<String> _flashcardLengths = ['${Strings.exampleFileLength}'];
 
 
 
@@ -145,8 +150,6 @@ class _MyHomePageState extends State<MyHomePage> {
   int _currentTabIndex = 0;
   var _tabTitle = Strings.tabTitleMain;
   bool _cardsAmountEnabled = defaultCardsOrdered;
-  List<String> _flashcardFiles = ['${Strings.exampleFileName}'];
-  List<String> _flashcardLengths = ['${Strings.exampleFileLength}'];
   final _controllerAmountOfCards = TextEditingController();
 
   //
@@ -341,6 +344,34 @@ class _MyHomePageState extends State<MyHomePage> {
       //in case of error output error
       outputErrors(Strings.errorLoad, e);
     }
+  }
+
+  void clickDeleteFlashcards(int _fileNumber) async {
+    //load prefs
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+    //get from shared prefs
+    List<String> _flashcardsData = _prefs.getStringList(Strings.prefsFlashcardData);
+
+    //check not example file
+    if (_flashcardsData != null) {
+      //get from shared prefs
+      _flashcardFiles = _prefs.getStringList(Strings.prefsFlashcardTitles);
+      _flashcardLengths = _prefs.getStringList(Strings.prefsFlashcardLength);
+
+      //remove file
+      _flashcardsData.removeAt(_fileNumber);
+      _prefs.setStringList(Strings.prefsFlashcardData, _flashcardsData);
+
+      //remove title
+      _flashcardFiles.removeAt(_fileNumber);
+      _prefs.setStringList(Strings.prefsFlashcardTitles, _flashcardFiles);
+
+      //remove number
+      _flashcardLengths.removeAt(_fileNumber);
+      _prefs.setStringList(Strings.prefsFlashcardLength, _flashcardLengths);
+    }
+
   }
 
   void loadFromPreferences() async {
@@ -558,6 +589,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                             clickLoadFlashcards(index);
                                           },
                                         ),
+                                        ListTile(
+                                          leading: Icon(Icons.delete_forever),
+                                          title: Text(Strings.deleteFlashcards),
+                                          onTap: (){
+                                            clickDeleteFlashcards(index);
+                                          },
+                                        )
                                       ],
                                     ),
                                   );
@@ -848,7 +886,6 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
                   itemCount: _cardFront.length,//currentFileData.length ~/2 -1,
                   scrollDirection: Axis.horizontal,
                   controller: _scrollControl,
-                  key: Key("test"),
                   itemBuilder: (BuildContext context, int index) {
                     return FlipCard(
                       key: UniqueKey(),
@@ -962,9 +999,23 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
 
       //save to prefs
       _prefs.setStringList(Strings.prefsFlashcardTitles, _titlesList);
+      _flashcardFiles = _titlesList;
     }
 
     void _cardChanged(String _newCard, int _index, bool _frontOfCard) async {
+      //check first that & not used
+      bool andUsed = false;
+      for (var i = 0; i < _newCard.length; i++) {
+        if (_newCard[i] == "&") {
+          andUsed = true;
+        }
+      }
+      if (andUsed) {
+        //output error
+
+        return;
+      }
+
       //local vars
       String _currentFileDataString = "" ;
 
@@ -997,6 +1048,7 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
     //
     // LOAD INTERFACE
     //
+    //TODO: PUT IN AN ADD NEWCARD OPTION
     _onLoad();
     return Scaffold(
       appBar: AppBar(
