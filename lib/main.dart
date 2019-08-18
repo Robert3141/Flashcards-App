@@ -98,6 +98,8 @@ class Strings{
   static String errorEditFlashcard = "Error Editing Flashcard:\n";
   static String errorEditNoAnd = "You used the '&' character. \n This cannot be used in this app unfortunately";
   static String errorEditClicked = "Error displaying Flashcard Editor:\n";
+  static String errorEditPrefs = "Error Saving Changes:\n";
+  static String errorEditDelete = "Error Deleting Card:\n";
 
 }
 
@@ -1055,25 +1057,29 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
     }
 
     void _updatePrefs() async {
-      //local vars
-      String _currentFileDataString = "" ;
+      try {
+        //local vars
+        String _currentFileDataString = "" ;
 
-      //compress string to list
-      for (var i = 0; i < _currentFileData.length; i++) {
-        _currentFileDataString += _currentFileData[i] + "&";
+        //compress string to list
+        for (var i = 0; i < _currentFileData.length; i++) {
+          _currentFileDataString += _currentFileData[i] + "&";
+        }
+
+        //load prefs
+        SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+        //get string list
+        List<String> _currentFlashcardData = _prefs.getStringList(Strings.prefsFlashcardData);
+
+        //update string list
+        _currentFlashcardData[_currentFileNo] = _currentFileDataString;
+
+        //save to prefs
+        _prefs.setStringList(Strings.prefsFlashcardData, _currentFlashcardData);
+      } catch(e) {
+        outputErrors(Strings.errorEditPrefs, e);
       }
-
-      //load prefs
-      SharedPreferences _prefs = await SharedPreferences.getInstance();
-
-      //get string list
-      List<String> _currentFlashcardData = _prefs.getStringList(Strings.prefsFlashcardData);
-
-      //update string list
-      _currentFlashcardData[_currentFileNo] = _currentFileDataString;
-
-      //save to prefs
-      _prefs.setStringList(Strings.prefsFlashcardData, _currentFlashcardData);
     }
 
     void _cardChanged(String _newCard, int _index, bool _frontOfCard) async {
@@ -1106,6 +1112,22 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
       }
     }
 
+    void _clickDeleteFlashcard(int _index) {
+      try {
+        //delete card
+        _currentFileData.removeAt(_index * 2);
+        _currentFileData.removeAt(_index * 2 + 1);
+
+        //close dialog
+        Navigator.of(context).pop();
+
+        //update prefs
+        _updatePrefs();
+      } catch(e) {
+        outputErrors(Strings.errorEditDelete, e);
+      }
+    }
+
     void _cardClicked(int index) {
       try {
         //set text of dialog
@@ -1128,7 +1150,6 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
                   controller: _controllerFront,
                 ),
               ),
-              Divider(),
               Padding(
                 padding: EdgeInsets.all(defaultPadding),
                 child: TextField(
@@ -1138,6 +1159,22 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
                   },
                   controller: _controllerRear,
                 ),
+              ),
+              ListTile(
+                leading: Icon(Icons.delete_forever),
+                title: Text(Strings.deleteFlashcards),
+                onTap: (){
+                  _clickDeleteFlashcard(index);
+                },
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                    FlatButton(
+                      child: Text(Strings.errorOk),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                ],
               ),
             ],
           ),
@@ -1272,7 +1309,6 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
     );
   });
 }
-// Stateful widget should I need it
 /*class EditCardsPopup extends StatefulWidget {
   EditCardsPopup({
     Key key,
