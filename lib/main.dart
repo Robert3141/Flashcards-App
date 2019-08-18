@@ -73,6 +73,7 @@ class Strings{
 
   //Edit Cards Options
   static String editCardsFileName = "File name: ";
+  static String editCardsAddCard = "Add New Flashcard";
   static String editCardsCardNo = "Card Number: ";
   static String editCardsFront = "Front of Card";
   static String editCardsRear = "Back of Card";
@@ -93,7 +94,10 @@ class Strings{
   static String errorSettingsTheme = "Error Changing Theme Colour:\n";
   static String errorSplitString = "Internal Error:\n";
   static String errorEditTitle = "Error Editing Title:\n";
+  static String errorEditNewCard = "Error Adding New Flashcard:\n";
   static String errorEditFlashcard = "Error Editing Flashcard:\n";
+  static String errorEditNoAnd = "You used the '&' character. \n This cannot be used in this app unfortunately";
+  static String errorEditClicked = "Error displaying Flashcard Editor:\n";
 
 }
 
@@ -1050,23 +1054,26 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
       }
     }
 
-    void _titleChanged(String _newTitle) async {
-      try {
-        //get shared prefs
-        SharedPreferences _prefs = await SharedPreferences.getInstance();
+    void _updatePrefs() async {
+      //local vars
+      String _currentFileDataString = "" ;
 
-        //get titles list
-        List<String> _titlesList = _prefs.getStringList(Strings.prefsFlashcardTitles);
-
-        //set titles lsit
-        _titlesList[_currentFileNo] = _newTitle;
-
-        //save to prefs
-        _prefs.setStringList(Strings.prefsFlashcardTitles, _titlesList);
-        _flashcardFiles = _titlesList;
-      } catch(e) {
-        outputErrors(Strings.errorEditTitle, e);
+      //compress string to list
+      for (var i = 0; i < _currentFileData.length; i++) {
+        _currentFileDataString += _currentFileData[i] + "&";
       }
+
+      //load prefs
+      SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+      //get string list
+      List<String> _currentFlashcardData = _prefs.getStringList(Strings.prefsFlashcardData);
+
+      //update string list
+      _currentFlashcardData[_currentFileNo] = _currentFileDataString;
+
+      //save to prefs
+      _prefs.setStringList(Strings.prefsFlashcardData, _currentFlashcardData);
     }
 
     void _cardChanged(String _newCard, int _index, bool _frontOfCard) async {
@@ -1080,12 +1087,9 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
         }
         if (andUsed) {
           //output error
-
+          outputErrors(Strings.errorEditFlashcard, Strings.errorEditNoAnd);
           return;
         }
-
-        //local vars
-        String _currentFileDataString = "" ;
 
         //update current card
         if(_frontOfCard){
@@ -1094,32 +1098,94 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
           _currentFileData[_index * 2 + 1] = _newCard;
         }
 
+        //update prefs
+        _updatePrefs();
 
-        //compress string to list
-        for (var i = 0; i < _currentFileData.length; i++) {
-          _currentFileDataString += _currentFileData[i] + "&";
-        }
-
-        //load prefs
-        SharedPreferences _prefs = await SharedPreferences.getInstance();
-
-        //get string list
-        List<String> _currentFlashcardData = _prefs.getStringList(Strings.prefsFlashcardData);
-
-        //update string list
-        _currentFlashcardData[_currentFileNo] = _currentFileDataString;
-
-        //save to prefs
-        _prefs.setStringList(Strings.prefsFlashcardData, _currentFlashcardData);
       } catch(e) {
         outputErrors(Strings.errorEditFlashcard, e);
+      }
+    }
+
+    void _cardClicked(int index) {
+      try {
+        //set text of dialog
+        _controllerFront.text = _currentFileData[index * 2];
+        _controllerRear.text = _currentFileData[index * 2 + 1];
+
+        //open cards dialog
+        showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => SimpleDialog(
+            title: Text(Strings.editCardsCardNo + (index + 1).toString()),
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.all(defaultPadding),
+                child: TextField(
+                  decoration: InputDecoration(hintText: Strings.editCardsFront),
+                  onChanged: (_newCard){
+                    _cardChanged(_newCard, index, true);
+                  },
+                  controller: _controllerFront,
+                ),
+              ),
+              Divider(),
+              Padding(
+                padding: EdgeInsets.all(defaultPadding),
+                child: TextField(
+                  decoration: InputDecoration(hintText: Strings.editCardsRear),
+                  onChanged: (_newCard){
+                    _cardChanged(_newCard, index, false);
+                  },
+                  controller: _controllerRear,
+                ),
+              ),
+            ],
+          ),
+        );
+      } catch(e) {
+        outputErrors(Strings.errorEditClicked, e);
+      }
+    }
+
+    void _titleChanged(String _newTitle) async {
+      try {
+        //get shared prefs
+        SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+        //get titles list
+        List<String> _titlesList = _prefs.getStringList(Strings.prefsFlashcardTitles);
+
+        //set titles list
+        _titlesList[_currentFileNo] = _newTitle;
+
+        //save to prefs
+        _prefs.setStringList(Strings.prefsFlashcardTitles, _titlesList);
+        _flashcardFiles = _titlesList;
+      } catch(e) {
+        outputErrors(Strings.errorEditTitle, e);
+      }
+    }
+
+    void _newCardAdded() async {
+      try{
+        //add new card
+        _currentFileData.add('');
+        _currentFileData.add('');
+
+        //update prefs
+        _updatePrefs();
+
+        //popup edit new card interface
+        _cardClicked(_currentFileData.length ~/ 2 - 1);
+
+      } catch(e) {
+        outputErrors(Strings.errorEditNewCard, e);
       }
     }
 
     //
     // LOAD INTERFACE
     //
-    //TODO: PUT IN AN ADD NEWCARD OPTION
     _onLoad();
     return Scaffold(
       appBar: AppBar(
@@ -1132,25 +1198,42 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
+              Container(
+                height: cardHeight,
+                child: InkWell(
+                  splashColor: Theme.of(context).primaryColor,
+                  onTap: () {},
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Text(Strings.paddingAsText + Strings.editCardsFileName, style: TextStyle(color: Color(0xFFFFFFFF)),),
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.all(defaultPadding),
+                          child: TextField(
+                            onChanged: _titleChanged,
+                            controller: _controllerTitle,
+                            style: TextStyle(color: Color(0xFFFFFFFF)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               Card(
                 child: Container(
                   height: cardHeight,
                   child: InkWell(
                     splashColor: Theme.of(context).primaryColor,
-                    onTap: () {},
+                    onTap: () {
+                      _newCardAdded();
+                    },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                        Text(Strings.paddingAsText + Strings.editCardsFileName),
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.all(defaultPadding),
-                            child: TextField(
-                              onChanged: _titleChanged,
-                              controller: _controllerTitle,
-                            ),
-                          ),
-                        ),
+                        Text(Strings.paddingAsText + Strings.editCardsAddCard),
+                        Icon(Icons.add),
                       ],
                     ),
                   ),
@@ -1166,41 +1249,7 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
                         child: InkWell(
                           splashColor: Theme.of(context).primaryColor,
                           onTap: (){
-                            //set text of dialog
-                            _controllerFront.text = _currentFileData[index * 2];
-                            _controllerRear.text = _currentFileData[index * 2 + 1];
-
-                            //open cards dialog
-                            showDialog<String>(
-                              context: context,
-                              builder: (BuildContext context) => SimpleDialog(
-                                title: Text(Strings.editCardsCardNo + (index + 1).toString()),
-                                children: <Widget>[
-                                    Padding(
-                                      padding: EdgeInsets.all(defaultPadding),
-                                      child: TextField(
-                                        decoration: InputDecoration(hintText: Strings.editCardsFront),
-                                        onChanged: (_newCard){
-                                          _cardChanged(_newCard, index, true);
-                                        },
-                                        controller: _controllerFront,
-                                      ),
-                                    ),
-                                    Divider(),
-                                    Padding(
-                                      padding: EdgeInsets.all(defaultPadding),
-                                      child: TextField(
-                                        decoration: InputDecoration(hintText: Strings.editCardsRear),
-                                        onChanged: (_newCard){
-                                          _cardChanged(_newCard, index, false);
-                                        },
-                                        controller: _controllerRear,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            );
-
+                            _cardClicked(index);
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1215,7 +1264,7 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
                     );
                   },
                 ),
-              )
+              ),
             ],
           ),
         ),
