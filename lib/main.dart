@@ -67,9 +67,9 @@ class Strings{
 
   //Settings Options
   static String settingsCardsOrdered = "Order Cards";
-  static String settingsAmountOfCards = "Amount Of Cards (Only when in shuffle)";
+  static String settingsAmountOfCards = "Amount Of Cards (In shuffle)";
   static String settingsDarkTheme = "Dark Theme";
-  static String settingsThemeColour = "Theme Colour (Only when in light theme)";
+  static String settingsThemeColour = "Theme Colour (In Light Theme)";
 
   //Edit Cards Options
   static String editCardsFileName = "File name: ";
@@ -80,12 +80,20 @@ class Strings{
   //Error Messages
   static String errorImport = "Error Importing Flashcards:\n";
   static String errorNoFile = "The app did not receive the file.\n Are you sure you selected a file?";
+  static String errorNotSupported = "The file is not supported.\n Are you sure the .txt file is UTF-8?";
   static String errorCreate = "Error Creating Flashcards:\n";
   static String errorEdit = "Error Editing Flashcards:\n";
   static String errorLoad = "Error Loading Flashcards:\n";
+  static String errorDelete = "Error Deleting Flashcards:\n";
   static String errorNewCard = "Error Getting Next Flashcard:\n";
   static String errorLoadPrefs = "Error Loading Settings:\n";
+  static String errorSettingsOrdered = "Error Changing Ordered Cards:\n";
+  static String errorSettingsAmount = "Error Changing Amount of Cards:\n";
+  static String errorSettingsDark = "Error Changing Dark Theme:\n";
+  static String errorSettingsTheme = "Error Changing Theme Colour:\n";
   static String errorSplitString = "Internal Error:\n";
+  static String errorEditTitle = "Error Editing Title:\n";
+  static String errorEditFlashcard = "Error Editing Flashcard:\n";
 
 }
 
@@ -188,6 +196,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
 
       //get text from file
+
       String _fileText = await _selectedFile.readAsString();
 
       //get name of text file from file path
@@ -210,22 +219,20 @@ class _MyHomePageState extends State<MyHomePage> {
       } else {
         _flashcardData = [_fileText];
       }
-      await _prefs.setStringList(Strings.prefsFlashcardData,_flashcardData);
       // flashcardTitles
       if (_flashcardTitles != null){
         _flashcardTitles.add(_fileName);
       } else {
         _flashcardTitles = [_fileName];
       }
-      await _prefs.setStringList(Strings.prefsFlashcardTitles,_flashcardTitles);
       //flashcardLengths
       if (_flashcardLengths != null) {
         _flashcardLengths.add('$_fileCards');
       } else {
         _flashcardLengths = [_fileCards.toString()];
       }
-      await _prefs.setStringList(Strings.prefsFlashcardLength, _flashcardLengths);
 
+      //update UI
       setState(() {
         _flashcardFiles = _flashcardTitles;
         _flashcardLengths = _flashcardLengths;
@@ -233,10 +240,18 @@ class _MyHomePageState extends State<MyHomePage> {
         Navigator.pop(context);
       });
 
+      //save to shared prefs
+      await _prefs.setStringList(Strings.prefsFlashcardData,_flashcardData);
+      await _prefs.setStringList(Strings.prefsFlashcardTitles,_flashcardTitles);
+      await _prefs.setStringList(Strings.prefsFlashcardLength, _flashcardLengths);
 
     } catch(e) {
       //in case of error output error
-      outputErrors(Strings.errorImport, e);
+      if (e == FileSystemException) {
+        outputErrors(Strings.errorImport, Strings.errorNotSupported);
+      } else {
+        outputErrors(Strings.errorImport, e);
+      }
     }
   }
 
@@ -244,6 +259,12 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       //user file prompt:
       File _selectedFile = await FilePicker.getFile(type: FileType.CUSTOM, fileExtension: 'txt');
+
+      //error avoid
+      if (_selectedFile == null) {
+        outputErrors(Strings.errorImport, Strings.errorNoFile);
+        return;
+      }
 
       //get text from file
       String _fileText = await _selectedFile.readAsString();
@@ -349,37 +370,40 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void clickDeleteFlashcards(int _fileNumber) async {
-    //load prefs
-    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    try {
+      //load prefs
+      SharedPreferences _prefs = await SharedPreferences.getInstance();
 
-    //get from shared prefs
-    List<String> _flashcardsData = _prefs.getStringList(Strings.prefsFlashcardData);
-
-    //check not example file
-    if (_flashcardsData != null) {
       //get from shared prefs
-      _flashcardFiles = _prefs.getStringList(Strings.prefsFlashcardTitles);
-      _flashcardLengths = _prefs.getStringList(Strings.prefsFlashcardLength);
+      List<String> _flashcardsData = _prefs.getStringList(Strings.prefsFlashcardData);
 
-      //remove file
-      _flashcardsData.removeAt(_fileNumber);
-      _prefs.setStringList(Strings.prefsFlashcardData, _flashcardsData);
+      //check not example file
+      if (_flashcardsData != null) {
+        //get from shared prefs
+        _flashcardFiles = _prefs.getStringList(Strings.prefsFlashcardTitles);
+        _flashcardLengths = _prefs.getStringList(Strings.prefsFlashcardLength);
 
-      //remove title
-      _flashcardFiles.removeAt(_fileNumber);
-      _prefs.setStringList(Strings.prefsFlashcardTitles, _flashcardFiles);
+        //remove file
+        _flashcardsData.removeAt(_fileNumber);
+        _prefs.setStringList(Strings.prefsFlashcardData, _flashcardsData);
 
-      //remove number
-      _flashcardLengths.removeAt(_fileNumber);
-      _prefs.setStringList(Strings.prefsFlashcardLength, _flashcardLengths);
+        //remove title
+        _flashcardFiles.removeAt(_fileNumber);
+        _prefs.setStringList(Strings.prefsFlashcardTitles, _flashcardFiles);
 
-      //reload interface
-      Navigator.pop(context);
-      setState(() {
+        //remove number
+        _flashcardLengths.removeAt(_fileNumber);
+        _prefs.setStringList(Strings.prefsFlashcardLength, _flashcardLengths);
 
-      });
+        //reload interface
+        Navigator.pop(context);
+        setState(() {
+
+        });
+      }
+    } catch(e) {
+      outputErrors(Strings.errorDelete, e);
     }
-
   }
 
   void loadFromPreferences() async {
@@ -404,14 +428,18 @@ class _MyHomePageState extends State<MyHomePage> {
   //
 
   void settingsOrderedCards(_orderedCard) async {
-    //set up prefs and save to prefs
-    SharedPreferences _prefs = await SharedPreferences.getInstance();
-    _prefs.setBool(Strings.prefsCardsOrdered, _orderedCard);
-    cardsOrdered = _orderedCard;
-    setState(() {
+    try {
+      //set up prefs and save to prefs
+      SharedPreferences _prefs = await SharedPreferences.getInstance();
+      _prefs.setBool(Strings.prefsCardsOrdered, _orderedCard);
       cardsOrdered = _orderedCard;
-      _cardsAmountEnabled = !_orderedCard;
-    });
+      setState(() {
+        cardsOrdered = _orderedCard;
+        _cardsAmountEnabled = !_orderedCard;
+      });
+    } catch(e) {
+      outputErrors(Strings.errorSettingsOrdered, e);
+    }
   }
 
   void settingsCardAmount(_cardAmountInput) async {
@@ -423,48 +451,56 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void settingsDarkTheme(_darkTheme) {
-    //set up prefs and save to prefs
-    DynamicTheme.of(context).setBrightness(_darkTheme? Brightness.dark : Brightness.light);
+    try {
+      //set up prefs and save to prefs
+      DynamicTheme.of(context).setBrightness(_darkTheme? Brightness.dark : Brightness.light);
+    } catch(e) {
+      outputErrors(Strings.errorSettingsDark, e);
+    }
   }
 
   void settingsThemeColor() {
-    //local var
-    Color _tempColor = Theme.of(context).primaryColor;
-    showDialog(
-      context: context,
-      builder: (_) {
-        return AlertDialog(
-          title: Text(Strings.settingsThemeColour),
-          content: MaterialColorPicker(
-            selectedColor: Theme.of(context).primaryColor,
-            allowShades: true,
-            onColorChange: (newColor) {
-              _tempColor = Color(newColor.value);
-            },
+    try {
+      //local var
+      Color _tempColor = Theme.of(context).primaryColor;
+      showDialog(
+          context: context,
+          builder: (_) {
+            return AlertDialog(
+              title: Text(Strings.settingsThemeColour),
+              content: MaterialColorPicker(
+                selectedColor: Theme.of(context).primaryColor,
+                allowShades: true,
+                onColorChange: (newColor) {
+                  _tempColor = Color(newColor.value);
+                },
 
-            onMainColorChange: (newColor) {
-              _tempColor = Color(newColor.value);
-            },
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: Text(Strings.errorCancel),
-              onPressed: (){
-                Navigator.of(context).pop();
-              },
-            ),
-            FlatButton(
-              child: Text(Strings.errorOk),
-              onPressed: (){
-                DynamicTheme.of(context).setBrightness(Brightness.light);
-                DynamicTheme.of(context).setThemeData(new ThemeData(primaryColor: _tempColor, accentColor: _tempColor));
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      }
-    );
+                onMainColorChange: (newColor) {
+                  _tempColor = Color(newColor.value);
+                },
+              ),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text(Strings.errorCancel),
+                  onPressed: (){
+                    Navigator.of(context).pop();
+                  },
+                ),
+                FlatButton(
+                  child: Text(Strings.errorOk),
+                  onPressed: (){
+                    DynamicTheme.of(context).setBrightness(Brightness.light);
+                    DynamicTheme.of(context).setThemeData(new ThemeData(primaryColor: _tempColor, accentColor: _tempColor));
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          }
+      );
+    } catch(e) {
+      outputErrors(Strings.errorSettingsTheme, e);
+    }
   }
 
   List<String> splitter(String _splitText,String _splitChar) {
@@ -814,7 +850,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
     //
 
     void outputErrors(String _error,_e){
-      /*showDialog<String>(
+      showDialog<String>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
           title: Text(_error),
@@ -826,8 +862,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
             )
           ],
         ),
-      );*/ // NOT WORKING because it's stateless
-      debugPrint(_error + _e.toString());
+      );
     }
 
     void newCard() {
@@ -856,7 +891,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
           int _amountOfFlashcards = _currentFileData.length ~/ 2 - 1;
 
           // make random flashcard as next in list
-          _randomNumber = _rng.nextInt(_amountOfFlashcards * 2);
+          _randomNumber = _rng.nextInt(_amountOfFlashcards) * 2;
           _cardFront[0] = _currentFileData[_randomNumber];
           _cardRear[0] = _currentFileData[_randomNumber + 1];
           for (var i = 1; i < amountOfCards; i++) {
@@ -987,70 +1022,98 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
     // FUNCTIONS
     //
 
-    void _onLoad() async {
-      //get shared prefs
-      SharedPreferences _prefs = await SharedPreferences.getInstance();
+    void outputErrors(String _error,_e){
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: Text(_error),
+          content: Text(_e.toString()),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(Strings.errorOk),
+              onPressed: () => Navigator.pop(context),
+            )
+          ],
+        ),
+      );
+    }
 
-      //get title
-      _controllerTitle.text = _prefs.getStringList(Strings.prefsFlashcardTitles)[_currentFileNo];
+    void _onLoad() async {
+      try{
+        //get shared prefs
+        SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+        //get title
+        _controllerTitle.text = _prefs.getStringList(Strings.prefsFlashcardTitles)[_currentFileNo];
+      } catch(e) {
+        outputErrors(Strings.errorLoadPrefs, e);
+      }
     }
 
     void _titleChanged(String _newTitle) async {
-      //get shared prefs
-      SharedPreferences _prefs = await SharedPreferences.getInstance();
+      try {
+        //get shared prefs
+        SharedPreferences _prefs = await SharedPreferences.getInstance();
 
-      //get titles list
-      List<String> _titlesList = _prefs.getStringList(Strings.prefsFlashcardTitles);
+        //get titles list
+        List<String> _titlesList = _prefs.getStringList(Strings.prefsFlashcardTitles);
 
-      //set titles lsit
-      _titlesList[_currentFileNo] = _newTitle;
+        //set titles lsit
+        _titlesList[_currentFileNo] = _newTitle;
 
-      //save to prefs
-      _prefs.setStringList(Strings.prefsFlashcardTitles, _titlesList);
-      _flashcardFiles = _titlesList;
+        //save to prefs
+        _prefs.setStringList(Strings.prefsFlashcardTitles, _titlesList);
+        _flashcardFiles = _titlesList;
+      } catch(e) {
+        outputErrors(Strings.errorEditTitle, e);
+      }
     }
 
     void _cardChanged(String _newCard, int _index, bool _frontOfCard) async {
-      //check first that & not used
-      bool andUsed = false;
-      for (var i = 0; i < _newCard.length; i++) {
-        if (_newCard[i] == "&") {
-          andUsed = true;
+      try {
+        //check first that & not used
+        bool andUsed = false;
+        for (var i = 0; i < _newCard.length; i++) {
+          if (_newCard[i] == "&") {
+            andUsed = true;
+          }
         }
+        if (andUsed) {
+          //output error
+
+          return;
+        }
+
+        //local vars
+        String _currentFileDataString = "" ;
+
+        //update current card
+        if(_frontOfCard){
+          _currentFileData[_index * 2] = _newCard;
+        } else {
+          _currentFileData[_index * 2 + 1] = _newCard;
+        }
+
+
+        //compress string to list
+        for (var i = 0; i < _currentFileData.length; i++) {
+          _currentFileDataString += _currentFileData[i] + "&";
+        }
+
+        //load prefs
+        SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+        //get string list
+        List<String> _currentFlashcardData = _prefs.getStringList(Strings.prefsFlashcardData);
+
+        //update string list
+        _currentFlashcardData[_currentFileNo] = _currentFileDataString;
+
+        //save to prefs
+        _prefs.setStringList(Strings.prefsFlashcardData, _currentFlashcardData);
+      } catch(e) {
+        outputErrors(Strings.errorEditFlashcard, e);
       }
-      if (andUsed) {
-        //output error
-
-        return;
-      }
-
-      //local vars
-      String _currentFileDataString = "" ;
-
-      //update current card
-      if(_frontOfCard){
-        _currentFileData[_index * 2] = _newCard;
-      } else {
-        _currentFileData[_index * 2 + 1] = _newCard;
-      }
-
-
-      //compress string to list
-      for (var i = 0; i < _currentFileData.length; i++) {
-        _currentFileDataString += _currentFileData[i] + "&";
-      }
-
-      //load prefs
-      SharedPreferences _prefs = await SharedPreferences.getInstance();
-
-      //get string list
-      List<String> _currentFlashcardData = _prefs.getStringList(Strings.prefsFlashcardData);
-
-      //update string list
-      _currentFlashcardData[_currentFileNo] = _currentFileDataString;
-
-      //save to prefs
-      _prefs.setStringList(Strings.prefsFlashcardData, _currentFlashcardData);
     }
 
     //
