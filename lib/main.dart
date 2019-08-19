@@ -120,6 +120,9 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
+    var routes = <String, WidgetBuilder>{
+      EditCards.routeName: (BuildContext context) => new EditCards(['1','2'],0),
+    };
 
     return new DynamicTheme(
       defaultBrightness: defaultBrightness,
@@ -136,6 +139,7 @@ class _MyAppState extends State<MyApp> {
             brightness: Brightness.dark,
           ),
           home: new MyHomePage(title: Strings.appName,),
+          routes: routes,
         );
       },
     );
@@ -352,6 +356,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       //load edit page
       Navigator.push(context, _EditCardsPage(_currentFlashcards, _fileNumber));
+      //Navigator.pushNamed(context, EditCards.routeName);
 
     } catch(e){
       //in case of error output error
@@ -1018,9 +1023,13 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
 
 class _EditCardsPage extends MaterialPageRoute<Null> {
 
+ /* _EditCardsPage(List<String> _currentFileData, int _currentFileNo) : super (builder: (BuildContext context){
+    return EditCards();
+  });*/
+
   _EditCardsPage(List<String> _currentFileData, int _currentFileNo) : super(builder: (BuildContext context){
     // LOCAL VARS
-    final _controllerFront = TextEditingController();
+    /*final _controllerFront = TextEditingController();
     final _controllerRear = TextEditingController();
     final _controllerTitle = TextEditingController();
 
@@ -1223,14 +1232,14 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
     //
     // LOAD INTERFACE
     //
-    _onLoad();
+    _onLoad();*/
     return Scaffold(
       appBar: AppBar(
         title:Text(Strings.tabTitleEditCards),
         elevation: 1.0,
       ),
       body: Builder(
-        builder: (BuildContext context) => Container(
+        builder: (BuildContext context) => EditCards(_currentFileData,_currentFileNo)/*Container(
           color: Theme.of(context).primaryColor,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -1304,33 +1313,337 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
               ),
             ],
           ),
-        ),
+        ),*/
       ),
     );
   });
+
 }
-/*class EditCardsPopup extends StatefulWidget {
-  EditCardsPopup({
+class EditCards extends StatefulWidget {
+  /*EditCards({
     Key key,
     int index,
-    List<String> flashcardFile,
-}) : super (key: key);
+}) : super (key: key);*/
+  List<String> _currentFileData;
+  int _currentFileNo;
+
+  EditCards(
+      List<String> currentFlashcardData,
+      int currentFileNo,
+      ){
+    this._currentFileData = currentFlashcardData;
+    this._currentFileNo = currentFileNo;
+  }
+
+  static const String routeName = "/EditCards";
 
   @override
-  _EditCardsPopupState createState() => new _EditCardsPopupState();
+  _EditCardsState createState() => new _EditCardsState();
 }
 
-class _EditCardsPopupState extends State<EditCardsPopup> {
+class _EditCardsState extends State<EditCards> {
 
   @override
   void initState() {
     super.initState();
   }
 
+
   @override
   Widget build(BuildContext context) {
-    return new Builder(builder: (BuildContext context) => SimpleDialog(
-      title: Text('Edit cards no.'),
-    ));
+
+
+    // LOCAL VARS
+    final _controllerFront = TextEditingController();
+    final _controllerRear = TextEditingController();
+    final _controllerTitle = TextEditingController();
+    List<String> _currentFileData = widget._currentFileData;
+    int _currentFileNo = widget._currentFileNo;
+
+    //
+    // FUNCTIONS
+    //
+
+    void outputErrors(String _error,_e){
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: Text(_error),
+          content: Text(_e.toString()),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(Strings.errorOk),
+              onPressed: () => Navigator.pop(context),
+            )
+          ],
+        ),
+      );
+    }
+
+    void _onLoad() async {
+      try{
+        //get shared prefs
+        SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+        //get title
+        _controllerTitle.text = _prefs.getStringList(Strings.prefsFlashcardTitles)[_currentFileNo];
+      } catch(e) {
+        outputErrors(Strings.errorLoadPrefs, e);
+      }
+    }
+
+    void _updatePrefs() async {
+      try {
+        //local vars
+        String _currentFileDataString = "" ;
+
+        //compress string to list
+        for (var i = 0; i < _currentFileData.length; i++) {
+          _currentFileDataString += _currentFileData[i] + "&";
+        }
+
+        //load prefs
+        SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+        //get string list
+        List<String> _currentFlashcardData = _prefs.getStringList(Strings.prefsFlashcardData);
+
+        //update string list
+        _currentFlashcardData[_currentFileNo] = _currentFileDataString;
+
+        //save to prefs
+        _prefs.setStringList(Strings.prefsFlashcardData, _currentFlashcardData);
+      } catch(e) {
+        outputErrors(Strings.errorEditPrefs, e);
+      }
+    }
+
+    void _cardChanged(String _newCard, int _index, bool _frontOfCard) async {
+      try {
+        //check first that & not used
+        bool andUsed = false;
+        for (var i = 0; i < _newCard.length; i++) {
+          if (_newCard[i] == "&") {
+            andUsed = true;
+          }
+        }
+        if (andUsed) {
+          //output error
+          outputErrors(Strings.errorEditFlashcard, Strings.errorEditNoAnd);
+          return;
+        }
+
+        //update current card
+        if(_frontOfCard){
+          _currentFileData[_index * 2] = _newCard;
+        } else {
+          _currentFileData[_index * 2 + 1] = _newCard;
+        }
+
+        //update prefs
+        _updatePrefs();
+
+      } catch(e) {
+        outputErrors(Strings.errorEditFlashcard, e);
+      }
+    }
+
+    void _clickDeleteFlashcard(int _index) {
+      try {
+        //delete card
+        debugPrint('_index=$_index');
+        for (var i =0; i < _currentFileData.length; i++) {
+          debugPrint("_currentFileData[$i]=" + _currentFileData[i]);
+        }
+        setState(() {
+          _currentFileData.removeAt(_index * 2);
+          _currentFileData.removeAt(_index * 2);
+        });
+
+        //close dialog
+        Navigator.of(context).pop();
+
+
+
+        //update prefs
+        _updatePrefs();
+      } catch(e) {
+        outputErrors(Strings.errorEditDelete, e);
+      }
+    }
+
+    void _cardClicked(int index) {
+      try {
+        //set text of dialog
+        _controllerFront.text = _currentFileData[index * 2];
+        _controllerRear.text = _currentFileData[index * 2 + 1];
+
+        //open cards dialog
+        showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => SimpleDialog(
+            title: Text(Strings.editCardsCardNo + (index + 1).toString()),
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.all(defaultPadding),
+                child: TextField(
+                  decoration: InputDecoration(hintText: Strings.editCardsFront),
+                  onChanged: (_newCard){
+                    _cardChanged(_newCard, index, true);
+                  },
+                  controller: _controllerFront,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(defaultPadding),
+                child: TextField(
+                  decoration: InputDecoration(hintText: Strings.editCardsRear),
+                  onChanged: (_newCard){
+                    _cardChanged(_newCard, index, false);
+                  },
+                  controller: _controllerRear,
+                ),
+              ),
+              ListTile(
+                leading: Icon(Icons.delete_forever),
+                title: Text(Strings.deleteFlashcards),
+                onTap: (){
+                  _clickDeleteFlashcard(index);
+                },
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  FlatButton(
+                    child: Text(Strings.errorOk),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      } catch(e) {
+        outputErrors(Strings.errorEditClicked, e);
+      }
+    }
+
+    void _titleChanged(String _newTitle) async {
+      try {
+        //get shared prefs
+        SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+        //get titles list
+        List<String> _titlesList = _prefs.getStringList(Strings.prefsFlashcardTitles);
+
+        //set titles list
+        _titlesList[_currentFileNo] = _newTitle;
+
+        //save to prefs
+        _prefs.setStringList(Strings.prefsFlashcardTitles, _titlesList);
+        _flashcardFiles = _titlesList;
+      } catch(e) {
+        outputErrors(Strings.errorEditTitle, e);
+      }
+    }
+
+    void _newCardAdded() async {
+      try{
+        //add new card
+        setState(() {
+          _currentFileData.add('');
+          _currentFileData.add('');
+        });
+
+        //update prefs
+        _updatePrefs();
+
+        //popup edit new card interface
+        _cardClicked(_currentFileData.length ~/ 2 - 1);
+
+      } catch(e) {
+        outputErrors(Strings.errorEditNewCard, e);
+      }
+    }
+
+    //
+    // LOAD INTERFACE
+    //
+    _onLoad();
+    return new Builder(builder: (BuildContext context) => Container(
+      color: Theme.of(context).primaryColor,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            height: cardHeight,
+            child: InkWell(
+              splashColor: Theme.of(context).primaryColor,
+              onTap: () {},
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Text(Strings.paddingAsText + Strings.editCardsFileName, style: TextStyle(color: Color(0xFFFFFFFF)),),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.all(defaultPadding),
+                      child: TextField(
+                        onChanged: _titleChanged,
+                        controller: _controllerTitle,
+                        style: TextStyle(color: Color(0xFFFFFFFF)),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Card(
+            child: Container(
+              height: cardHeight,
+              child: InkWell(
+                splashColor: Theme.of(context).primaryColor,
+                onTap: () {
+                  _newCardAdded();
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Text(Strings.paddingAsText + Strings.editCardsAddCard),
+                    Icon(Icons.add),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _currentFileData.length ~/ 2,
+              itemBuilder: (BuildContext context, int index){
+                return Card(
+                  child: Container(
+                    height: cardHeight,
+                    child: InkWell(
+                      splashColor: Theme.of(context).primaryColor,
+                      onTap: (){
+                        _cardClicked(index);
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text(Strings.paddingAsText + _currentFileData[index * 2], overflow: TextOverflow.ellipsis,),
+                          Divider(),
+                          Text(_currentFileData[index * 2 + 1] + Strings.paddingAsText, overflow: TextOverflow.ellipsis,),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    ),);
   }
-}*/
+}
