@@ -86,6 +86,7 @@ class Strings{
   static String errorEdit = "Error Editing Flashcards:\n";
   static String errorLoad = "Error Loading Flashcards:\n";
   static String errorDelete = "Error Deleting Flashcards:\n";
+  static String errorDeleting = "Are you sure you want to delete this?";
   static String errorNewCard = "Error Getting Next Flashcard:\n";
   static String errorLoadPrefs = "Error Loading Settings:\n";
   static String errorSettingsOrdered = "Error Changing Ordered Cards:\n";
@@ -380,38 +381,59 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void clickDeleteFlashcards(int _fileNumber) async {
+  void clickDeleteFlashcards(int _fileNumber) {
     try {
-      //load prefs
-      SharedPreferences _prefs = await SharedPreferences.getInstance();
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: Text(Strings.errorDelete),
+          content: Text(Strings.errorDeleting),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(Strings.errorCancel),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text(Strings.errorOk),
+              onPressed: () async {
+                //load prefs
+                SharedPreferences _prefs = await SharedPreferences.getInstance();
 
-      //get from shared prefs
-      List<String> _flashcardsData = _prefs.getStringList(Strings.prefsFlashcardData);
+                //get from shared prefs
+                List<String> _flashcardsData = _prefs.getStringList(Strings.prefsFlashcardData);
 
-      //check not example file
-      if (_flashcardsData != null) {
-        //get from shared prefs
-        _flashcardFiles = _prefs.getStringList(Strings.prefsFlashcardTitles);
-        _flashcardLengths = _prefs.getStringList(Strings.prefsFlashcardLength);
+                //check not example file
+                if (_flashcardsData != null) {
+                  //get from shared prefs
+                  _flashcardFiles = _prefs.getStringList(Strings.prefsFlashcardTitles);
+                  _flashcardLengths = _prefs.getStringList(Strings.prefsFlashcardLength);
 
-        //remove file
-        _flashcardsData.removeAt(_fileNumber);
-        _prefs.setStringList(Strings.prefsFlashcardData, _flashcardsData);
+                  //remove file
+                  _flashcardsData.removeAt(_fileNumber);
+                  _prefs.setStringList(Strings.prefsFlashcardData, _flashcardsData);
 
-        //remove title
-        _flashcardFiles.removeAt(_fileNumber);
-        _prefs.setStringList(Strings.prefsFlashcardTitles, _flashcardFiles);
+                  //remove title
+                  _flashcardFiles.removeAt(_fileNumber);
+                  _prefs.setStringList(Strings.prefsFlashcardTitles, _flashcardFiles);
 
-        //remove number
-        _flashcardLengths.removeAt(_fileNumber);
-        _prefs.setStringList(Strings.prefsFlashcardLength, _flashcardLengths);
+                  //remove number
+                  _flashcardLengths.removeAt(_fileNumber);
+                  _prefs.setStringList(Strings.prefsFlashcardLength, _flashcardLengths);
 
-        //reload interface
-        Navigator.pop(context);
-        setState(() {
+                  //reload interface
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  setState(() {
 
-        });
-      }
+                  });
+                }
+              },
+            )
+          ],
+        ),
+      );
     } catch(e) {
       outputErrors(Strings.errorDelete, e);
     }
@@ -1167,23 +1189,47 @@ class _EditCardsState extends State<EditCards> {
 
     void _clickDeleteFlashcard(int _index) {
       try {
-        //delete card
-        debugPrint('_index=$_index');
-        for (var i =0; i < _currentFileData.length; i++) {
-          debugPrint("_currentFileData[$i]=" + _currentFileData[i]);
-        }
-        setState(() {
-          _currentFileData.removeAt(_index * 2);
-          _currentFileData.removeAt(_index * 2);
-        });
+        //show warning
+        showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: Text(Strings.errorEditDelete),
+            content: Text(Strings.errorDeleting),
+            actions: <Widget>[
+              FlatButton(
+                child: Text(Strings.errorCancel),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                  },
+              ),
+              FlatButton(
+                child: Text(Strings.errorOk),
+                onPressed: () async {
+                  //delete card
+                  debugPrint('_index=$_index');
+                  for (var i =0; i < _currentFileData.length; i++) {
+                    debugPrint("_currentFileData[$i]=" + _currentFileData[i]);
+                  }
+                  setState(() {
+                    _currentFileData.removeAt(_index * 2);
+                    _currentFileData.removeAt(_index * 2);
+                  });
 
-        //close dialog
-        Navigator.of(context).pop();
+                  //close dialogs
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
 
+                  //update prefs
+                  _updatePrefs();
 
-
-        //update prefs
-        _updatePrefs();
+                  //update card amount
+                  SharedPreferences _prefs = await SharedPreferences.getInstance();
+                  _prefs.setInt(Strings.prefsAmountOfCards, _prefs.getInt(Strings.prefsAmountOfCards) - 1);
+                },
+              )
+            ],
+          ),
+        );
       } catch(e) {
         outputErrors(Strings.errorEditDelete, e);
       }
@@ -1274,6 +1320,10 @@ class _EditCardsState extends State<EditCards> {
 
         //update prefs
         _updatePrefs();
+
+        //update card amount
+        SharedPreferences _prefs = await SharedPreferences.getInstance();
+        _prefs.setInt(Strings.prefsAmountOfCards, _prefs.getInt(Strings.prefsAmountOfCards) + 1);
 
         //popup edit new card interface
         _cardClicked(_currentFileData.length ~/ 2 - 1);
