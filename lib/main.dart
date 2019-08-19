@@ -357,8 +357,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
       //load edit page
       Navigator.push(context, _EditCardsPage(_currentFlashcards, _fileNumber));
-      //Navigator.pushNamed(context, EditCards.routeName);
 
+      //update UI
+      setState(() {
+
+      });
     } catch(e){
       //in case of error output error
       outputErrors(Strings.errorEdit, e);
@@ -1224,7 +1227,9 @@ class _EditCardsState extends State<EditCards> {
 
                   //update card amount
                   SharedPreferences _prefs = await SharedPreferences.getInstance();
-                  _prefs.setInt(Strings.prefsAmountOfCards, _prefs.getInt(Strings.prefsAmountOfCards) - 1);
+                  List<String> _amountOfCards =_prefs.getStringList(Strings.prefsFlashcardLength);
+                  _amountOfCards[_currentFileNo] = (int.parse(_amountOfCards[_currentFileNo]) - 1).toString();
+                  _prefs.setStringList(Strings.prefsFlashcardLength, _amountOfCards);
                 },
               )
             ],
@@ -1314,8 +1319,8 @@ class _EditCardsState extends State<EditCards> {
       try{
         //add new card
         setState(() {
-          _currentFileData.add('');
-          _currentFileData.add('');
+          _currentFileData.add(' ');
+          _currentFileData.add(' ');
         });
 
         //update prefs
@@ -1323,7 +1328,9 @@ class _EditCardsState extends State<EditCards> {
 
         //update card amount
         SharedPreferences _prefs = await SharedPreferences.getInstance();
-        _prefs.setInt(Strings.prefsAmountOfCards, _prefs.getInt(Strings.prefsAmountOfCards) + 1);
+        List<String> _amountOfCards =_prefs.getStringList(Strings.prefsFlashcardLength);
+        _amountOfCards[_currentFileNo] = (int.parse(_amountOfCards[_currentFileNo]) + 1).toString();
+        _prefs.setStringList(Strings.prefsFlashcardLength, _amountOfCards);
 
         //popup edit new card interface
         _cardClicked(_currentFileData.length ~/ 2 - 1);
