@@ -9,7 +9,7 @@ The app has features including:
 - Imported files need to be in the format ``card1a&card1b&card2a&card2b&card3a&card3b`` (i.e the flashcards need to have an ``&`` after them.)
 
 Permissions:
--READ_EXTERNAL_STORAGE (Required so app can import/open flashcards)
+- READ_EXTERNAL_STORAGE (Required so app can import/open flashcards)
 
 ### Download
 [![Play Store](http://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=uk.co.ariesfamily.flashcards) Flutter Version
