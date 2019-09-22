@@ -3,7 +3,6 @@ import 'dart:math';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
@@ -102,6 +101,8 @@ class Strings{
   static String errorEditClicked = "Error displaying Flashcard Editor:\n";
   static String errorEditPrefs = "Error Saving Changes:\n";
   static String errorEditDelete = "Error Deleting Card:\n";
+  static String errorWeb = "Web Version";
+  static String errorWebVersion = "Web Version does not currently support this feature";
 
 }
 
@@ -198,64 +199,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void clickImportFlashcards() async {
     try {
-      //user file prompt:
-      File _selectedFile = await FilePicker.getFile(type: FileType.CUSTOM, fileExtension: 'txt');
-
-      //error avoid
-      if (_selectedFile == null) {
-        outputErrors(Strings.errorImport, Strings.errorNoFile);
-        return;
-      }
-
-      //get text from file
-
-      String _fileText = await _selectedFile.readAsString();
-
-      //get name of text file from file path
-      String _fileName = splitter(_selectedFile.path, "/").last;
-
-      //get amount of flashcards from file
-      int _fileCards = splitter(_fileText, "&").length;
-      _fileCards = _fileCards ~/ 2;
-
-      //get SharedPrefs file
-      SharedPreferences _prefs = await SharedPreferences.getInstance();
-      List<String> _flashcardTitles = _prefs.getStringList(Strings.prefsFlashcardTitles);
-      List<String> _flashcardLengths = _prefs.getStringList(Strings.prefsFlashcardLength);
-      List<String> _flashcardData = _prefs.getStringList(Strings.prefsFlashcardData);
-
-      //add file to prefs
-      // flashcardData
-      if (_flashcardData != null){
-        _flashcardData.add(_fileText);
-      } else {
-        _flashcardData = [_fileText];
-      }
-      // flashcardTitles
-      if (_flashcardTitles != null){
-        _flashcardTitles.add(_fileName);
-      } else {
-        _flashcardTitles = [_fileName];
-      }
-      //flashcardLengths
-      if (_flashcardLengths != null) {
-        _flashcardLengths.add('$_fileCards');
-      } else {
-        _flashcardLengths = [_fileCards.toString()];
-      }
-
-      //update UI
-      setState(() {
-        _flashcardFiles = _flashcardTitles;
-        _flashcardLengths = _flashcardLengths;
-
-        Navigator.pop(context);
-      });
-
-      //save to shared prefs
-      await _prefs.setStringList(Strings.prefsFlashcardData,_flashcardData);
-      await _prefs.setStringList(Strings.prefsFlashcardTitles,_flashcardTitles);
-      await _prefs.setStringList(Strings.prefsFlashcardLength, _flashcardLengths);
+      //not supported
+      outputErrors(Strings.errorWeb, Strings.errorWebVersion);
 
     } catch(e) {
       //in case of error output error
@@ -269,23 +214,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void clickOpenFlashcards() async {
     try {
-      //user file prompt:
-      File _selectedFile = await FilePicker.getFile(type: FileType.CUSTOM, fileExtension: 'txt');
-
-      //error avoid
-      if (_selectedFile == null) {
-        outputErrors(Strings.errorImport, Strings.errorNoFile);
-        return;
-      }
-
-      //get text from file
-      String _fileText = await _selectedFile.readAsString();
-
-      //get list from file
-      List<String> _currentFlashcards = splitter(_fileText, "&");
-
-      //load flashcards page
-      Navigator.push(context, _FlashcardsPage(_currentFlashcards));
+      //not supported
+      outputErrors(Strings.errorWeb, Strings.errorWebVersion);
 
     } catch(e) {
       outputErrors(Strings.errorLoad, e);
@@ -586,129 +516,129 @@ class _MyHomePageState extends State<MyHomePage> {
       //Main Tab
       Container(
         child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Card(
-                  child: Container(
-                    height: cardHeight,
-                    child: InkWell(
-                      splashColor: Theme.of(context).primaryColor,
-                      onTap: (){
-                        setState(() {
-                          //Add Cards dialog
-                          showDialog<String>(
-                            context: context,
-                            builder: (BuildContext context) => SimpleDialog(
-                              title: Text(Strings.addNewCards),
-                              children: <Widget>[
-                                ListTile(
-                                  leading: Icon(Icons.folder_open),
-                                  title: Text(Strings.importFlashcards),
-                                  onTap: (){
-                                    clickImportFlashcards();
-                                  },
-                                ),
-                                ListTile(
-                                  leading: Icon(Icons.library_books),
-                                  title: Text(Strings.openFlashcardsFile),
-                                  onTap: (){
-                                    clickOpenFlashcards();
-                                  },
-                                ),
-                                ListTile(
-                                  leading: Icon(Icons.control_point),
-                                  title: Text(Strings.createFlashcards),
-                                  onTap: (){
-                                    clickCreateFlashcards();
-                                  },
-                                ),
-                              ],
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Card(
+              child: Container(
+                height: cardHeight,
+                child: InkWell(
+                  splashColor: Theme.of(context).primaryColor,
+                  onTap: (){
+                    setState(() {
+                      //Add Cards dialog
+                      showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => SimpleDialog(
+                          title: Text(Strings.addNewCards),
+                          children: <Widget>[
+                            ListTile(
+                              leading: Icon(Icons.folder_open),
+                              title: Text(Strings.importFlashcards),
+                              onTap: (){
+                                clickImportFlashcards();
+                              },
                             ),
-                          );
-                        });
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(Strings.paddingAsText + Strings.addNewCards,overflow: TextOverflow.ellipsis,style: TextStyle(fontWeight: FontWeight.bold)),
-                          Icon(Icons.add),
-                        ],
-                      ),
-                    ),
+                            ListTile(
+                              leading: Icon(Icons.library_books),
+                              title: Text(Strings.openFlashcardsFile),
+                              onTap: (){
+                                clickOpenFlashcards();
+                              },
+                            ),
+                            ListTile(
+                              leading: Icon(Icons.control_point),
+                              title: Text(Strings.createFlashcards),
+                              onTap: (){
+                                clickCreateFlashcards();
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    });
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(Strings.paddingAsText + Strings.addNewCards,overflow: TextOverflow.ellipsis,style: TextStyle(fontWeight: FontWeight.bold)),
+                      Icon(Icons.add),
+                    ],
                   ),
                 ),
+              ),
+            ),
 
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: _flashcardFiles.length,
-                    itemBuilder: (BuildContext context, int index){
-                      return Card(
-                          child: Container(
-                            height: cardHeight,
-                            child: InkWell(
-                              splashColor: Theme.of(context).primaryColor,
-                              onTap: (){
-                                //open cards dialog
-                                setState(() {
-                                  //Add Cards dialog
-                                  showDialog<String>(
-                                    context: context,
-                                    builder: (BuildContext context) => SimpleDialog(
-                                      title: Text(_flashcardFiles[index]),
-                                      children: <Widget>[
-                                        ListTile(
-                                          leading: Icon(Icons.edit),
-                                          title: Text(Strings.editFlashcards),
-                                          onTap: (){
-                                            clickEditFlashcards(index);
-                                          },
-                                        ),
-                                        ListTile(
-                                          leading: Icon(Icons.content_copy),
-                                          title: Text(Strings.loadFlashcards),
-                                          onTap: (){
-                                            clickLoadFlashcards(index);
-                                          },
-                                        ),
-                                        ListTile(
-                                          leading: Icon(Icons.delete_forever),
-                                          title: Text(Strings.deleteFlashcards),
-                                          onTap: (){
-                                            clickDeleteFlashcards(index);
-                                          },
-                                        )
-                                      ],
-                                    ),
-                                  );
-                                });
-                              },
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Expanded(
+              child: ListView.builder(
+                itemCount: _flashcardFiles.length,
+                itemBuilder: (BuildContext context, int index){
+                  return Card(
+                    child: Container(
+                      height: cardHeight,
+                      child: InkWell(
+                        splashColor: Theme.of(context).primaryColor,
+                        onTap: (){
+                          //open cards dialog
+                          setState(() {
+                            //Add Cards dialog
+                            showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => SimpleDialog(
+                                title: Text(_flashcardFiles[index]),
                                 children: <Widget>[
-                                  Flexible(
-                                    child: Container(
-                                      padding: EdgeInsets.only(right: 4.0),
-                                      child: Text(Strings.paddingAsText + _flashcardFiles[index],overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold)),
-
-                                    ),
+                                  ListTile(
+                                    leading: Icon(Icons.edit),
+                                    title: Text(Strings.editFlashcards),
+                                    onTap: (){
+                                      clickEditFlashcards(index);
+                                    },
                                   ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      Text(_flashcardLengths[index],overflow: TextOverflow.ellipsis),
-                                      Icon(Icons.content_copy),
-                                    ],
+                                  ListTile(
+                                    leading: Icon(Icons.content_copy),
+                                    title: Text(Strings.loadFlashcards),
+                                    onTap: (){
+                                      clickLoadFlashcards(index);
+                                    },
                                   ),
+                                  ListTile(
+                                    leading: Icon(Icons.delete_forever),
+                                    title: Text(Strings.deleteFlashcards),
+                                    onTap: (){
+                                      clickDeleteFlashcards(index);
+                                    },
+                                  )
                                 ],
                               ),
+                            );
+                          });
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Flexible(
+                              child: Container(
+                                padding: EdgeInsets.only(right: 4.0),
+                                child: Text(Strings.paddingAsText + _flashcardFiles[index],overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold)),
+
+                              ),
                             ),
-                          ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-          ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(_flashcardLengths[index],overflow: TextOverflow.ellipsis),
+                                Icon(Icons.content_copy),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
 
       //Settings Tab
@@ -836,30 +766,30 @@ class _MyHomePageState extends State<MyHomePage> {
       currentIndex: _currentTabIndex,
       type: BottomNavigationBarType.fixed,
       items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.content_copy),
-            title: Text(Strings.tabTitleFlashcards),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.content_copy),
+          title: Text(Strings.tabTitleFlashcards),
 
-          ),
+        ),
 
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            title: Text(Strings.tabTitleSettings),
-          ),
-        ],
+        BottomNavigationBarItem(
+          icon: Icon(Icons.settings),
+          title: Text(Strings.tabTitleSettings),
+        ),
+      ],
       onTap: (int index){
-          setState(() {
-            _currentTabIndex = index;
-            switch (index) {
-              case 0:
-                _tabTitle = Strings.tabTitleMain;
-                break;
-              case 1:
-                _tabTitle = Strings.tabTitleSettings;
-                break;
+        setState(() {
+          _currentTabIndex = index;
+          switch (index) {
+            case 0:
+              _tabTitle = Strings.tabTitleMain;
+              break;
+            case 1:
+              _tabTitle = Strings.tabTitleSettings;
+              break;
 
-            }
-          });
+          }
+        });
       },
     );
 
@@ -935,7 +865,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
             _cardFront.add(_currentFileData[_randomNumber]);
             _cardRear.add(_currentFileData[_randomNumber + 1]);
           }
-          
+
         }
 
 
@@ -1203,7 +1133,7 @@ class _EditCardsState extends State<EditCards> {
                 child: Text(Strings.errorCancel),
                 onPressed: (){
                   Navigator.of(context).pop();
-                  },
+                },
               ),
               FlatButton(
                 child: Text(Strings.errorOk),
