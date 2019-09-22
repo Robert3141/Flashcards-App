@@ -585,7 +585,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final _tabPages = <Widget>[
       //Main Tab
       Container(
-          child: Column(
+        child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Card(
@@ -713,8 +713,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       //Settings Tab
       Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+        child: ListView(
           children: <Widget>[
             // Cards Ordered
             InkWell(
@@ -824,7 +823,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
           ],
-        )
+        ),
       ),
     ];
 
@@ -968,7 +967,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
                   controller: _scrollControl,
                   itemBuilder: (BuildContext context, int index) {
                     return FlipCard(
-                      key: UniqueKey(),
+                      //key: UniqueKey(),
                       direction: FlipDirection.HORIZONTAL,
                       speed: 1500,
                       front: InkWell(
