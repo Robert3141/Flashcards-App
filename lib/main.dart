@@ -925,7 +925,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
           //generate random
           Random _rng = new Random();
           int _randomNumber = 0;
-          int _amountOfFlashcards = _currentFileData.length ~/ 2 - 1;
+          int _amountOfFlashcards = _currentFileData.length ~/ 2;
 
           // make random flashcard as next in list
           _randomNumber = _rng.nextInt(_amountOfFlashcards) * 2;
