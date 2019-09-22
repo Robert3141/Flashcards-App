@@ -78,6 +78,7 @@ class Strings{
   static String editCardsFront = "Front of Card";
   static String editCardsRear = "Back of Card";
   static String editDelete = "Deleting Card";
+  static String editDeleting = "Are you sure you want to delete this?";
 
   //Error Messages
   static String errorImport = "Error Importing Flashcards:\n";
@@ -87,7 +88,6 @@ class Strings{
   static String errorEdit = "Error Editing Flashcards:\n";
   static String errorLoad = "Error Loading Flashcards:\n";
   static String errorDelete = "Error Deleting Flashcards:\n";
-  static String errorDeleting = "Are you sure you want to delete this?";
   static String errorNewCard = "Error Getting Next Flashcard:\n";
   static String errorLoadPrefs = "Error Loading Settings:\n";
   static String errorSettingsOrdered = "Error Changing Ordered Cards:\n";
@@ -390,8 +390,8 @@ class _MyHomePageState extends State<MyHomePage> {
       showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          title: Text(Strings.errorDelete),
-          content: Text(Strings.errorDeleting),
+          title: Text(Strings.editDelete),
+          content: Text(Strings.editDeleting),
           actions: <Widget>[
             FlatButton(
               child: Text(Strings.errorCancel),
@@ -1197,8 +1197,8 @@ class _EditCardsState extends State<EditCards> {
         showDialog<String>(
           context: context,
           builder: (BuildContext context) => AlertDialog(
-            title: Text(Strings.errorEditDelete),
-            content: Text(Strings.errorDeleting),
+            title: Text(Strings.editDelete),
+            content: Text(Strings.editDeleting),
             actions: <Widget>[
               FlatButton(
                 child: Text(Strings.errorCancel),
