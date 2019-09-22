@@ -77,6 +77,7 @@ class Strings{
   static String editCardsCardNo = "Card Number: ";
   static String editCardsFront = "Front of Card";
   static String editCardsRear = "Back of Card";
+  static String editDelete = "Deleting Card";
 
   //Error Messages
   static String errorImport = "Error Importing Flashcards:\n";
