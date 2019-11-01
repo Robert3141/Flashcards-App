@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flashcards/globals.dart' as globals;
 import 'package:file_picker/file_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flip_card/flip_card.dart';
@@ -12,102 +13,6 @@ import 'package:flutter_material_color_picker/flutter_material_color_picker.dart
 Future main() async {
   runApp(new MyApp());
 }
-
-//
-// CONSTANTS
-//
-
-// Default settings
-final cardHeight = 100.0;
-final cardWidth = 0.9;
-final defaultPadding = 12.0;
-final defaultCardAmount = 50;
-final defaultCardsOrdered = false;
-final defaultThemeColor = Colors.blue;
-final defaultBrightness = Brightness.light;
-
-//prefs for flashcards page
-int amountOfCards;
-bool cardsOrdered;
-
-class Strings{
-  //British strings:
-
-  //App Interface Main
-  static String appName = "Flashcards";
-  static String tabTitleMain = "Main";
-  static String tabTitleSettings = "Settings";
-  static String tabTitleFlashcards = "Flashcards";
-  static String tabTitleEditCards = "Edit Cards";
-  static String paddingAsText = "     ";
-
-  //Default cards
-  static String addNewCards = "Add New Flashcards";
-  static String newFileName = "New File";
-  static String exampleFileName = "Example File";
-  static String exampleFileLength = "3";
-  static String exampleFileData = "card1a&card1b&card2a&card2b&card3a&card3b&";
-
-  //Dialog Options
-  static String importFlashcards = "Import File";
-  static String openFlashcardsFile = "Open File";
-  static String createFlashcards = "Create New";
-  static String editFlashcards = "Edit";
-  static String loadFlashcards = "Load";
-  static String deleteFlashcards = "Delete";
-  static String errorOk = "OK";
-  static String errorCancel = "CANCEL";
-
-  //Shared prefs storage names
-  static String prefsFlashcardTitles = "Titles"; //Strings List
-  static String prefsFlashcardLength = "Amount"; //Strings List
-  static String prefsFlashcardData = "Data"; //Strings List
-  static String prefsAmountOfCards = "Number"; //Integer
-  static String prefsCardsOrdered = "Ordered"; //Boolean
-
-  //Settings Options
-  static String settingsCardsOrdered = "Order Cards";
-  static String settingsAmountOfCards = "Amount Of Cards (In shuffle)";
-  static String settingsDarkTheme = "Dark Theme";
-  static String settingsThemeColour = "Theme Colour (In Light Theme)";
-
-  //Edit Cards Options
-  static String editCardsFileName = "File name: ";
-  static String editCardsAddCard = "Add New Flashcard";
-  static String editCardsCardNo = "Card Number: ";
-  static String editCardsFront = "Front of Card";
-  static String editCardsRear = "Back of Card";
-  static String editDelete = "Deleting Card";
-  static String editDeleting = "Are you sure you want to delete this?";
-
-  //Error Messages
-  static String errorImport = "Error Importing Flashcards:\n";
-  static String errorNoFile = "The app did not receive the file.\n Are you sure you selected a file?";
-  static String errorNotSupported = "The file is not supported.\n Are you sure the .txt file is UTF-8?";
-  static String errorCreate = "Error Creating Flashcards:\n";
-  static String errorEdit = "Error Editing Flashcards:\n";
-  static String errorLoad = "Error Loading Flashcards:\n";
-  static String errorDelete = "Error Deleting Flashcards:\n";
-  static String errorNewCard = "Error Getting Next Flashcard:\n";
-  static String errorLoadPrefs = "Error Loading Settings:\n";
-  static String errorSettingsOrdered = "Error Changing Ordered Cards:\n";
-  static String errorSettingsAmount = "Error Changing Amount of Cards:\n";
-  static String errorSettingsDark = "Error Changing Dark Theme:\n";
-  static String errorSettingsTheme = "Error Changing Theme Colour:\n";
-  static String errorSplitString = "Internal Error:\n";
-  static String errorEditTitle = "Error Editing Title:\n";
-  static String errorEditNewCard = "Error Adding New Flashcard:\n";
-  static String errorEditFlashcard = "Error Editing Flashcard:\n";
-  static String errorEditNoAnd = "You used the '&' character. \n This cannot be used in this app unfortunately";
-  static String errorEditClicked = "Error displaying Flashcard Editor:\n";
-  static String errorEditPrefs = "Error Saving Changes:\n";
-  static String errorEditDelete = "Error Deleting Card:\n";
-
-}
-
-//GLOBAL VARS
-List<String> _flashcardFiles = ['${Strings.exampleFileName}'];
-List<String> _flashcardLengths = ['${Strings.exampleFileLength}'];
 
 
 
@@ -127,20 +32,20 @@ class _MyAppState extends State<MyApp> {
     };
 
     return new DynamicTheme(
-      defaultBrightness: defaultBrightness,
+      defaultBrightness: globals.defaultBrightness,
       data: (brightness) => new ThemeData(
-        primarySwatch: defaultThemeColor,
+        primarySwatch: globals.defaultThemeColor,
         brightness: brightness,
       ),
       themedWidgetBuilder: (context, theme) {
         return new MaterialApp(
-          title: Strings.appName,
+          title: globals.appName,
           theme: theme,
           darkTheme: new ThemeData(
-            primarySwatch: defaultThemeColor,
+            primarySwatch: globals.defaultThemeColor,
             brightness: Brightness.dark,
           ),
-          home: new MyHomePage(title: Strings.appName,),
+          home: new MyHomePage(title: globals.appName,),
           routes: routes,
         );
       },
@@ -170,8 +75,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   //set variables for class
   int _currentTabIndex = 0;
-  var _tabTitle = Strings.tabTitleMain;
-  bool _cardsAmountEnabled = defaultCardsOrdered;
+  var _tabTitle = globals.tabTitleMain;
+  bool _cardsAmountEnabled = globals.defaultCardsOrdered;
   final _controllerAmountOfCards = TextEditingController();
 
   //
@@ -187,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
           content: Text(_e.toString()),
           actions: <Widget>[
             FlatButton(
-              child: Text(Strings.errorOk),
+              child: Text(globals.errorOk),
               onPressed: () => Navigator.pop(context),
             )
           ],
@@ -203,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       //error avoid
       if (_selectedFile == null) {
-        outputErrors(Strings.errorImport, Strings.errorNoFile);
+        outputErrors(globals.errorImport, globals.errorNoFile);
         return;
       }
 
@@ -220,9 +125,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
       //get SharedPrefs file
       SharedPreferences _prefs = await SharedPreferences.getInstance();
-      List<String> _flashcardTitles = _prefs.getStringList(Strings.prefsFlashcardTitles);
-      List<String> _flashcardLengths = _prefs.getStringList(Strings.prefsFlashcardLength);
-      List<String> _flashcardData = _prefs.getStringList(Strings.prefsFlashcardData);
+      List<String> _flashcardTitles = _prefs.getStringList(globals.prefsFlashcardTitles);
+      List<String> _flashcardLengths = _prefs.getStringList(globals.prefsFlashcardLength);
+      List<String> _flashcardData = _prefs.getStringList(globals.prefsFlashcardData);
 
       //add file to prefs
       // flashcardData
@@ -246,23 +151,23 @@ class _MyHomePageState extends State<MyHomePage> {
 
       //update UI
       setState(() {
-        _flashcardFiles = _flashcardTitles;
+        globals.flashcardFiles = _flashcardTitles;
         _flashcardLengths = _flashcardLengths;
 
         Navigator.pop(context);
       });
 
       //save to shared prefs
-      await _prefs.setStringList(Strings.prefsFlashcardData,_flashcardData);
-      await _prefs.setStringList(Strings.prefsFlashcardTitles,_flashcardTitles);
-      await _prefs.setStringList(Strings.prefsFlashcardLength, _flashcardLengths);
+      await _prefs.setStringList(globals.prefsFlashcardData,_flashcardData);
+      await _prefs.setStringList(globals.prefsFlashcardTitles,_flashcardTitles);
+      await _prefs.setStringList(globals.prefsFlashcardLength, _flashcardLengths);
 
     } catch(e) {
       //in case of error output error
       if (e == FileSystemException) {
-        outputErrors(Strings.errorImport, Strings.errorNotSupported);
+        outputErrors(globals.errorImport, globals.errorNotSupported);
       } else {
-        outputErrors(Strings.errorImport, e);
+        outputErrors(globals.errorImport, e);
       }
     }
   }
@@ -274,7 +179,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       //error avoid
       if (_selectedFile == null) {
-        outputErrors(Strings.errorImport, Strings.errorNoFile);
+        outputErrors(globals.errorImport, globals.errorNoFile);
         return;
       }
 
@@ -288,7 +193,7 @@ class _MyHomePageState extends State<MyHomePage> {
       Navigator.push(context, _FlashcardsPage(_currentFlashcards));
 
     } catch(e) {
-      outputErrors(Strings.errorLoad, e);
+      outputErrors(globals.errorLoad, e);
     }
   }
 
@@ -297,43 +202,43 @@ class _MyHomePageState extends State<MyHomePage> {
       // Get file from shared prefs
       int _newFileNumber = 0;
       SharedPreferences _prefs = await SharedPreferences.getInstance();
-      List<String> _flashcardsData = _prefs.getStringList(Strings.prefsFlashcardData);
-      List<String> _flashcardLengths = _prefs.getStringList(Strings.prefsFlashcardLength);
-      List<String> _flashcardTitle = _prefs.getStringList(Strings.prefsFlashcardTitles);
+      List<String> _flashcardsData = _prefs.getStringList(globals.prefsFlashcardData);
+      List<String> _flashcardLengths = _prefs.getStringList(globals.prefsFlashcardLength);
+      List<String> _flashcardTitle = _prefs.getStringList(globals.prefsFlashcardTitles);
 
       //add file to sharedPrefs
       // flashcardData
       if (_flashcardsData != null) {
-        _flashcardsData.add(Strings.exampleFileData);
+        _flashcardsData.add(globals.exampleFileData);
         _newFileNumber = _flashcardsData.length - 1;
       } else {
-        _flashcardsData = [Strings.exampleFileData];
+        _flashcardsData = [globals.exampleFileData];
       }
-      await _prefs.setStringList(Strings.prefsFlashcardData, _flashcardsData);
+      await _prefs.setStringList(globals.prefsFlashcardData, _flashcardsData);
       // flashcardLengths
       if (_flashcardLengths != null) {
-        _flashcardLengths.add(Strings.exampleFileLength);
+        _flashcardLengths.add(globals.exampleFileLength);
       } else {
-        _flashcardLengths = [Strings.exampleFileLength];
+        _flashcardLengths = [globals.exampleFileLength];
       }
-      await _prefs.setStringList(Strings.prefsFlashcardLength, _flashcardLengths);
+      await _prefs.setStringList(globals.prefsFlashcardLength, _flashcardLengths);
       //flashcardTitle
       if (_flashcardTitle != null) {
-        _flashcardTitle.add(Strings.newFileName);
+        _flashcardTitle.add(globals.newFileName);
       } else {
-        _flashcardTitle = [Strings.newFileName];
+        _flashcardTitle = [globals.newFileName];
       }
-      await _prefs.setStringList(Strings.prefsFlashcardTitles, _flashcardTitle);
+      await _prefs.setStringList(globals.prefsFlashcardTitles, _flashcardTitle);
 
       //split from file
-      List<String> _currentFlashcards = splitter(Strings.exampleFileData, "&");
+      List<String> _currentFlashcards = splitter(globals.exampleFileData, "&");
 
       //load edit page
       Navigator.push(context, _EditCardsPage(_currentFlashcards, _newFileNumber));
 
     } catch(e){
       //in case of error output error
-      outputErrors(Strings.errorCreate, e);
+      outputErrors(globals.errorCreate, e);
     }
   }
 
@@ -341,16 +246,16 @@ class _MyHomePageState extends State<MyHomePage> {
     try{
       //Get file from shared prefs
       SharedPreferences _prefs = await SharedPreferences.getInstance();
-      List<String> _flashcardData = _prefs.getStringList(Strings.prefsFlashcardData);
+      List<String> _flashcardData = _prefs.getStringList(globals.prefsFlashcardData);
 
       //add example file to shared prefs
       if (_flashcardData == null) {
-        _flashcardData = [Strings.exampleFileData];
-        _prefs.setStringList(Strings.prefsFlashcardData, [Strings.exampleFileData]);
+        _flashcardData = [globals.exampleFileData];
+        _prefs.setStringList(globals.prefsFlashcardData, [globals.exampleFileData]);
 
         //add title and amount of cards
-        _prefs.setStringList(Strings.prefsFlashcardTitles, [Strings.exampleFileName]);
-        _prefs.setStringList(Strings.prefsFlashcardLength, [Strings.exampleFileLength]);
+        _prefs.setStringList(globals.prefsFlashcardTitles, [globals.exampleFileName]);
+        _prefs.setStringList(globals.prefsFlashcardLength, [globals.exampleFileLength]);
       }
 
       //split from file
@@ -365,7 +270,7 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     } catch(e){
       //in case of error output error
-      outputErrors(Strings.errorEdit, e);
+      outputErrors(globals.errorEdit, e);
     }
   }
 
@@ -373,7 +278,7 @@ class _MyHomePageState extends State<MyHomePage> {
     try{
       //Get file from shared prefs
       SharedPreferences _prefs = await SharedPreferences.getInstance();
-      List<String> _flashcardsData = _prefs.getStringList(Strings.prefsFlashcardData) ?? [Strings.exampleFileData];
+      List<String> _flashcardsData = _prefs.getStringList(globals.prefsFlashcardData) ?? [globals.exampleFileData];
       List<String> _currentFlashcards = splitter(_flashcardsData[_fileNumber], "&");
 
       //load flashcards page
@@ -381,7 +286,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     } catch(e){
       //in case of error output error
-      outputErrors(Strings.errorLoad, e);
+      outputErrors(globals.errorLoad, e);
     }
   }
 
@@ -390,41 +295,41 @@ class _MyHomePageState extends State<MyHomePage> {
       showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          title: Text(Strings.editDelete),
-          content: Text(Strings.editDeleting),
+          title: Text(globals.editDelete),
+          content: Text(globals.editDeleting),
           actions: <Widget>[
             FlatButton(
-              child: Text(Strings.errorCancel),
+              child: Text(globals.errorCancel),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             FlatButton(
-              child: Text(Strings.errorOk),
+              child: Text(globals.errorOk),
               onPressed: () async {
                 //load prefs
                 SharedPreferences _prefs = await SharedPreferences.getInstance();
 
                 //get from shared prefs
-                List<String> _flashcardsData = _prefs.getStringList(Strings.prefsFlashcardData);
+                List<String> _flashcardsData = _prefs.getStringList(globals.prefsFlashcardData);
 
                 //check not example file
                 if (_flashcardsData != null) {
                   //get from shared prefs
-                  _flashcardFiles = _prefs.getStringList(Strings.prefsFlashcardTitles);
-                  _flashcardLengths = _prefs.getStringList(Strings.prefsFlashcardLength);
+                  globals.flashcardFiles = _prefs.getStringList(globals.prefsFlashcardTitles);
+                  globals.flashcardLengths = _prefs.getStringList(globals.prefsFlashcardLength);
 
                   //remove file
                   _flashcardsData.removeAt(_fileNumber);
-                  _prefs.setStringList(Strings.prefsFlashcardData, _flashcardsData);
+                  _prefs.setStringList(globals.prefsFlashcardData, _flashcardsData);
 
                   //remove title
-                  _flashcardFiles.removeAt(_fileNumber);
-                  _prefs.setStringList(Strings.prefsFlashcardTitles, _flashcardFiles);
+                  globals.flashcardFiles.removeAt(_fileNumber);
+                  _prefs.setStringList(globals.prefsFlashcardTitles, globals.flashcardFiles);
 
                   //remove number
-                  _flashcardLengths.removeAt(_fileNumber);
-                  _prefs.setStringList(Strings.prefsFlashcardLength, _flashcardLengths);
+                  globals.flashcardLengths.removeAt(_fileNumber);
+                  _prefs.setStringList(globals.prefsFlashcardLength, globals.flashcardLengths);
 
                   //reload interface
                   Navigator.pop(context);
@@ -439,7 +344,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       );
     } catch(e) {
-      outputErrors(Strings.errorDelete, e);
+      outputErrors(globals.errorDelete, e);
     }
   }
 
@@ -449,14 +354,14 @@ class _MyHomePageState extends State<MyHomePage> {
       SharedPreferences _prefs = await SharedPreferences.getInstance();
 
       //set variables
-      _flashcardFiles = _prefs.getStringList(Strings.prefsFlashcardTitles)?? [Strings.exampleFileName];
-      _flashcardLengths = _prefs.getStringList(Strings.prefsFlashcardLength)?? [Strings.exampleFileLength];
-      amountOfCards = _prefs.getInt(Strings.prefsAmountOfCards) ?? defaultCardAmount;
-      _controllerAmountOfCards.text = amountOfCards.toString();
-      cardsOrdered = _prefs.getBool(Strings.prefsCardsOrdered) ?? defaultCardsOrdered;
-      _cardsAmountEnabled = !cardsOrdered;
+      globals.flashcardFiles = _prefs.getStringList(globals.prefsFlashcardTitles)?? [globals.exampleFileName];
+      globals.flashcardLengths = _prefs.getStringList(globals.prefsFlashcardLength)?? [globals.exampleFileLength];
+      globals.amountOfCards = _prefs.getInt(globals.prefsAmountOfCards) ?? globals.defaultCardAmount;
+      _controllerAmountOfCards.text = globals.amountOfCards.toString();
+      globals.cardsOrdered = _prefs.getBool(globals.prefsCardsOrdered) ?? globals.defaultCardsOrdered;
+      _cardsAmountEnabled = !globals.cardsOrdered;
     } catch(e) {
-      outputErrors(Strings.errorLoadPrefs, e);
+      outputErrors(globals.errorLoadPrefs, e);
     }
   }
 
@@ -468,14 +373,14 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       //set up prefs and save to prefs
       SharedPreferences _prefs = await SharedPreferences.getInstance();
-      _prefs.setBool(Strings.prefsCardsOrdered, _orderedCard);
-      cardsOrdered = _orderedCard;
+      _prefs.setBool(globals.prefsCardsOrdered, _orderedCard);
+      globals.cardsOrdered = _orderedCard;
       setState(() {
-        cardsOrdered = _orderedCard;
+        globals.cardsOrdered = _orderedCard;
         _cardsAmountEnabled = !_orderedCard;
       });
     } catch(e) {
-      outputErrors(Strings.errorSettingsOrdered, e);
+      outputErrors(globals.errorSettingsOrdered, e);
     }
   }
 
@@ -483,7 +388,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (num.tryParse(_cardAmountInput.toString()) != null){
       //set up prefs and save to prefs
       SharedPreferences _prefs = await SharedPreferences.getInstance();
-      _prefs.setInt(Strings.prefsAmountOfCards, num.parse(_cardAmountInput.toString()));
+      _prefs.setInt(globals.prefsAmountOfCards, num.parse(_cardAmountInput.toString()));
     }
   }
 
@@ -492,7 +397,7 @@ class _MyHomePageState extends State<MyHomePage> {
       //set up prefs and save to prefs
       DynamicTheme.of(context).setBrightness(_darkTheme? Brightness.dark : Brightness.light);
     } catch(e) {
-      outputErrors(Strings.errorSettingsDark, e);
+      outputErrors(globals.errorSettingsDark, e);
     }
   }
 
@@ -504,7 +409,7 @@ class _MyHomePageState extends State<MyHomePage> {
           context: context,
           builder: (_) {
             return AlertDialog(
-              title: Text(Strings.settingsThemeColour),
+              title: Text(globals.settingsThemeColour),
               content: MaterialColorPicker(
                 selectedColor: Theme.of(context).primaryColor,
                 allowShades: true,
@@ -518,13 +423,13 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               actions: <Widget>[
                 FlatButton(
-                  child: Text(Strings.errorCancel),
+                  child: Text(globals.errorCancel),
                   onPressed: (){
                     Navigator.of(context).pop();
                   },
                 ),
                 FlatButton(
-                  child: Text(Strings.errorOk),
+                  child: Text(globals.errorOk),
                   onPressed: (){
                     DynamicTheme.of(context).setBrightness(Brightness.light);
                     DynamicTheme.of(context).setThemeData(new ThemeData(primaryColor: _tempColor, accentColor: _tempColor));
@@ -536,7 +441,7 @@ class _MyHomePageState extends State<MyHomePage> {
           }
       );
     } catch(e) {
-      outputErrors(Strings.errorSettingsTheme, e);
+      outputErrors(globals.errorSettingsTheme, e);
     }
   }
 
@@ -571,7 +476,7 @@ class _MyHomePageState extends State<MyHomePage> {
         _fileList.add(_tempString);
       }
     } catch(e) {
-      outputErrors(Strings.errorSplitString, e);
+      outputErrors(globals.errorSplitString, e);
     }
 
     return _fileList;
@@ -590,7 +495,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 Card(
                   child: Container(
-                    height: cardHeight,
+                    height: globals.cardHeight,
                     child: InkWell(
                       splashColor: Theme.of(context).primaryColor,
                       onTap: (){
@@ -599,25 +504,25 @@ class _MyHomePageState extends State<MyHomePage> {
                           showDialog<String>(
                             context: context,
                             builder: (BuildContext context) => SimpleDialog(
-                              title: Text(Strings.addNewCards),
+                              title: Text(globals.addNewCards),
                               children: <Widget>[
                                 ListTile(
                                   leading: Icon(Icons.folder_open),
-                                  title: Text(Strings.importFlashcards),
+                                  title: Text(globals.importFlashcards),
                                   onTap: (){
                                     clickImportFlashcards();
                                   },
                                 ),
                                 ListTile(
                                   leading: Icon(Icons.library_books),
-                                  title: Text(Strings.openFlashcardsFile),
+                                  title: Text(globals.openFlashcardsFile),
                                   onTap: (){
                                     clickOpenFlashcards();
                                   },
                                 ),
                                 ListTile(
                                   leading: Icon(Icons.control_point),
-                                  title: Text(Strings.createFlashcards),
+                                  title: Text(globals.createFlashcards),
                                   onTap: (){
                                     clickCreateFlashcards();
                                   },
@@ -630,7 +535,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text(Strings.paddingAsText + Strings.addNewCards,overflow: TextOverflow.ellipsis,style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text(globals.paddingAsText + globals.addNewCards,overflow: TextOverflow.ellipsis,style: TextStyle(fontWeight: FontWeight.bold)),
                           Icon(Icons.add),
                         ],
                       ),
@@ -640,11 +545,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 Expanded(
                   child: ListView.builder(
-                    itemCount: _flashcardFiles.length,
+                    itemCount: globals.flashcardFiles.length,
                     itemBuilder: (BuildContext context, int index){
                       return Card(
                           child: Container(
-                            height: cardHeight,
+                            height: globals.cardHeight,
                             child: InkWell(
                               splashColor: Theme.of(context).primaryColor,
                               onTap: (){
@@ -654,25 +559,25 @@ class _MyHomePageState extends State<MyHomePage> {
                                   showDialog<String>(
                                     context: context,
                                     builder: (BuildContext context) => SimpleDialog(
-                                      title: Text(_flashcardFiles[index]),
+                                      title: Text(globals.flashcardFiles[index]),
                                       children: <Widget>[
                                         ListTile(
                                           leading: Icon(Icons.edit),
-                                          title: Text(Strings.editFlashcards),
+                                          title: Text(globals.editFlashcards),
                                           onTap: (){
                                             clickEditFlashcards(index);
                                           },
                                         ),
                                         ListTile(
                                           leading: Icon(Icons.content_copy),
-                                          title: Text(Strings.loadFlashcards),
+                                          title: Text(globals.loadFlashcards),
                                           onTap: (){
                                             clickLoadFlashcards(index);
                                           },
                                         ),
                                         ListTile(
                                           leading: Icon(Icons.delete_forever),
-                                          title: Text(Strings.deleteFlashcards),
+                                          title: Text(globals.deleteFlashcards),
                                           onTap: (){
                                             clickDeleteFlashcards(index);
                                           },
@@ -688,14 +593,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                   Flexible(
                                     child: Container(
                                       padding: EdgeInsets.only(right: 4.0),
-                                      child: Text(Strings.paddingAsText + _flashcardFiles[index],overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold)),
+                                      child: Text(globals.paddingAsText + globals.flashcardFiles[index],overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold)),
 
                                     ),
                                   ),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: <Widget>[
-                                      Text(_flashcardLengths[index],overflow: TextOverflow.ellipsis),
+                                      Text(globals.flashcardLengths[index],overflow: TextOverflow.ellipsis),
                                       Icon(Icons.content_copy),
                                     ],
                                   ),
@@ -719,7 +624,7 @@ class _MyHomePageState extends State<MyHomePage> {
             InkWell(
               splashColor: Theme.of(context).primaryColor,
               onTap: (){
-                settingsOrderedCards(!cardsOrdered);
+                settingsOrderedCards(!globals.cardsOrdered);
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -727,12 +632,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Padding(padding: EdgeInsets.only(left: defaultPadding),),
+                      Padding(padding: EdgeInsets.only(left: globals.defaultPadding),),
                       Icon(Icons.reorder),
-                      Text(Strings.paddingAsText + Strings.settingsCardsOrdered, style: TextStyle(fontWeight: FontWeight.bold),),
+                      Text(globals.paddingAsText + globals.settingsCardsOrdered, style: TextStyle(fontWeight: FontWeight.bold),),
                     ],
                   ),
-                  Switch(value: cardsOrdered, onChanged: settingsOrderedCards,),
+                  Switch(value: globals.cardsOrdered, onChanged: settingsOrderedCards,),
                 ],
               ),
             ),
@@ -746,10 +651,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Padding(padding: EdgeInsets.only(left: defaultPadding),),
+                      Padding(padding: EdgeInsets.only(left: globals.defaultPadding),),
                       Icon(Icons.shuffle),
                       Text(
-                        Strings.paddingAsText + Strings.settingsAmountOfCards,
+                        globals.paddingAsText + globals.settingsAmountOfCards,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
@@ -757,9 +662,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   Expanded(
                     child: Padding(
-                      padding: EdgeInsets.all(defaultPadding),
+                      padding: EdgeInsets.all(globals.defaultPadding),
                       child: TextField(
-                        decoration: InputDecoration(contentPadding: EdgeInsets.all(defaultPadding)),
+                        decoration: InputDecoration(contentPadding: EdgeInsets.all(globals.defaultPadding)),
                         enabled: _cardsAmountEnabled,
                         keyboardType: TextInputType.number,
                         inputFormatters: <TextInputFormatter>[WhitelistingTextInputFormatter.digitsOnly],
@@ -784,10 +689,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Padding(padding: EdgeInsets.only(left: defaultPadding),),
+                      Padding(padding: EdgeInsets.only(left: globals.defaultPadding),),
                       Icon(Icons.brightness_3),
                       Text(
-                        Strings.paddingAsText + Strings.settingsDarkTheme,
+                        globals.paddingAsText + globals.settingsDarkTheme,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
@@ -810,10 +715,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Padding(padding: EdgeInsets.only(left: defaultPadding),),
+                      Padding(padding: EdgeInsets.only(left: globals.defaultPadding),),
                       Icon(Icons.color_lens),
                       Text(
-                        Strings.paddingAsText + Strings.settingsThemeColour,
+                        globals.paddingAsText + globals.settingsThemeColour,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
@@ -838,13 +743,13 @@ class _MyHomePageState extends State<MyHomePage> {
       items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.content_copy),
-            title: Text(Strings.tabTitleFlashcards),
+            title: Text(globals.tabTitleFlashcards),
 
           ),
 
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
-            title: Text(Strings.tabTitleSettings),
+            title: Text(globals.tabTitleSettings),
           ),
         ],
       onTap: (int index){
@@ -852,10 +757,10 @@ class _MyHomePageState extends State<MyHomePage> {
             _currentTabIndex = index;
             switch (index) {
               case 0:
-                _tabTitle = Strings.tabTitleMain;
+                _tabTitle = globals.tabTitleMain;
                 break;
               case 1:
-                _tabTitle = Strings.tabTitleSettings;
+                _tabTitle = globals.tabTitleSettings;
                 break;
 
             }
@@ -893,7 +798,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
           content: Text(_e.toString()),
           actions: <Widget>[
             FlatButton(
-              child: Text(Strings.errorOk),
+              child: Text(globals.errorOk),
               onPressed: () => Navigator.pop(context),
             )
           ],
@@ -904,7 +809,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
     void newCard() {
       try {
         //cards ordered?
-        if (cardsOrdered){
+        if (globals.cardsOrdered){
           //Cards need to be displayed in an ordered fashion
 
           //loop through array and add the flashcards
@@ -930,7 +835,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
           _randomNumber = _rng.nextInt(_amountOfFlashcards) * 2;
           _cardFront[0] = _currentFileData[_randomNumber];
           _cardRear[0] = _currentFileData[_randomNumber + 1];
-          for (var i = 1; i < amountOfCards; i++) {
+          for (var i = 1; i < globals.amountOfCards; i++) {
             _randomNumber = _rng.nextInt(_amountOfFlashcards) * 2;
             _cardFront.add(_currentFileData[_randomNumber]);
             _cardRear.add(_currentFileData[_randomNumber + 1]);
@@ -940,7 +845,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
 
 
       } catch(e) {
-        outputErrors(Strings.errorNewCard, e);
+        outputErrors(globals.errorNewCard, e);
       }
     }
 
@@ -950,7 +855,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
     newCard();
     return Scaffold(
       appBar: AppBar(
-        title: Text(Strings.tabTitleFlashcards),
+        title: Text(globals.tabTitleFlashcards),
         elevation: 1.0,
       ),
       body: Builder(
@@ -973,7 +878,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
                       front: InkWell(
                         child: Card(
                           child: Container(
-                            width: _screenWidth * cardWidth,
+                            width: _screenWidth * globals.cardWidth,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.all(Radius.circular(8.0))
                             ),
@@ -981,7 +886,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
                                 Padding(
-                                  padding: EdgeInsets.all(defaultPadding),
+                                  padding: EdgeInsets.all(globals.defaultPadding),
                                   child: Text(_cardFront[index]),
                                 ),
                               ],
@@ -992,7 +897,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
                       back: InkWell(
                         child: Card(
                           child: Container(
-                            width: _screenWidth * cardWidth,
+                            width: _screenWidth * globals.cardWidth,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.all(Radius.circular(8.0))
                             ),
@@ -1000,7 +905,7 @@ class _FlashcardsPage extends MaterialPageRoute<Null> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
                                 Padding(
-                                  padding: EdgeInsets.all(defaultPadding),
+                                  padding: EdgeInsets.all(globals.defaultPadding),
                                   child: Text(_cardRear[index]),
                                 ),
                               ],
@@ -1051,7 +956,7 @@ class _EditCardsPage extends MaterialPageRoute<Null> {
   _EditCardsPage(List<String> _currentFileData, int _currentFileNo) : super(builder: (BuildContext context){
     return Scaffold(
       appBar: AppBar(
-        title:Text(Strings.tabTitleEditCards),
+        title:Text(globals.tabTitleEditCards),
         elevation: 1.0,
       ),
       body: Builder(
@@ -1114,7 +1019,7 @@ class _EditCardsState extends State<EditCards> {
           content: Text(_e.toString()),
           actions: <Widget>[
             FlatButton(
-              child: Text(Strings.errorOk),
+              child: Text(globals.errorOk),
               onPressed: () => Navigator.pop(context),
             )
           ],
@@ -1128,9 +1033,9 @@ class _EditCardsState extends State<EditCards> {
         SharedPreferences _prefs = await SharedPreferences.getInstance();
 
         //get title
-        _controllerTitle.text = _prefs.getStringList(Strings.prefsFlashcardTitles)[_currentFileNo];
+        _controllerTitle.text = _prefs.getStringList(globals.prefsFlashcardTitles)[_currentFileNo];
       } catch(e) {
-        outputErrors(Strings.errorLoadPrefs, e);
+        outputErrors(globals.errorLoadPrefs, e);
       }
     }
 
@@ -1148,15 +1053,15 @@ class _EditCardsState extends State<EditCards> {
         SharedPreferences _prefs = await SharedPreferences.getInstance();
 
         //get string list
-        List<String> _currentFlashcardData = _prefs.getStringList(Strings.prefsFlashcardData);
+        List<String> _currentFlashcardData = _prefs.getStringList(globals.prefsFlashcardData);
 
         //update string list
         _currentFlashcardData[_currentFileNo] = _currentFileDataString;
 
         //save to prefs
-        _prefs.setStringList(Strings.prefsFlashcardData, _currentFlashcardData);
+        _prefs.setStringList(globals.prefsFlashcardData, _currentFlashcardData);
       } catch(e) {
-        outputErrors(Strings.errorEditPrefs, e);
+        outputErrors(globals.errorEditPrefs, e);
       }
     }
 
@@ -1171,7 +1076,7 @@ class _EditCardsState extends State<EditCards> {
         }
         if (andUsed) {
           //output error
-          outputErrors(Strings.errorEditFlashcard, Strings.errorEditNoAnd);
+          outputErrors(globals.errorEditFlashcard, globals.errorEditNoAnd);
           return;
         }
 
@@ -1186,7 +1091,7 @@ class _EditCardsState extends State<EditCards> {
         _updatePrefs();
 
       } catch(e) {
-        outputErrors(Strings.errorEditFlashcard, e);
+        outputErrors(globals.errorEditFlashcard, e);
       }
     }
 
@@ -1196,17 +1101,17 @@ class _EditCardsState extends State<EditCards> {
         showDialog<String>(
           context: context,
           builder: (BuildContext context) => AlertDialog(
-            title: Text(Strings.editDelete),
-            content: Text(Strings.editDeleting),
+            title: Text(globals.editDelete),
+            content: Text(globals.editDeleting),
             actions: <Widget>[
               FlatButton(
-                child: Text(Strings.errorCancel),
+                child: Text(globals.errorCancel),
                 onPressed: (){
                   Navigator.of(context).pop();
                   },
               ),
               FlatButton(
-                child: Text(Strings.errorOk),
+                child: Text(globals.errorOk),
                 onPressed: () async {
                   //delete card
                   debugPrint('_index=$_index');
@@ -1227,16 +1132,16 @@ class _EditCardsState extends State<EditCards> {
 
                   //update card amount
                   SharedPreferences _prefs = await SharedPreferences.getInstance();
-                  List<String> _amountOfCards =_prefs.getStringList(Strings.prefsFlashcardLength);
+                  List<String> _amountOfCards =_prefs.getStringList(globals.prefsFlashcardLength);
                   _amountOfCards[_currentFileNo] = (int.parse(_amountOfCards[_currentFileNo]) - 1).toString();
-                  _prefs.setStringList(Strings.prefsFlashcardLength, _amountOfCards);
+                  _prefs.setStringList(globals.prefsFlashcardLength, _amountOfCards);
                 },
               )
             ],
           ),
         );
       } catch(e) {
-        outputErrors(Strings.errorEditDelete, e);
+        outputErrors(globals.errorEditDelete, e);
       }
     }
 
@@ -1250,12 +1155,12 @@ class _EditCardsState extends State<EditCards> {
         showDialog<String>(
           context: context,
           builder: (BuildContext context) => SimpleDialog(
-            title: Text(Strings.editCardsCardNo + (index + 1).toString()),
+            title: Text(globals.editCardsCardNo + (index + 1).toString()),
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.all(defaultPadding),
+                padding: EdgeInsets.all(globals.defaultPadding),
                 child: TextField(
-                  decoration: InputDecoration(hintText: Strings.editCardsFront),
+                  decoration: InputDecoration(hintText: globals.editCardsFront),
                   onChanged: (_newCard){
                     _cardChanged(_newCard, index, true);
                   },
@@ -1263,9 +1168,9 @@ class _EditCardsState extends State<EditCards> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(defaultPadding),
+                padding: EdgeInsets.all(globals.defaultPadding),
                 child: TextField(
-                  decoration: InputDecoration(hintText: Strings.editCardsRear),
+                  decoration: InputDecoration(hintText: globals.editCardsRear),
                   onChanged: (_newCard){
                     _cardChanged(_newCard, index, false);
                   },
@@ -1274,7 +1179,7 @@ class _EditCardsState extends State<EditCards> {
               ),
               ListTile(
                 leading: Icon(Icons.delete_forever),
-                title: Text(Strings.deleteFlashcards),
+                title: Text(globals.deleteFlashcards),
                 onTap: (){
                   _clickDeleteFlashcard(index);
                 },
@@ -1283,7 +1188,7 @@ class _EditCardsState extends State<EditCards> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   FlatButton(
-                    child: Text(Strings.errorOk),
+                    child: Text(globals.errorOk),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ],
@@ -1292,7 +1197,7 @@ class _EditCardsState extends State<EditCards> {
           ),
         );
       } catch(e) {
-        outputErrors(Strings.errorEditClicked, e);
+        outputErrors(globals.errorEditClicked, e);
       }
     }
 
@@ -1302,16 +1207,16 @@ class _EditCardsState extends State<EditCards> {
         SharedPreferences _prefs = await SharedPreferences.getInstance();
 
         //get titles list
-        List<String> _titlesList = _prefs.getStringList(Strings.prefsFlashcardTitles);
+        List<String> _titlesList = _prefs.getStringList(globals.prefsFlashcardTitles);
 
         //set titles list
         _titlesList[_currentFileNo] = _newTitle;
 
         //save to prefs
-        _prefs.setStringList(Strings.prefsFlashcardTitles, _titlesList);
-        _flashcardFiles = _titlesList;
+        _prefs.setStringList(globals.prefsFlashcardTitles, _titlesList);
+        globals.flashcardFiles = _titlesList;
       } catch(e) {
-        outputErrors(Strings.errorEditTitle, e);
+        outputErrors(globals.errorEditTitle, e);
       }
     }
 
@@ -1328,15 +1233,15 @@ class _EditCardsState extends State<EditCards> {
 
         //update card amount
         SharedPreferences _prefs = await SharedPreferences.getInstance();
-        List<String> _amountOfCards =_prefs.getStringList(Strings.prefsFlashcardLength);
+        List<String> _amountOfCards =_prefs.getStringList(globals.prefsFlashcardLength);
         _amountOfCards[_currentFileNo] = (int.parse(_amountOfCards[_currentFileNo]) + 1).toString();
-        _prefs.setStringList(Strings.prefsFlashcardLength, _amountOfCards);
+        _prefs.setStringList(globals.prefsFlashcardLength, _amountOfCards);
 
         //popup edit new card interface
         _cardClicked(_currentFileData.length ~/ 2 - 1);
 
       } catch(e) {
-        outputErrors(Strings.errorEditNewCard, e);
+        outputErrors(globals.errorEditNewCard, e);
       }
     }
 
@@ -1350,17 +1255,17 @@ class _EditCardsState extends State<EditCards> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Container(
-            height: cardHeight,
+            height: globals.cardHeight,
             child: InkWell(
               splashColor: Theme.of(context).primaryColor,
               onTap: () {},
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  Text(Strings.paddingAsText + Strings.editCardsFileName, style: TextStyle(color: Color(0xFFFFFFFF)),),
+                  Text(globals.paddingAsText + globals.editCardsFileName, style: TextStyle(color: Color(0xFFFFFFFF)),),
                   Expanded(
                     child: Padding(
-                      padding: EdgeInsets.all(defaultPadding),
+                      padding: EdgeInsets.all(globals.defaultPadding),
                       child: TextField(
                         onChanged: _titleChanged,
                         controller: _controllerTitle,
@@ -1374,7 +1279,7 @@ class _EditCardsState extends State<EditCards> {
           ),
           Card(
             child: Container(
-              height: cardHeight,
+              height: globals.cardHeight,
               child: InkWell(
                 splashColor: Theme.of(context).primaryColor,
                 onTap: () {
@@ -1383,7 +1288,7 @@ class _EditCardsState extends State<EditCards> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
-                    Text(Strings.paddingAsText + Strings.editCardsAddCard),
+                    Text(globals.paddingAsText + globals.editCardsAddCard),
                     Icon(Icons.add),
                   ],
                 ),
@@ -1396,7 +1301,7 @@ class _EditCardsState extends State<EditCards> {
               itemBuilder: (BuildContext context, int index){
                 return Card(
                   child: Container(
-                    height: cardHeight,
+                    height: globals.cardHeight,
                     child: InkWell(
                       splashColor: Theme.of(context).primaryColor,
                       onTap: (){
@@ -1405,9 +1310,9 @@ class _EditCardsState extends State<EditCards> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text(Strings.paddingAsText + _currentFileData[index * 2], overflow: TextOverflow.ellipsis,),
+                          Text(globals.paddingAsText + _currentFileData[index * 2], overflow: TextOverflow.ellipsis,),
                           Divider(),
-                          Text(_currentFileData[index * 2 + 1] + Strings.paddingAsText, overflow: TextOverflow.ellipsis,),
+                          Text(_currentFileData[index * 2 + 1] + globals.paddingAsText, overflow: TextOverflow.ellipsis,),
                         ],
                       ),
                     ),
