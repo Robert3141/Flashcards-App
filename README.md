@@ -12,9 +12,9 @@ Permissions:
 - READ_EXTERNAL_STORAGE (Required so app can import/open flashcards)
 
 ### Download
-| [![Play Store](http://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=uk.co.ariesfamily.flashcards) | ![Github](https://github.githubassets.com/pinned-octocat.svg) | [![XDA Labs](https://i2.wp.com/www.androidfreeapks.com/wp-content/uploads/2016/10/XDA-Labs-1.0.8.8b-beta-APK.png?resize=96%2C96&ssl=1)](https://labs.xda-developers.com/store/app/uk.co.ariesfamily.flashcards) |
-| :---: | :---: | :---: |
-| Flutter Version (6.2+) | Github (6.2+) | Old Kotlin Version |
+| [![Play Store](http://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=uk.co.ariesfamily.flashcards) | [![Github](https://github.githubassets.com/pinned-octocat.svg)](https://github.com/Robert3141/Flashcards-App/releases) |
+| :---: | :---: |
+| Flutter Version (6.2+) | Github (6.2+) |
 
 ### Contribute
 You can contribute to this project in many ways:
@@ -25,7 +25,7 @@ You can contribute to this project in many ways:
 ### Showcase
 | [YouTube](https://youtu.be/8eFHujrshkk) | ![](https://lh3.googleusercontent.com/pH5MbzVzBDMcG2KvuxGtSMlrqofgGJlDHI1TT8EeLtW3NioDo5b0KV5g0T0krk5YUA=w1920-h947-rw) | ![](https://lh3.googleusercontent.com/qKb-rFDGb37Hjaz_kOQs8Cs5XJ_XwnfpdP6o-qaxUu3xt78q5lBLxr0costmd7sDnw=w1920-h947-rw) |
 | :---: | ---| --- |
-| ![](https://lh3.googleusercontent.com/msRe45dS0ZvnpDJ8x1ReI8_pkuXM0f-UoZjQUhZ_pjU2QFLzvZyIQj5xfaozMmVUnRk=w1920-h947-rw) | ![](https://lh3.googleusercontent.com/msRe45dS0ZvnpDJ8x1ReI8_pkuXM0f-UoZjQUhZ_pjU2QFLzvZyIQj5xfaozMmVUnRk=w1920-h947-rw) | ![](https://lh3.googleusercontent.com/aMOXCTn67ekKrUJiiEkfH2wxn-X2obAjLbfmygmhgbWoP-0PQ-w-08zFAX-GNkX28bs=w1920-h947-rw) |
+| ![](https://lh3.googleusercontent.com/msRe45dS0ZvnpDJ8x1ReI8_pkuXM0f-UoZjQUhZ_pjU2QFLzvZyIQj5xfaozMmVUnRk=w1920-h947-rw) | ![](https://lh3.googleusercontent.com/2kjzS7H1Y4j67xOJdfRKAO3xyVF-SE5Vm2CwBtqU2iROf6siOYqkuKhDrk65MrKhWYxY=w1366-h635-rw) | ![](https://lh3.googleusercontent.com/aMOXCTn67ekKrUJiiEkfH2wxn-X2obAjLbfmygmhgbWoP-0PQ-w-08zFAX-GNkX28bs=w1920-h947-rw) |
 
 ### Developer
 [Robert3141](https://github.com/Robert3141)
