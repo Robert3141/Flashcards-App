@@ -12,9 +12,9 @@ Permissions:
 - READ_EXTERNAL_STORAGE (Required so app can import/open flashcards)
 
 ### Download
-| [![Play Store](http://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=uk.co.ariesfamily.flashcards) | ![Github](https://github.githubassets.com/pinned-octocat.svg) | [![XDA Labs](https://i2.wp.com/www.androidfreeapks.com/wp-content/uploads/2016/10/XDA-Labs-1.0.8.8b-beta-APK.png?resize=96%2C96&ssl=1)](https://labs.xda-developers.com/store/app/uk.co.ariesfamily.flashcards) |
-| :---: | :---: | :---: |
-| Flutter Version (6.2+) | Github (6.2+) | Old Kotlin Version |
+| [![Play Store](http://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=uk.co.ariesfamily.flashcards) | [![Github](https://github.githubassets.com/pinned-octocat.svg)](https://github.com/Robert3141/Flashcards-App/releases) |
+| :---: | :---: |
+| Flutter Version (6.2+) | Github (6.2+) |
 
 ### Contribute
 You can contribute to this project in many ways:
