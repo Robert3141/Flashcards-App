@@ -130,11 +130,13 @@ class EditCardsState extends State<EditCards> {
         }
 
         //update current card
-        if (_frontOfCard) {
-          _currentFileData[_index * 2] = _newCard;
-        } else {
-          _currentFileData[_index * 2 + 1] = _newCard;
-        }
+        setState(() {
+          if (_frontOfCard) {
+            _currentFileData[_index * 2] = _newCard;
+          } else {
+            _currentFileData[_index * 2 + 1] = _newCard;
+          }
+        });
 
         //update prefs
         _updatePrefs();
@@ -264,7 +266,9 @@ class EditCardsState extends State<EditCards> {
             _prefs.getStringList(globals.prefsFlashcardTitles);
 
         //set titles list
-        _titlesList[_currentFileNo] = _newTitle;
+        setState(() {
+          _titlesList[_currentFileNo] = _newTitle;
+        });
 
         //save to prefs
         _prefs.setStringList(globals.prefsFlashcardTitles, _titlesList);
