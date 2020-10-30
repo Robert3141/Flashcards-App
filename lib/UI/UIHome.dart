@@ -58,15 +58,18 @@ class MyHomePageState extends State<MyHomePage> {
 
   void clickImportFlashcards() async {
     try {
-      //user file prompt:
-      File _selectedFile =
-          await FilePicker.getFile(type: FileType.CUSTOM, fileExtension: 'txt');
+      // Will filter and only let you pick files with svg and pdf extension
+      FilePickerResult result = await FilePicker.platform
+          .pickFiles(type: FileType.custom, allowedExtensions: ['txt']);
 
       //error avoid
-      if (_selectedFile == null) {
+      if (result == null) {
         outputErrors(globals.errorImport, globals.errorNoFile);
         return;
       }
+
+      //user file prompt:
+      File _selectedFile = File(result.files.first.path);
 
       //get text from file
 
@@ -134,15 +137,18 @@ class MyHomePageState extends State<MyHomePage> {
 
   void clickOpenFlashcards() async {
     try {
-      //user file prompt:
-      File _selectedFile =
-          await FilePicker.getFile(type: FileType.CUSTOM, fileExtension: 'txt');
+      // Will filter and only let you pick files with svg and pdf extension
+      FilePickerResult result = await FilePicker.platform
+          .pickFiles(type: FileType.custom, allowedExtensions: ['txt']);
 
       //error avoid
-      if (_selectedFile == null) {
+      if (result == null) {
         outputErrors(globals.errorImport, globals.errorNoFile);
         return;
       }
+
+      //user file prompt:
+      File _selectedFile = File(result.files.first.path);
 
       //get text from file
       String _fileText = await _selectedFile.readAsString();
