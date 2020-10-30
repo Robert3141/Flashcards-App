@@ -1,38 +1,37 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flashcards/globals.dart' as globals;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditCardsPage extends MaterialPageRoute<Null> {
-
-  EditCardsPage(List<String> _currentFileData, int _currentFileNo) : super(builder: (BuildContext context){
-    return Scaffold(
-      appBar: AppBar(
-        title:Text(globals.tabTitleEditCards),
-        elevation: 1.0,
-      ),
-      body: Builder(
-        builder: (BuildContext context) => EditCards(_currentFileData,_currentFileNo),
-      ),
-    );
-  });
-
+  EditCardsPage(List<String> _currentFileData, int _currentFileNo)
+      : super(builder: (BuildContext context) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(globals.tabTitleEditCards),
+              elevation: 1.0,
+            ),
+            body: Builder(
+              builder: (BuildContext context) => EditCards(
+                  currentFileData: _currentFileData,
+                  currentFileNo: _currentFileNo),
+            ),
+          );
+        });
 }
 
 class EditCards extends StatefulWidget {
-  /*EditCards({
-    Key key,
-    int index,
-}) : super (key: key);*/
-  List<String> _currentFileData;
-  int _currentFileNo;
-
   EditCards(
-      List<String> currentFlashcardData,
-      int currentFileNo,
-      ){
-    this._currentFileData = currentFlashcardData;
-    this._currentFileNo = currentFileNo;
-  }
+      {@required this.currentFileData,
+      @required this.currentFileNo,
+      Key key,
+      int index})
+      : super(key: key);
+
+  final List<String> currentFileData;
+  final int currentFileNo;
 
   static const String routeName = "/EditCards";
 
@@ -41,29 +40,25 @@ class EditCards extends StatefulWidget {
 }
 
 class EditCardsState extends State<EditCards> {
-
   @override
   void initState() {
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
-
-
     // LOCAL VARS
     final _controllerFront = TextEditingController();
     final _controllerRear = TextEditingController();
     final _controllerTitle = TextEditingController();
-    List<String> _currentFileData = widget._currentFileData;
-    int _currentFileNo = widget._currentFileNo;
+    List<String> _currentFileData = widget.currentFileData;
+    int _currentFileNo = widget.currentFileNo;
 
     //
     // FUNCTIONS
     //
 
-    void outputErrors(String _error,_e){
+    void outputErrors(String _error, _e) {
       showDialog<String>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
@@ -80,13 +75,14 @@ class EditCardsState extends State<EditCards> {
     }
 
     void _onLoad() async {
-      try{
+      try {
         //get shared prefs
         SharedPreferences _prefs = await SharedPreferences.getInstance();
 
         //get title
-        _controllerTitle.text = _prefs.getStringList(globals.prefsFlashcardTitles)[_currentFileNo];
-      } catch(e) {
+        _controllerTitle.text =
+            _prefs.getStringList(globals.prefsFlashcardTitles)[_currentFileNo];
+      } catch (e) {
         outputErrors(globals.errorLoadPrefs, e);
       }
     }
@@ -94,7 +90,7 @@ class EditCardsState extends State<EditCards> {
     void _updatePrefs() async {
       try {
         //local vars
-        String _currentFileDataString = "" ;
+        String _currentFileDataString = "";
 
         //compress string to list
         for (var i = 0; i < _currentFileData.length; i++) {
@@ -105,14 +101,15 @@ class EditCardsState extends State<EditCards> {
         SharedPreferences _prefs = await SharedPreferences.getInstance();
 
         //get string list
-        List<String> _currentFlashcardData = _prefs.getStringList(globals.prefsFlashcardData);
+        List<String> _currentFlashcardData =
+            _prefs.getStringList(globals.prefsFlashcardData);
 
         //update string list
         _currentFlashcardData[_currentFileNo] = _currentFileDataString;
 
         //save to prefs
         _prefs.setStringList(globals.prefsFlashcardData, _currentFlashcardData);
-      } catch(e) {
+      } catch (e) {
         outputErrors(globals.errorEditPrefs, e);
       }
     }
@@ -133,7 +130,7 @@ class EditCardsState extends State<EditCards> {
         }
 
         //update current card
-        if(_frontOfCard){
+        if (_frontOfCard) {
           _currentFileData[_index * 2] = _newCard;
         } else {
           _currentFileData[_index * 2 + 1] = _newCard;
@@ -141,8 +138,7 @@ class EditCardsState extends State<EditCards> {
 
         //update prefs
         _updatePrefs();
-
-      } catch(e) {
+      } catch (e) {
         outputErrors(globals.errorEditFlashcard, e);
       }
     }
@@ -158,7 +154,7 @@ class EditCardsState extends State<EditCards> {
             actions: <Widget>[
               FlatButton(
                 child: Text(globals.errorCancel),
-                onPressed: (){
+                onPressed: () {
                   Navigator.of(context).pop();
                 },
               ),
@@ -167,7 +163,7 @@ class EditCardsState extends State<EditCards> {
                 onPressed: () async {
                   //delete card
                   debugPrint('_index=$_index');
-                  for (var i =0; i < _currentFileData.length; i++) {
+                  for (var i = 0; i < _currentFileData.length; i++) {
                     debugPrint("_currentFileData[$i]=" + _currentFileData[i]);
                   }
                   setState(() {
@@ -183,16 +179,21 @@ class EditCardsState extends State<EditCards> {
                   _updatePrefs();
 
                   //update card amount
-                  SharedPreferences _prefs = await SharedPreferences.getInstance();
-                  List<String> _amountOfCards =_prefs.getStringList(globals.prefsFlashcardLength);
-                  _amountOfCards[_currentFileNo] = (int.parse(_amountOfCards[_currentFileNo]) - 1).toString();
-                  _prefs.setStringList(globals.prefsFlashcardLength, _amountOfCards);
+                  SharedPreferences _prefs =
+                      await SharedPreferences.getInstance();
+                  List<String> _amountOfCards =
+                      _prefs.getStringList(globals.prefsFlashcardLength);
+                  _amountOfCards[_currentFileNo] =
+                      (int.parse(_amountOfCards[_currentFileNo]) - 1)
+                          .toString();
+                  _prefs.setStringList(
+                      globals.prefsFlashcardLength, _amountOfCards);
                 },
               )
             ],
           ),
         );
-      } catch(e) {
+      } catch (e) {
         outputErrors(globals.errorEditDelete, e);
       }
     }
@@ -213,7 +214,7 @@ class EditCardsState extends State<EditCards> {
                 padding: EdgeInsets.all(globals.defaultPadding),
                 child: TextField(
                   decoration: InputDecoration(hintText: globals.editCardsFront),
-                  onChanged: (_newCard){
+                  onChanged: (_newCard) {
                     _cardChanged(_newCard, index, true);
                   },
                   controller: _controllerFront,
@@ -223,7 +224,7 @@ class EditCardsState extends State<EditCards> {
                 padding: EdgeInsets.all(globals.defaultPadding),
                 child: TextField(
                   decoration: InputDecoration(hintText: globals.editCardsRear),
-                  onChanged: (_newCard){
+                  onChanged: (_newCard) {
                     _cardChanged(_newCard, index, false);
                   },
                   controller: _controllerRear,
@@ -232,7 +233,7 @@ class EditCardsState extends State<EditCards> {
               ListTile(
                 leading: Icon(Icons.delete_forever),
                 title: Text(globals.deleteFlashcards),
-                onTap: (){
+                onTap: () {
                   _clickDeleteFlashcard(index);
                 },
               ),
@@ -248,7 +249,7 @@ class EditCardsState extends State<EditCards> {
             ],
           ),
         );
-      } catch(e) {
+      } catch (e) {
         outputErrors(globals.errorEditClicked, e);
       }
     }
@@ -259,7 +260,8 @@ class EditCardsState extends State<EditCards> {
         SharedPreferences _prefs = await SharedPreferences.getInstance();
 
         //get titles list
-        List<String> _titlesList = _prefs.getStringList(globals.prefsFlashcardTitles);
+        List<String> _titlesList =
+            _prefs.getStringList(globals.prefsFlashcardTitles);
 
         //set titles list
         _titlesList[_currentFileNo] = _newTitle;
@@ -267,13 +269,13 @@ class EditCardsState extends State<EditCards> {
         //save to prefs
         _prefs.setStringList(globals.prefsFlashcardTitles, _titlesList);
         globals.flashcardFiles = _titlesList;
-      } catch(e) {
+      } catch (e) {
         outputErrors(globals.errorEditTitle, e);
       }
     }
 
     void _newCardAdded() async {
-      try{
+      try {
         //add new card
         setState(() {
           _currentFileData.add(' ');
@@ -285,14 +287,15 @@ class EditCardsState extends State<EditCards> {
 
         //update card amount
         SharedPreferences _prefs = await SharedPreferences.getInstance();
-        List<String> _amountOfCards =_prefs.getStringList(globals.prefsFlashcardLength);
-        _amountOfCards[_currentFileNo] = (int.parse(_amountOfCards[_currentFileNo]) + 1).toString();
+        List<String> _amountOfCards =
+            _prefs.getStringList(globals.prefsFlashcardLength);
+        _amountOfCards[_currentFileNo] =
+            (int.parse(_amountOfCards[_currentFileNo]) + 1).toString();
         _prefs.setStringList(globals.prefsFlashcardLength, _amountOfCards);
 
         //popup edit new card interface
         _cardClicked(_currentFileData.length ~/ 2 - 1);
-
-      } catch(e) {
+      } catch (e) {
         outputErrors(globals.errorEditNewCard, e);
       }
     }
@@ -301,80 +304,93 @@ class EditCardsState extends State<EditCards> {
     // LOAD INTERFACE
     //
     _onLoad();
-    return new Builder(builder: (BuildContext context) => Container(
-      color: Theme.of(context).primaryColor,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            height: globals.cardHeight,
-            child: InkWell(
-              splashColor: Theme.of(context).primaryColor,
-              onTap: () {},
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Text(globals.paddingAsText + globals.editCardsFileName, style: TextStyle(color: Color(0xFFFFFFFF)),),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.all(globals.defaultPadding),
-                      child: TextField(
-                        onChanged: _titleChanged,
-                        controller: _controllerTitle,
-                        style: TextStyle(color: Color(0xFFFFFFFF)),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Card(
-            child: Container(
+    return new Builder(
+      builder: (BuildContext context) => Container(
+        color: Theme.of(context).primaryColor,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
               height: globals.cardHeight,
               child: InkWell(
                 splashColor: Theme.of(context).primaryColor,
-                onTap: () {
-                  _newCardAdded();
-                },
+                onTap: () {},
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
-                    Text(globals.paddingAsText + globals.editCardsAddCard),
-                    Icon(Icons.add),
+                    Text(
+                      globals.paddingAsText + globals.editCardsFileName,
+                      style: TextStyle(color: Color(0xFFFFFFFF)),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.all(globals.defaultPadding),
+                        child: TextField(
+                          onChanged: _titleChanged,
+                          controller: _controllerTitle,
+                          style: TextStyle(color: Color(0xFFFFFFFF)),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _currentFileData.length ~/ 2,
-              itemBuilder: (BuildContext context, int index){
-                return Card(
-                  child: Container(
-                    height: globals.cardHeight,
-                    child: InkWell(
-                      splashColor: Theme.of(context).primaryColor,
-                      onTap: (){
-                        _cardClicked(index);
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(globals.paddingAsText + _currentFileData[index * 2], overflow: TextOverflow.ellipsis,),
-                          Divider(),
-                          Text(_currentFileData[index * 2 + 1] + globals.paddingAsText, overflow: TextOverflow.ellipsis,),
-                        ],
+            Card(
+              child: Container(
+                height: globals.cardHeight,
+                child: InkWell(
+                  splashColor: Theme.of(context).primaryColor,
+                  onTap: () {
+                    _newCardAdded();
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Text(globals.paddingAsText + globals.editCardsAddCard),
+                      Icon(Icons.add),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _currentFileData.length ~/ 2,
+                itemBuilder: (BuildContext context, int index) {
+                  return Card(
+                    child: Container(
+                      height: globals.cardHeight,
+                      child: InkWell(
+                        splashColor: Theme.of(context).primaryColor,
+                        onTap: () {
+                          _cardClicked(index);
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              globals.paddingAsText +
+                                  _currentFileData[index * 2],
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Divider(),
+                            Text(
+                              _currentFileData[index * 2 + 1] +
+                                  globals.paddingAsText,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),);
+    );
   }
 }

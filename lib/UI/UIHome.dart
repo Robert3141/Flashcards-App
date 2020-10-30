@@ -38,7 +38,7 @@ class MyHomePageState extends State<MyHomePage> {
   // FUNCTIONS:
   //
 
-  void outputErrors(String _error,_e){
+  void outputErrors(String _error, _e) {
     setState(() {
       showDialog<String>(
         context: context,
@@ -59,7 +59,8 @@ class MyHomePageState extends State<MyHomePage> {
   void clickImportFlashcards() async {
     try {
       //user file prompt:
-      File _selectedFile = await FilePicker.getFile(type: FileType.CUSTOM, fileExtension: 'txt');
+      File _selectedFile =
+          await FilePicker.getFile(type: FileType.CUSTOM, fileExtension: 'txt');
 
       //error avoid
       if (_selectedFile == null) {
@@ -80,19 +81,22 @@ class MyHomePageState extends State<MyHomePage> {
 
       //get SharedPrefs file
       SharedPreferences _prefs = await SharedPreferences.getInstance();
-      List<String> _flashcardTitles = _prefs.getStringList(globals.prefsFlashcardTitles);
-      List<String> _flashcardLengths = _prefs.getStringList(globals.prefsFlashcardLength);
-      List<String> _flashcardData = _prefs.getStringList(globals.prefsFlashcardData);
+      List<String> _flashcardTitles =
+          _prefs.getStringList(globals.prefsFlashcardTitles);
+      List<String> _flashcardLengths =
+          _prefs.getStringList(globals.prefsFlashcardLength);
+      List<String> _flashcardData =
+          _prefs.getStringList(globals.prefsFlashcardData);
 
       //add file to prefs
       // flashcardData
-      if (_flashcardData != null){
+      if (_flashcardData != null) {
         _flashcardData.add(_fileText);
       } else {
         _flashcardData = [_fileText];
       }
       // flashcardTitles
-      if (_flashcardTitles != null){
+      if (_flashcardTitles != null) {
         _flashcardTitles.add(_fileName);
       } else {
         _flashcardTitles = [_fileName];
@@ -113,11 +117,12 @@ class MyHomePageState extends State<MyHomePage> {
       });
 
       //save to shared prefs
-      await _prefs.setStringList(globals.prefsFlashcardData,_flashcardData);
-      await _prefs.setStringList(globals.prefsFlashcardTitles,_flashcardTitles);
-      await _prefs.setStringList(globals.prefsFlashcardLength, _flashcardLengths);
-
-    } catch(e) {
+      await _prefs.setStringList(globals.prefsFlashcardData, _flashcardData);
+      await _prefs.setStringList(
+          globals.prefsFlashcardTitles, _flashcardTitles);
+      await _prefs.setStringList(
+          globals.prefsFlashcardLength, _flashcardLengths);
+    } catch (e) {
       //in case of error output error
       if (e == FileSystemException) {
         outputErrors(globals.errorImport, globals.errorNotSupported);
@@ -130,7 +135,8 @@ class MyHomePageState extends State<MyHomePage> {
   void clickOpenFlashcards() async {
     try {
       //user file prompt:
-      File _selectedFile = await FilePicker.getFile(type: FileType.CUSTOM, fileExtension: 'txt');
+      File _selectedFile =
+          await FilePicker.getFile(type: FileType.CUSTOM, fileExtension: 'txt');
 
       //error avoid
       if (_selectedFile == null) {
@@ -146,20 +152,22 @@ class MyHomePageState extends State<MyHomePage> {
 
       //load flashcards page
       Navigator.push(context, FlashcardsPage(_currentFlashcards));
-
-    } catch(e) {
+    } catch (e) {
       outputErrors(globals.errorLoad, e);
     }
   }
 
   void clickCreateFlashcards() async {
-    try{
+    try {
       // Get file from shared prefs
       int _newFileNumber = 0;
       SharedPreferences _prefs = await SharedPreferences.getInstance();
-      List<String> _flashcardsData = _prefs.getStringList(globals.prefsFlashcardData);
-      List<String> _flashcardLengths = _prefs.getStringList(globals.prefsFlashcardLength);
-      List<String> _flashcardTitle = _prefs.getStringList(globals.prefsFlashcardTitles);
+      List<String> _flashcardsData =
+          _prefs.getStringList(globals.prefsFlashcardData);
+      List<String> _flashcardLengths =
+          _prefs.getStringList(globals.prefsFlashcardLength);
+      List<String> _flashcardTitle =
+          _prefs.getStringList(globals.prefsFlashcardTitles);
 
       //add file to sharedPrefs
       // flashcardData
@@ -176,7 +184,8 @@ class MyHomePageState extends State<MyHomePage> {
       } else {
         _flashcardLengths = [globals.exampleFileLength];
       }
-      await _prefs.setStringList(globals.prefsFlashcardLength, _flashcardLengths);
+      await _prefs.setStringList(
+          globals.prefsFlashcardLength, _flashcardLengths);
       //flashcardTitle
       if (_flashcardTitle != null) {
         _flashcardTitle.add(globals.newFileName);
@@ -189,57 +198,62 @@ class MyHomePageState extends State<MyHomePage> {
       List<String> _currentFlashcards = splitter(globals.exampleFileData, "&");
 
       //load edit page
-      Navigator.push(context, EditCardsPage(_currentFlashcards, _newFileNumber));
-
-    } catch(e){
+      Navigator.push(
+          context, EditCardsPage(_currentFlashcards, _newFileNumber));
+    } catch (e) {
       //in case of error output error
       outputErrors(globals.errorCreate, e);
     }
   }
 
   void clickEditFlashcards(int _fileNumber) async {
-    try{
+    try {
       //Get file from shared prefs
       SharedPreferences _prefs = await SharedPreferences.getInstance();
-      List<String> _flashcardData = _prefs.getStringList(globals.prefsFlashcardData);
+      List<String> _flashcardData =
+          _prefs.getStringList(globals.prefsFlashcardData);
 
       //add example file to shared prefs
       if (_flashcardData == null) {
         _flashcardData = [globals.exampleFileData];
-        _prefs.setStringList(globals.prefsFlashcardData, [globals.exampleFileData]);
+        _prefs.setStringList(
+            globals.prefsFlashcardData, [globals.exampleFileData]);
 
         //add title and amount of cards
-        _prefs.setStringList(globals.prefsFlashcardTitles, [globals.exampleFileName]);
-        _prefs.setStringList(globals.prefsFlashcardLength, [globals.exampleFileLength]);
+        _prefs.setStringList(
+            globals.prefsFlashcardTitles, [globals.exampleFileName]);
+        _prefs.setStringList(
+            globals.prefsFlashcardLength, [globals.exampleFileLength]);
       }
 
       //split from file
-      List<String> _currentFlashcards = splitter(_flashcardData[_fileNumber], "&");
+      List<String> _currentFlashcards =
+          splitter(_flashcardData[_fileNumber], "&");
 
       //load edit page
       Navigator.push(context, EditCardsPage(_currentFlashcards, _fileNumber));
 
       //update UI
-      setState(() {
-
-      });
-    } catch(e){
+      setState(() {});
+    } catch (e) {
       //in case of error output error
       outputErrors(globals.errorEdit, e);
     }
   }
 
   void clickLoadFlashcards(int _fileNumber) async {
-    try{
+    try {
       //Get file from shared prefs
       SharedPreferences _prefs = await SharedPreferences.getInstance();
-      List<String> _flashcardsData = _prefs.getStringList(globals.prefsFlashcardData) ?? [globals.exampleFileData];
-      List<String> _currentFlashcards = splitter(_flashcardsData[_fileNumber], "&");
+      List<String> _flashcardsData =
+          _prefs.getStringList(globals.prefsFlashcardData) ??
+              [globals.exampleFileData];
+      List<String> _currentFlashcards =
+          splitter(_flashcardsData[_fileNumber], "&");
 
       //load flashcards page
       Navigator.push(context, FlashcardsPage(_currentFlashcards));
-
-    } catch(e){
+    } catch (e) {
       //in case of error output error
       outputErrors(globals.errorLoad, e);
     }
@@ -263,42 +277,47 @@ class MyHomePageState extends State<MyHomePage> {
               child: Text(globals.errorOk),
               onPressed: () async {
                 //load prefs
-                SharedPreferences _prefs = await SharedPreferences.getInstance();
+                SharedPreferences _prefs =
+                    await SharedPreferences.getInstance();
 
                 //get from shared prefs
-                List<String> _flashcardsData = _prefs.getStringList(globals.prefsFlashcardData);
+                List<String> _flashcardsData =
+                    _prefs.getStringList(globals.prefsFlashcardData);
 
                 //check not example file
                 if (_flashcardsData != null) {
                   //get from shared prefs
-                  globals.flashcardFiles = _prefs.getStringList(globals.prefsFlashcardTitles);
-                  globals.flashcardLengths = _prefs.getStringList(globals.prefsFlashcardLength);
+                  globals.flashcardFiles =
+                      _prefs.getStringList(globals.prefsFlashcardTitles);
+                  globals.flashcardLengths =
+                      _prefs.getStringList(globals.prefsFlashcardLength);
 
                   //remove file
                   _flashcardsData.removeAt(_fileNumber);
-                  _prefs.setStringList(globals.prefsFlashcardData, _flashcardsData);
+                  _prefs.setStringList(
+                      globals.prefsFlashcardData, _flashcardsData);
 
                   //remove title
                   globals.flashcardFiles.removeAt(_fileNumber);
-                  _prefs.setStringList(globals.prefsFlashcardTitles, globals.flashcardFiles);
+                  _prefs.setStringList(
+                      globals.prefsFlashcardTitles, globals.flashcardFiles);
 
                   //remove number
                   globals.flashcardLengths.removeAt(_fileNumber);
-                  _prefs.setStringList(globals.prefsFlashcardLength, globals.flashcardLengths);
+                  _prefs.setStringList(
+                      globals.prefsFlashcardLength, globals.flashcardLengths);
 
                   //reload interface
                   Navigator.pop(context);
                   Navigator.pop(context);
-                  setState(() {
-
-                  });
+                  setState(() {});
                 }
               },
             )
           ],
         ),
       );
-    } catch(e) {
+    } catch (e) {
       outputErrors(globals.errorDelete, e);
     }
   }
@@ -309,13 +328,19 @@ class MyHomePageState extends State<MyHomePage> {
       SharedPreferences _prefs = await SharedPreferences.getInstance();
 
       //set variables
-      globals.flashcardFiles = _prefs.getStringList(globals.prefsFlashcardTitles)?? [globals.exampleFileName];
-      globals.flashcardLengths = _prefs.getStringList(globals.prefsFlashcardLength)?? [globals.exampleFileLength];
-      globals.amountOfCards = _prefs.getInt(globals.prefsAmountOfCards) ?? globals.defaultCardAmount;
+      globals.flashcardFiles =
+          _prefs.getStringList(globals.prefsFlashcardTitles) ??
+              [globals.exampleFileName];
+      globals.flashcardLengths =
+          _prefs.getStringList(globals.prefsFlashcardLength) ??
+              [globals.exampleFileLength];
+      globals.amountOfCards = _prefs.getInt(globals.prefsAmountOfCards) ??
+          globals.defaultCardAmount;
       _controllerAmountOfCards.text = globals.amountOfCards.toString();
-      globals.cardsOrdered = _prefs.getBool(globals.prefsCardsOrdered) ?? globals.defaultCardsOrdered;
+      globals.cardsOrdered = _prefs.getBool(globals.prefsCardsOrdered) ??
+          globals.defaultCardsOrdered;
       _cardsAmountEnabled = !globals.cardsOrdered;
-    } catch(e) {
+    } catch (e) {
       outputErrors(globals.errorLoadPrefs, e);
     }
   }
@@ -334,24 +359,26 @@ class MyHomePageState extends State<MyHomePage> {
         globals.cardsOrdered = _orderedCard;
         _cardsAmountEnabled = !_orderedCard;
       });
-    } catch(e) {
+    } catch (e) {
       outputErrors(globals.errorSettingsOrdered, e);
     }
   }
 
   void settingsCardAmount(_cardAmountInput) async {
-    if (num.tryParse(_cardAmountInput.toString()) != null){
+    if (num.tryParse(_cardAmountInput.toString()) != null) {
       //set up prefs and save to prefs
       SharedPreferences _prefs = await SharedPreferences.getInstance();
-      _prefs.setInt(globals.prefsAmountOfCards, num.parse(_cardAmountInput.toString()));
+      _prefs.setInt(
+          globals.prefsAmountOfCards, num.parse(_cardAmountInput.toString()));
     }
   }
 
   void settingsDarkTheme(_darkTheme) {
     try {
       //set up prefs and save to prefs
-      DynamicTheme.of(context).setBrightness(_darkTheme? Brightness.dark : Brightness.light);
-    } catch(e) {
+      DynamicTheme.of(context)
+          .setBrightness(_darkTheme ? Brightness.dark : Brightness.light);
+    } catch (e) {
       outputErrors(globals.errorSettingsDark, e);
     }
   }
@@ -371,7 +398,6 @@ class MyHomePageState extends State<MyHomePage> {
                 onColorChange: (newColor) {
                   _tempColor = Color(newColor.value);
                 },
-
                 onMainColorChange: (newColor) {
                   _tempColor = Color(newColor.value);
                 },
@@ -379,28 +405,28 @@ class MyHomePageState extends State<MyHomePage> {
               actions: <Widget>[
                 FlatButton(
                   child: Text(globals.errorCancel),
-                  onPressed: (){
+                  onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
                 FlatButton(
                   child: Text(globals.errorOk),
-                  onPressed: (){
+                  onPressed: () {
                     DynamicTheme.of(context).setBrightness(Brightness.light);
-                    DynamicTheme.of(context).setThemeData(new ThemeData(primaryColor: _tempColor, accentColor: _tempColor));
+                    DynamicTheme.of(context).setThemeData(new ThemeData(
+                        primaryColor: _tempColor, accentColor: _tempColor));
                     Navigator.of(context).pop();
                   },
                 ),
               ],
             );
-          }
-      );
-    } catch(e) {
+          });
+    } catch (e) {
       outputErrors(globals.errorSettingsTheme, e);
     }
   }
 
-  List<String> splitter(String _splitText,String _splitChar) {
+  List<String> splitter(String _splitText, String _splitChar) {
     //local variables
     List<String> _fileList = [""];
     try {
@@ -408,9 +434,9 @@ class MyHomePageState extends State<MyHomePage> {
       bool _firstTime = true;
 
       for (var i = 0; i < _splitText.length; i++) {
-        if (_splitText[i] == _splitChar){
-          if (_tempString != null){
-            if(_firstTime){
+        if (_splitText[i] == _splitChar) {
+          if (_tempString != null) {
+            if (_firstTime) {
               _fileList[0] = _tempString;
               _firstTime = false;
             } else {
@@ -419,7 +445,7 @@ class MyHomePageState extends State<MyHomePage> {
           }
           _tempString = null;
         } else {
-          if(_tempString == null){
+          if (_tempString == null) {
             _tempString = _splitText[i];
           } else {
             _tempString += _splitText[i];
@@ -427,16 +453,15 @@ class MyHomePageState extends State<MyHomePage> {
         }
       }
 
-      if (_tempString != null){
+      if (_tempString != null) {
         _fileList.add(_tempString);
       }
-    } catch(e) {
+    } catch (e) {
       outputErrors(globals.errorSplitString, e);
     }
 
     return _fileList;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -453,7 +478,7 @@ class MyHomePageState extends State<MyHomePage> {
                 height: globals.cardHeight,
                 child: InkWell(
                   splashColor: Theme.of(context).primaryColor,
-                  onTap: (){
+                  onTap: () {
                     setState(() {
                       //Add Cards dialog
                       showDialog<String>(
@@ -464,21 +489,21 @@ class MyHomePageState extends State<MyHomePage> {
                             ListTile(
                               leading: Icon(Icons.folder_open),
                               title: Text(globals.importFlashcards),
-                              onTap: (){
+                              onTap: () {
                                 clickImportFlashcards();
                               },
                             ),
                             ListTile(
                               leading: Icon(Icons.library_books),
                               title: Text(globals.openFlashcardsFile),
-                              onTap: (){
+                              onTap: () {
                                 clickOpenFlashcards();
                               },
                             ),
                             ListTile(
                               leading: Icon(Icons.control_point),
                               title: Text(globals.createFlashcards),
-                              onTap: (){
+                              onTap: () {
                                 clickCreateFlashcards();
                               },
                             ),
@@ -490,24 +515,25 @@ class MyHomePageState extends State<MyHomePage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text(globals.paddingAsText + globals.addNewCards,overflow: TextOverflow.ellipsis,style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text(globals.paddingAsText + globals.addNewCards,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontWeight: FontWeight.bold)),
                       Icon(Icons.add),
                     ],
                   ),
                 ),
               ),
             ),
-
             Expanded(
               child: ListView.builder(
                 itemCount: globals.flashcardFiles.length,
-                itemBuilder: (BuildContext context, int index){
+                itemBuilder: (BuildContext context, int index) {
                   return Card(
                     child: Container(
                       height: globals.cardHeight,
                       child: InkWell(
                         splashColor: Theme.of(context).primaryColor,
-                        onTap: (){
+                        onTap: () {
                           //open cards dialog
                           setState(() {
                             //Add Cards dialog
@@ -519,21 +545,21 @@ class MyHomePageState extends State<MyHomePage> {
                                   ListTile(
                                     leading: Icon(Icons.edit),
                                     title: Text(globals.editFlashcards),
-                                    onTap: (){
+                                    onTap: () {
                                       clickEditFlashcards(index);
                                     },
                                   ),
                                   ListTile(
                                     leading: Icon(Icons.content_copy),
                                     title: Text(globals.loadFlashcards),
-                                    onTap: (){
+                                    onTap: () {
                                       clickLoadFlashcards(index);
                                     },
                                   ),
                                   ListTile(
                                     leading: Icon(Icons.delete_forever),
                                     title: Text(globals.deleteFlashcards),
-                                    onTap: (){
+                                    onTap: () {
                                       clickDeleteFlashcards(index);
                                     },
                                   )
@@ -548,14 +574,19 @@ class MyHomePageState extends State<MyHomePage> {
                             Flexible(
                               child: Container(
                                 padding: EdgeInsets.only(right: 4.0),
-                                child: Text(globals.paddingAsText + globals.flashcardFiles[index],overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold)),
-
+                                child: Text(
+                                    globals.paddingAsText +
+                                        globals.flashcardFiles[index],
+                                    overflow: TextOverflow.ellipsis,
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
                               ),
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                Text(globals.flashcardLengths[index],overflow: TextOverflow.ellipsis),
+                                Text(globals.flashcardLengths[index],
+                                    overflow: TextOverflow.ellipsis),
                                 Icon(Icons.content_copy),
                               ],
                             ),
@@ -578,7 +609,7 @@ class MyHomePageState extends State<MyHomePage> {
             // Cards Ordered
             InkWell(
               splashColor: Theme.of(context).primaryColor,
-              onTap: (){
+              onTap: () {
                 settingsOrderedCards(!globals.cardsOrdered);
               },
               child: Row(
@@ -587,12 +618,20 @@ class MyHomePageState extends State<MyHomePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Padding(padding: EdgeInsets.only(left: globals.defaultPadding),),
+                      Padding(
+                        padding: EdgeInsets.only(left: globals.defaultPadding),
+                      ),
                       Icon(Icons.reorder),
-                      Text(globals.paddingAsText + globals.settingsCardsOrdered, style: TextStyle(fontWeight: FontWeight.bold),),
+                      Text(
+                        globals.paddingAsText + globals.settingsCardsOrdered,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ],
                   ),
-                  Switch(value: globals.cardsOrdered, onChanged: settingsOrderedCards,),
+                  Switch(
+                    value: globals.cardsOrdered,
+                    onChanged: settingsOrderedCards,
+                  ),
                 ],
               ),
             ),
@@ -606,7 +645,9 @@ class MyHomePageState extends State<MyHomePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Padding(padding: EdgeInsets.only(left: globals.defaultPadding),),
+                      Padding(
+                        padding: EdgeInsets.only(left: globals.defaultPadding),
+                      ),
                       Icon(Icons.shuffle),
                       Text(
                         globals.paddingAsText + globals.settingsAmountOfCards,
@@ -614,15 +655,18 @@ class MyHomePageState extends State<MyHomePage> {
                       ),
                     ],
                   ),
-
                   Expanded(
                     child: Padding(
                       padding: EdgeInsets.all(globals.defaultPadding),
                       child: TextField(
-                        decoration: InputDecoration(contentPadding: EdgeInsets.all(globals.defaultPadding)),
+                        decoration: InputDecoration(
+                            contentPadding:
+                                EdgeInsets.all(globals.defaultPadding)),
                         enabled: _cardsAmountEnabled,
                         keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[WhitelistingTextInputFormatter.digitsOnly],
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
                         onChanged: settingsCardAmount,
                         controller: _controllerAmountOfCards,
                       ),
@@ -635,8 +679,9 @@ class MyHomePageState extends State<MyHomePage> {
             //set brightness
             InkWell(
               splashColor: Theme.of(context).primaryColor,
-              onTap: (){
-                settingsDarkTheme(Theme.of(context).brightness == Brightness.light);
+              onTap: () {
+                settingsDarkTheme(
+                    Theme.of(context).brightness == Brightness.light);
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -644,7 +689,9 @@ class MyHomePageState extends State<MyHomePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Padding(padding: EdgeInsets.only(left: globals.defaultPadding),),
+                      Padding(
+                        padding: EdgeInsets.only(left: globals.defaultPadding),
+                      ),
                       Icon(Icons.brightness_3),
                       Text(
                         globals.paddingAsText + globals.settingsDarkTheme,
@@ -652,8 +699,10 @@ class MyHomePageState extends State<MyHomePage> {
                       ),
                     ],
                   ),
-
-                  Switch(value: Theme.of(context).brightness == Brightness.dark, onChanged: settingsDarkTheme,),
+                  Switch(
+                    value: Theme.of(context).brightness == Brightness.dark,
+                    onChanged: settingsDarkTheme,
+                  ),
                 ],
               ),
             ),
@@ -661,7 +710,7 @@ class MyHomePageState extends State<MyHomePage> {
             //set theme
             InkWell(
               splashColor: Theme.of(context).primaryColor,
-              onTap: (){
+              onTap: () {
                 settingsThemeColor();
               },
               child: Row(
@@ -670,7 +719,9 @@ class MyHomePageState extends State<MyHomePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Padding(padding: EdgeInsets.only(left: globals.defaultPadding),),
+                      Padding(
+                        padding: EdgeInsets.only(left: globals.defaultPadding),
+                      ),
                       Icon(Icons.color_lens),
                       Text(
                         globals.paddingAsText + globals.settingsThemeColour,
@@ -678,7 +729,9 @@ class MyHomePageState extends State<MyHomePage> {
                       ),
                     ],
                   ),
-                  CircleAvatar(backgroundColor: Theme.of(context).accentColor,),
+                  CircleAvatar(
+                    backgroundColor: Theme.of(context).accentColor,
+                  ),
                 ],
               ),
             ),
@@ -698,16 +751,14 @@ class MyHomePageState extends State<MyHomePage> {
       items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(Icons.content_copy),
-          title: Text(globals.tabTitleFlashcards),
-
+          label: globals.tabTitleFlashcards,
         ),
-
         BottomNavigationBarItem(
           icon: Icon(Icons.settings),
-          title: Text(globals.tabTitleSettings),
+          label: globals.tabTitleSettings,
         ),
       ],
-      onTap: (int index){
+      onTap: (int index) {
         setState(() {
           _currentTabIndex = index;
           switch (index) {
@@ -717,7 +768,6 @@ class MyHomePageState extends State<MyHomePage> {
             case 1:
               _tabTitle = globals.tabTitleSettings;
               break;
-
           }
         });
       },
