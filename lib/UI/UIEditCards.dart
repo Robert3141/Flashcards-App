@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flashcards/globals.dart' as globals;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 
 class EditCardsPage extends MaterialPageRoute<Null> {
   EditCardsPage(List<String> _currentFileData, int _currentFileNo)
@@ -53,6 +54,7 @@ class EditCardsState extends State<EditCards> {
     final _controllerTitle = TextEditingController();
     List<String> _currentFileData = widget.currentFileData;
     int _currentFileNo = widget.currentFileNo;
+    ScrollController _scrolly = ScrollController();
 
     //
     // FUNCTIONS
@@ -357,37 +359,41 @@ class EditCardsState extends State<EditCards> {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: _currentFileData.length ~/ 2,
-                itemBuilder: (BuildContext context, int index) {
-                  return Card(
-                    child: Container(
-                      height: globals.cardHeight,
-                      child: InkWell(
-                        splashColor: Theme.of(context).primaryColor,
-                        onTap: () {
-                          _cardClicked(index);
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text(
-                              globals.paddingAsText +
-                                  _currentFileData[index * 2],
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Divider(),
-                            Text(
-                              _currentFileData[index * 2 + 1] +
-                                  globals.paddingAsText,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
+              child: DraggableScrollbar.arrows(
+                controller: _scrolly,
+                child: ListView.builder(
+                  controller: _scrolly,
+                  itemCount: _currentFileData.length ~/ 2,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Card(
+                      child: Container(
+                        height: globals.cardHeight,
+                        child: InkWell(
+                          splashColor: Theme.of(context).primaryColor,
+                          onTap: () {
+                            _cardClicked(index);
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(
+                                globals.paddingAsText +
+                                    _currentFileData[index * 2],
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Divider(),
+                              Text(
+                                _currentFileData[index * 2 + 1] +
+                                    globals.paddingAsText,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
           ],
