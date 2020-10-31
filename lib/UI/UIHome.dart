@@ -127,8 +127,11 @@ class MyHomePageState extends State<MyHomePage> {
       });
     } catch (e) {
       //in case of error output error
-      if (e == FileSystemException) {
+      //print(e.runtimeType);
+      if (e.runtimeType == FileSystemException) {
         outputErrors(globals.errorImport, globals.errorNotSupported);
+      } else if (e.runtimeType == MissingPluginException) {
+        outputErrors(globals.errorImport, globals.errorDeviceNotSupported);
       } else {
         outputErrors(globals.errorImport, e);
       }
@@ -159,7 +162,11 @@ class MyHomePageState extends State<MyHomePage> {
       //load flashcards page
       Navigator.push(context, FlashcardsPage(_currentFlashcards));
     } catch (e) {
-      outputErrors(globals.errorLoad, e);
+      if (e.runtimeType == MissingPluginException) {
+        outputErrors(globals.errorImport, globals.errorDeviceNotSupported);
+      } else {
+        outputErrors(globals.errorLoad, e);
+      }
     }
   }
 

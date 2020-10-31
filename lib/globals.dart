@@ -69,8 +69,12 @@ const String editDeleting = "Are you sure you want to delete this?";
 
 //Error Messages
 const String errorImport = "Error Importing Flashcards:\n";
-const String errorNoFile = "The app did not receive the file.\n Are you sure you selected a file?";
-const String errorNotSupported = "The file is not supported.\n Are you sure the .txt file is UTF-8?";
+const String errorNoFile =
+    "The app did not receive the file.\n Are you sure you selected a file?";
+const String errorNotSupported =
+    "The file is not supported.\n Are you sure the .txt file is UTF-8?";
+const String errorDeviceNotSupported =
+    "Device not supported:\n Unfortunately this device does not support this feature.";
 const String errorCreate = "Error Creating Flashcards:\n";
 const String errorEdit = "Error Editing Flashcards:\n";
 const String errorLoad = "Error Loading Flashcards:\n";
@@ -85,7 +89,8 @@ const String errorSplitString = "Internal Error:\n";
 const String errorEditTitle = "Error Editing Title:\n";
 const String errorEditNewCard = "Error Adding New Flashcard:\n";
 const String errorEditFlashcard = "Error Editing Flashcard:\n";
-const String errorEditNoAnd = "You used the '&' character. \n This cannot be used in this app unfortunately";
+const String errorEditNoAnd =
+    "You used the '&' character. \n This cannot be used in this app unfortunately";
 const String errorEditClicked = "Error displaying Flashcard Editor:\n";
 const String errorEditPrefs = "Error Saving Changes:\n";
 const String errorEditDelete = "Error Deleting Card:\n";
