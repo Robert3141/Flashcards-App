@@ -266,9 +266,7 @@ class EditCardsState extends State<EditCards> {
             _prefs.getStringList(globals.prefsFlashcardTitles);
 
         //set titles list
-        setState(() {
-          _titlesList[_currentFileNo] = _newTitle;
-        });
+        _titlesList[_currentFileNo] = _newTitle;
 
         //save to prefs
         _prefs.setStringList(globals.prefsFlashcardTitles, _titlesList);

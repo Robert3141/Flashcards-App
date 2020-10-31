@@ -237,7 +237,8 @@ class MyHomePageState extends State<MyHomePage> {
           splitter(_flashcardData[_fileNumber], "&");
 
       //load edit page
-      Navigator.push(context, EditCardsPage(_currentFlashcards, _fileNumber));
+      await Navigator.push(
+          context, EditCardsPage(_currentFlashcards, _fileNumber));
 
       //update UI
       setState(() {});
