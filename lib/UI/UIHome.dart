@@ -69,14 +69,14 @@ class MyHomePageState extends State<MyHomePage> {
       }
 
       //user file prompt:
-      File _selectedFile = File(result.files.first.path);
+      PlatformFile _selectedFile = result.files.first;
 
       //get text from file
-
-      String _fileText = await _selectedFile.readAsString();
+      String _fileText = String.fromCharCodes(_selectedFile.bytes);
 
       //get name of text file from file path
-      String _fileName = splitter(_selectedFile.path, "/").last;
+      String _fileName =
+          _selectedFile.name; //splitter(_selectedFile.path.trim(), "/").last;
 
       //get amount of flashcards from file
       int _fileCards = splitter(_fileText, "&").length;
@@ -111,20 +111,20 @@ class MyHomePageState extends State<MyHomePage> {
         _flashcardLengths = [_fileCards.toString()];
       }
 
-      //update UI
-      setState(() {
-        globals.flashcardFiles = _flashcardTitles;
-        _flashcardLengths = _flashcardLengths;
-
-        Navigator.pop(context);
-      });
-
       //save to shared prefs
       await _prefs.setStringList(globals.prefsFlashcardData, _flashcardData);
       await _prefs.setStringList(
           globals.prefsFlashcardTitles, _flashcardTitles);
       await _prefs.setStringList(
           globals.prefsFlashcardLength, _flashcardLengths);
+
+      //update UI
+      setState(() {
+        globals.flashcardFiles = _flashcardTitles;
+        globals.flashcardLengths = _flashcardLengths;
+
+        Navigator.pop(context);
+      });
     } catch (e) {
       //in case of error output error
       if (e == FileSystemException) {
@@ -148,10 +148,10 @@ class MyHomePageState extends State<MyHomePage> {
       }
 
       //user file prompt:
-      File _selectedFile = File(result.files.first.path);
+      PlatformFile _selectedFile = result.files.first;
 
       //get text from file
-      String _fileText = await _selectedFile.readAsString();
+      String _fileText = String.fromCharCodes(_selectedFile.bytes);
 
       //get list from file
       List<String> _currentFlashcards = splitter(_fileText, "&");
