@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:dynamic_themes/dynamic_themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flashcards/UI/UIFlashcards.dart';
@@ -7,10 +8,10 @@ import 'package:flashcards/globals.dart' as globals;
 import 'package:file_picker/file_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
-import 'package:dynamic_theme/dynamic_theme.dart';
+
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -46,7 +47,7 @@ class MyHomePageState extends State<MyHomePage> {
           title: Text(_error),
           content: Text(_e.toString()),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text(globals.errorOk),
               onPressed: () => Navigator.pop(context),
             )
@@ -59,7 +60,7 @@ class MyHomePageState extends State<MyHomePage> {
   void clickImportFlashcards() async {
     try {
       // Will filter and only let you pick files with svg and pdf extension
-      FilePickerResult result = await FilePicker.platform
+      FilePickerResult? result = await FilePicker.platform
           .pickFiles(type: FileType.custom, allowedExtensions: ['txt']);
 
       //error avoid
@@ -72,7 +73,8 @@ class MyHomePageState extends State<MyHomePage> {
       PlatformFile _selectedFile = result.files.first;
 
       //get text from file
-      String _fileText = String.fromCharCodes(_selectedFile.bytes);
+      String _fileText =
+          String.fromCharCodes(_selectedFile.bytes as Iterable<int>);
 
       //get name of text file from file path
       String _fileName =
@@ -84,20 +86,14 @@ class MyHomePageState extends State<MyHomePage> {
 
       //get SharedPrefs file
       SharedPreferences _prefs = await SharedPreferences.getInstance();
-      List<String> _flashcardTitles =
+      List<String>? _flashcardTitles =
           _prefs.getStringList(globals.prefsFlashcardTitles);
-      List<String> _flashcardLengths =
+      List<String>? _flashcardLengths =
           _prefs.getStringList(globals.prefsFlashcardLength);
-      List<String> _flashcardData =
+      List<String>? _flashcardData =
           _prefs.getStringList(globals.prefsFlashcardData);
 
       //add file to prefs
-      // flashcardData
-      if (_flashcardData != null) {
-        _flashcardData.add(_fileText);
-      } else {
-        _flashcardData = [_fileText];
-      }
       // flashcardTitles
       if (_flashcardTitles != null) {
         _flashcardTitles.add(_fileName);
@@ -110,6 +106,12 @@ class MyHomePageState extends State<MyHomePage> {
       } else {
         _flashcardLengths = [_fileCards.toString()];
       }
+      // flashcardData
+      if (_flashcardData != null) {
+        _flashcardData.add(_fileText);
+      } else {
+        _flashcardData = [_fileText];
+      }
 
       //save to shared prefs
       await _prefs.setStringList(globals.prefsFlashcardData, _flashcardData);
@@ -120,8 +122,8 @@ class MyHomePageState extends State<MyHomePage> {
 
       //update UI
       setState(() {
-        globals.flashcardFiles = _flashcardTitles;
-        globals.flashcardLengths = _flashcardLengths;
+        globals.flashcardFiles = _flashcardTitles!;
+        globals.flashcardLengths = _flashcardLengths!;
 
         Navigator.pop(context);
       });
@@ -141,7 +143,7 @@ class MyHomePageState extends State<MyHomePage> {
   void clickOpenFlashcards() async {
     try {
       // Will filter and only let you pick files with svg and pdf extension
-      FilePickerResult result = await FilePicker.platform
+      FilePickerResult? result = await FilePicker.platform
           .pickFiles(type: FileType.custom, allowedExtensions: ['txt']);
 
       //error avoid
@@ -154,7 +156,7 @@ class MyHomePageState extends State<MyHomePage> {
       PlatformFile _selectedFile = result.files.first;
 
       //get text from file
-      String _fileText = String.fromCharCodes(_selectedFile.bytes);
+      String _fileText = String.fromCharCodes(_selectedFile.bytes as Iterable<int>);
 
       //get list from file
       List<String> _currentFlashcards = splitter(_fileText, "&");
@@ -175,11 +177,11 @@ class MyHomePageState extends State<MyHomePage> {
       // Get file from shared prefs
       int _newFileNumber = 0;
       SharedPreferences _prefs = await SharedPreferences.getInstance();
-      List<String> _flashcardsData =
+      List<String>? _flashcardsData =
           _prefs.getStringList(globals.prefsFlashcardData);
-      List<String> _flashcardLengths =
+      List<String>? _flashcardLengths =
           _prefs.getStringList(globals.prefsFlashcardLength);
-      List<String> _flashcardTitle =
+      List<String>? _flashcardTitle =
           _prefs.getStringList(globals.prefsFlashcardTitles);
 
       //add file to sharedPrefs
@@ -224,20 +226,7 @@ class MyHomePageState extends State<MyHomePage> {
       //Get file from shared prefs
       SharedPreferences _prefs = await SharedPreferences.getInstance();
       List<String> _flashcardData =
-          _prefs.getStringList(globals.prefsFlashcardData);
-
-      //add example file to shared prefs
-      if (_flashcardData == null) {
-        _flashcardData = [globals.exampleFileData];
-        _prefs.setStringList(
-            globals.prefsFlashcardData, [globals.exampleFileData]);
-
-        //add title and amount of cards
-        _prefs.setStringList(
-            globals.prefsFlashcardTitles, [globals.exampleFileName]);
-        _prefs.setStringList(
-            globals.prefsFlashcardLength, [globals.exampleFileLength]);
-      }
+          _prefs.getStringList(globals.prefsFlashcardData) ?? [""];
 
       //split from file
       List<String> _currentFlashcards =
@@ -281,13 +270,13 @@ class MyHomePageState extends State<MyHomePage> {
           title: Text(globals.editDelete),
           content: Text(globals.editDeleting),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text(globals.errorCancel),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text(globals.errorOk),
               onPressed: () async {
                 //load prefs
@@ -295,16 +284,16 @@ class MyHomePageState extends State<MyHomePage> {
                     await SharedPreferences.getInstance();
 
                 //get from shared prefs
-                List<String> _flashcardsData =
+                List<String>? _flashcardsData =
                     _prefs.getStringList(globals.prefsFlashcardData);
 
                 //check not example file
                 if (_flashcardsData != null) {
                   //get from shared prefs
                   globals.flashcardFiles =
-                      _prefs.getStringList(globals.prefsFlashcardTitles);
+                      _prefs.getStringList(globals.prefsFlashcardTitles)!;
                   globals.flashcardLengths =
-                      _prefs.getStringList(globals.prefsFlashcardLength);
+                      _prefs.getStringList(globals.prefsFlashcardLength)!;
 
                   //remove file
                   _flashcardsData.removeAt(_fileNumber);
@@ -383,7 +372,7 @@ class MyHomePageState extends State<MyHomePage> {
       //set up prefs and save to prefs
       SharedPreferences _prefs = await SharedPreferences.getInstance();
       _prefs.setInt(
-          globals.prefsAmountOfCards, num.parse(_cardAmountInput.toString()));
+          globals.prefsAmountOfCards, int.parse(_cardAmountInput.toString()));
     }
   }
 
@@ -391,7 +380,7 @@ class MyHomePageState extends State<MyHomePage> {
     try {
       //set up prefs and save to prefs
       DynamicTheme.of(context)
-          .setBrightness(_darkTheme ? Brightness.dark : Brightness.light);
+          ?.setTheme(_darkTheme);
     } catch (e) {
       outputErrors(globals.errorSettingsDark, e);
     }
@@ -413,25 +402,26 @@ class MyHomePageState extends State<MyHomePage> {
                   _tempColor = Color(newColor.value);
                 },
                 onMainColorChange: (newColor) {
-                  _tempColor = Color(newColor.value);
+                  _tempColor = Color(newColor!.value);
                 },
               ),
               actions: <Widget>[
-                FlatButton(
+                TextButton(
                   child: Text(globals.errorCancel),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
-                FlatButton(
+                /*TextButton(
                   child: Text(globals.errorOk),
                   onPressed: () {
-                    DynamicTheme.of(context).setBrightness(Brightness.light);
-                    DynamicTheme.of(context).setThemeData(new ThemeData(
+                    DynamicTheme.of(context)?.setTheme(AppThemes.LightTheme);
+                    DynamicTheme.of(context)?.
+                    DynamicTheme.of(context)?.setThemeData(new ThemeData(
                         primaryColor: _tempColor, accentColor: _tempColor));
                     Navigator.of(context).pop();
                   },
-                ),
+                ),*/
               ],
             );
           });
@@ -444,7 +434,7 @@ class MyHomePageState extends State<MyHomePage> {
     //local variables
     List<String> _fileList = [""];
     try {
-      var _tempString = "";
+      String? _tempString = "";
       bool _firstTime = true;
 
       for (var i = 0; i < _splitText.length; i++) {
@@ -744,7 +734,7 @@ class MyHomePageState extends State<MyHomePage> {
                     ],
                   ),
                   CircleAvatar(
-                    backgroundColor: Theme.of(context).accentColor,
+                    backgroundColor: Theme.of(context).primaryColor,
                   ),
                 ],
               ),
