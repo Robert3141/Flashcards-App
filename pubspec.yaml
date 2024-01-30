@@ -25,9 +25,9 @@ dependencies:
   file_picker: ^6.1.1
   shared_preferences: ^2.0.5
   flip_card: ^0.7.0
-  dynamic_themes: ^1.1.0
+  flutter_dynamic_theme: ^1.0.6
   flutter_material_color_picker: ^1.0.3
-  #draggable_scrollbar: ^0.0.4
+  draggable_scrollbar: ^0.1.0
 
 dev_dependencies:
   flutter_test:

@@ -1,14 +1,40 @@
 import 'dart:io';
-import 'package:dynamic_themes/dynamic_themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flashcards/UI/UIFlashcards.dart';
 import 'package:flashcards/UI/UIEditCards.dart';
 import 'package:flashcards/globals.dart' as globals;
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter_dynamic_theme/flutter_dynamic_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 
+
+import 'dart:developer' as developer;
+
+extension ColorsExt on Color {
+
+  MaterialColor toMaterialColor() {
+    final int red = this.red;
+    final int green = this.green;
+    final int blue = this.blue;
+
+    final Map<int, Color> shades = {
+      50: Color.fromRGBO(red, green, blue, .1),
+      100: Color.fromRGBO(red, green, blue, .2),
+      200: Color.fromRGBO(red, green, blue, .3),
+      300: Color.fromRGBO(red, green, blue, .4),
+      400: Color.fromRGBO(red, green, blue, .5),
+      500: Color.fromRGBO(red, green, blue, .6),
+      600: Color.fromRGBO(red, green, blue, .7),
+      700: Color.fromRGBO(red, green, blue, .8),
+      800: Color.fromRGBO(red, green, blue, .9),
+      900: Color.fromRGBO(red, green, blue, 1),
+    };
+
+    return MaterialColor(value, shades);
+  }
+}
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -376,11 +402,13 @@ class MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void settingsDarkTheme(_darkTheme) {
+  void settingsDarkTheme(bool _darkTheme) {
     try {
       //set up prefs and save to prefs
-      DynamicTheme.of(context)
-          ?.setTheme(_darkTheme);
+      /*DynamicTheme.of(context)
+          ?.setTheme(/*_darkTheme ? AppThemes.DarkTheme :*/ AppThemes.LightTheme);*/
+      developer.log(_darkTheme ? "Dark": "Light");
+      FlutterDynamicTheme.of(context)?.setBrightness(_darkTheme ? Brightness.dark : Brightness.light);
     } catch (e) {
       outputErrors(globals.errorSettingsDark, e);
     }
@@ -396,7 +424,7 @@ class MyHomePageState extends State<MyHomePage> {
             return AlertDialog(
               title: Text(globals.settingsThemeColour),
               content: MaterialColorPicker(
-                selectedColor: Theme.of(context).primaryColor,
+                selectedColor: _tempColor,
                 allowShades: true,
                 onColorChange: (newColor) {
                   _tempColor = Color(newColor.value);
@@ -412,16 +440,18 @@ class MyHomePageState extends State<MyHomePage> {
                     Navigator.of(context).pop();
                   },
                 ),
-                /*TextButton(
+                TextButton(
                   child: Text(globals.errorOk),
                   onPressed: () {
-                    DynamicTheme.of(context)?.setTheme(AppThemes.LightTheme);
-                    DynamicTheme.of(context)?.
-                    DynamicTheme.of(context)?.setThemeData(new ThemeData(
-                        primaryColor: _tempColor, accentColor: _tempColor));
+                    FlutterDynamicTheme.of(context)?.setThemeData(
+                          new ThemeData(
+                            primarySwatch: _tempColor.toMaterialColor(),
+                            primaryColor: _tempColor,
+
+                          ));
                     Navigator.of(context).pop();
                   },
-                ),*/
+                ),
               ],
             );
           });
@@ -751,6 +781,7 @@ class MyHomePageState extends State<MyHomePage> {
 
     final bottomNavBar = BottomNavigationBar(
       currentIndex: _currentTabIndex,
+      selectedItemColor: Theme.of(context).primaryColor,
       type: BottomNavigationBarType.fixed,
       items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(

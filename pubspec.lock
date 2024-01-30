@@ -49,14 +49,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.6"
-  dynamic_themes:
+  draggable_scrollbar:
     dependency: "direct main"
     description:
-      name: dynamic_themes
-      sha256: "35e285d3b61cd70a25bf1035e6192fc578d7b6c7b09b0cc99da0f5e2780651a9"
+      name: draggable_scrollbar
+      sha256: a906e27fc1ee056e2942d66989dd0cb5b70a361e7d44af566cfa1b584054eac3
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.0"
+    version: "0.1.0"
   fake_async:
     dependency: transitive
     description:
@@ -102,6 +102,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_dynamic_theme:
+    dependency: "direct main"
+    description:
+      name: flutter_dynamic_theme
+      sha256: "28b9855403c8f579f789b8d32d0ce07225fb772c896cc0f9f42c9fc05c5ed9e7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.6"
   flutter_material_color_picker:
     dependency: "direct main"
     description:

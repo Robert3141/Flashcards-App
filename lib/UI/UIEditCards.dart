@@ -1,7 +1,4 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flashcards/globals.dart' as globals;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
@@ -17,7 +14,8 @@ class EditCardsPage extends MaterialPageRoute<Null> {
             body: Builder(
               builder: (BuildContext context) => EditCards(
                   currentFileData: _currentFileData,
-                  currentFileNo: _currentFileNo),
+                  currentFileNo: _currentFileNo,
+              ),
             ),
           );
         });
@@ -25,10 +23,10 @@ class EditCardsPage extends MaterialPageRoute<Null> {
 
 class EditCards extends StatefulWidget {
   EditCards(
-      {@required this.currentFileData,
-      @required this.currentFileNo,
-      Key key,
-      int index})
+      {required this.currentFileData,
+      required this.currentFileNo,
+      Key? key,
+      int index = 0})
       : super(key: key);
 
   final List<String> currentFileData;
@@ -67,7 +65,7 @@ class EditCardsState extends State<EditCards> {
           title: Text(_error),
           content: Text(_e.toString()),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text(globals.errorOk),
               onPressed: () => Navigator.pop(context),
             )
@@ -83,7 +81,7 @@ class EditCardsState extends State<EditCards> {
 
         //get title
         _controllerTitle.text =
-            _prefs.getStringList(globals.prefsFlashcardTitles)[_currentFileNo];
+            _prefs.getStringList(globals.prefsFlashcardTitles)?[_currentFileNo] ?? "";
       } catch (e) {
         outputErrors(globals.errorLoadPrefs, e);
       }
@@ -104,7 +102,7 @@ class EditCardsState extends State<EditCards> {
 
         //get string list
         List<String> _currentFlashcardData =
-            _prefs.getStringList(globals.prefsFlashcardData);
+            _prefs.getStringList(globals.prefsFlashcardData) ?? [];
 
         //update string list
         _currentFlashcardData[_currentFileNo] = _currentFileDataString;
@@ -156,13 +154,13 @@ class EditCardsState extends State<EditCards> {
             title: Text(globals.editDelete),
             content: Text(globals.editDeleting),
             actions: <Widget>[
-              FlatButton(
+              TextButton(
                 child: Text(globals.errorCancel),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
               ),
-              FlatButton(
+              TextButton(
                 child: Text(globals.errorOk),
                 onPressed: () async {
                   //delete card
@@ -186,7 +184,7 @@ class EditCardsState extends State<EditCards> {
                   SharedPreferences _prefs =
                       await SharedPreferences.getInstance();
                   List<String> _amountOfCards =
-                      _prefs.getStringList(globals.prefsFlashcardLength);
+                      _prefs.getStringList(globals.prefsFlashcardLength)!;
                   _amountOfCards[_currentFileNo] =
                       (int.parse(_amountOfCards[_currentFileNo]) - 1)
                           .toString();
@@ -244,7 +242,7 @@ class EditCardsState extends State<EditCards> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
-                  FlatButton(
+                  TextButton(
                     child: Text(globals.errorOk),
                     onPressed: () => Navigator.pop(context),
                   ),
@@ -265,7 +263,7 @@ class EditCardsState extends State<EditCards> {
 
         //get titles list
         List<String> _titlesList =
-            _prefs.getStringList(globals.prefsFlashcardTitles);
+            _prefs.getStringList(globals.prefsFlashcardTitles)!;
 
         //set titles list
         _titlesList[_currentFileNo] = _newTitle;
@@ -292,7 +290,7 @@ class EditCardsState extends State<EditCards> {
         //update card amount
         SharedPreferences _prefs = await SharedPreferences.getInstance();
         List<String> _amountOfCards =
-            _prefs.getStringList(globals.prefsFlashcardLength);
+            _prefs.getStringList(globals.prefsFlashcardLength)!;
         _amountOfCards[_currentFileNo] =
             (int.parse(_amountOfCards[_currentFileNo]) + 1).toString();
         _prefs.setStringList(globals.prefsFlashcardLength, _amountOfCards);
