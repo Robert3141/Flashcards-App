@@ -1,12 +1,10 @@
 import 'dart:async';
+import 'package:dynamic_themes/dynamic_themes.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flashcards/UI/UIHome.dart';
 import 'package:flashcards/UI/UIEditCards.dart';
 import 'package:flashcards/globals.dart' as globals;
-import 'package:dynamic_theme/dynamic_theme.dart';
 
-import 'UI/UIEditCards.dart';
 
 //run the app
 Future main() async {
@@ -19,6 +17,23 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
+class AppThemes {
+  static const int LightTheme = 0;
+  static const int DarkTheme = 1;
+}
+final themeCollection = ThemeCollection(
+  themes: {
+    AppThemes.LightTheme: ThemeData(
+        primarySwatch: globals.defaultThemeColor,
+        brightness: Brightness.light
+    ),
+    AppThemes.DarkTheme: ThemeData(
+        primarySwatch: globals.defaultThemeColor,
+        brightness: Brightness.dark
+    )
+  },
+);
+
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
@@ -28,15 +43,10 @@ class _MyAppState extends State<MyApp> {
     };
 
     return new DynamicTheme(
-      defaultBrightness: globals.defaultBrightness,
-      data: (brightness) => new ThemeData(
-        primarySwatch: globals.defaultThemeColor,
-        brightness: brightness,
-      ),
-      themedWidgetBuilder: (context, theme) {
+      builder: (BuildContext context, ThemeData themeData) {
         return new MaterialApp(
           title: globals.appName,
-          theme: theme,
+          theme: themeData,
           darkTheme: new ThemeData(
             primarySwatch: globals.defaultThemeColor,
             brightness: Brightness.dark,
@@ -47,6 +57,7 @@ class _MyAppState extends State<MyApp> {
           routes: routes,
         );
       },
+      themeCollection: themeCollection,
     );
   }
 }

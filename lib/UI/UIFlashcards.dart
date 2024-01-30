@@ -24,7 +24,7 @@ class FlashcardsPage extends MaterialPageRoute<Null> {
           title: Text(_error),
           content: Text(_e.toString()),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text(globals.errorOk),
               onPressed: () => Navigator.pop(context),
             )

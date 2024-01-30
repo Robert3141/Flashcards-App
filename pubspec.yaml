@@ -11,23 +11,23 @@ description: Uses text file to shuffe flashcards.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 6.2.4+24
+version: 6.3.0+25
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: '>=2.12.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
 
   # Imported dependencies
-  cupertino_icons: ^0.1.2
-  file_picker: ^2.0.11
-  shared_preferences: ^0.5.12+2
-  flip_card: ^0.4.1
-  dynamic_theme: ^1.0.1
+  cupertino_icons: ^1.0.6
+  file_picker: ^6.1.1
+  shared_preferences: ^2.0.5
+  flip_card: ^0.7.0
+  dynamic_themes: ^1.1.0
   flutter_material_color_picker: ^1.0.3
-  draggable_scrollbar: ^0.0.4
+  #draggable_scrollbar: ^0.0.4
 
 dev_dependencies:
   flutter_test:
