@@ -1,4 +1,4 @@
-package com.example.flashcards
+package uk.co.ariesfamily.flashcards
 
 import io.flutter.embedding.android.FlutterActivity
 
