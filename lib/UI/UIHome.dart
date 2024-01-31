@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flashcards/UI/UIFlashcards.dart';
@@ -9,30 +10,51 @@ import 'package:flutter_dynamic_theme/flutter_dynamic_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 
-
 import 'dart:developer' as developer;
 
 extension ColorsExt on Color {
-
   MaterialColor toMaterialColor() {
-    final int red = this.red;
-    final int green = this.green;
-    final int blue = this.blue;
+    List strengths = <double>[.05];
+    Map<int, Color> swatch = {};
+    final int r = this.red, g = this.green, b = this.blue;
 
-    final Map<int, Color> shades = {
-      50: Color.fromRGBO(red, green, blue, .1),
-      100: Color.fromRGBO(red, green, blue, .2),
-      200: Color.fromRGBO(red, green, blue, .3),
-      300: Color.fromRGBO(red, green, blue, .4),
-      400: Color.fromRGBO(red, green, blue, .5),
-      500: Color.fromRGBO(red, green, blue, .6),
-      600: Color.fromRGBO(red, green, blue, .7),
-      700: Color.fromRGBO(red, green, blue, .8),
-      800: Color.fromRGBO(red, green, blue, .9),
-      900: Color.fromRGBO(red, green, blue, 1),
-    };
+    for (int i = 1; i < 10; i++) {
+      strengths.add(0.1 * i);
+    }
+    for (var strength in strengths) {
+      final double ds = 0.5 - strength;
+      swatch[(strength * 1000).round()] = Color.fromRGBO(
+        r + ((ds < 0 ? r : (255 - r)) * ds).round(),
+        g + ((ds < 0 ? g : (255 - g)) * ds).round(),
+        b + ((ds < 0 ? b : (255 - b)) * ds).round(),
+        1,
+      );
+    }
+    return MaterialColor(this.value, swatch);
+  }
 
-    return MaterialColor(value, shades);
+  ColorScheme toColorScheme(Brightness brightness) {
+    MaterialColor material = this.toMaterialColor();
+    double lum = this.computeLuminance();
+    bool isContrast = (lum > 0.5) ^ (brightness == Brightness.light);
+    return ColorScheme(
+      brightness: brightness,
+      primary: this,
+      onPrimary: lum > 0.5 ? material.shade600 : material.shade50,
+      secondary: material.shade700,
+      onSecondary: material.shade100,
+      error: Colors.red,
+      onError: Colors.black,
+      background: brightness == Brightness.light ? Colors.white : Colors.black,
+      onBackground:
+          brightness == Brightness.light ? Colors.black : Colors.white,
+      surface: brightness == Brightness.light
+          ? material.shade100
+          : material.shade700,
+      onSurface: brightness == Brightness.light
+          ? Colors.white
+          : Colors.black, //Text Color
+    );
   }
 }
 
@@ -182,7 +204,8 @@ class MyHomePageState extends State<MyHomePage> {
       PlatformFile _selectedFile = result.files.first;
 
       //get text from file
-      String _fileText = String.fromCharCodes(_selectedFile.bytes as Iterable<int>);
+      String _fileText =
+          String.fromCharCodes(_selectedFile.bytes as Iterable<int>);
 
       //get list from file
       List<String> _currentFlashcards = splitter(_fileText, "&");
@@ -251,8 +274,21 @@ class MyHomePageState extends State<MyHomePage> {
     try {
       //Get file from shared prefs
       SharedPreferences _prefs = await SharedPreferences.getInstance();
-      List<String> _flashcardData =
-          _prefs.getStringList(globals.prefsFlashcardData) ?? [""];
+      List<String>? _flashcardData =
+          _prefs.getStringList(globals.prefsFlashcardData);
+
+      //add example file to shared prefs
+      if (_flashcardData == null) {
+        _flashcardData = [globals.exampleFileData];
+        _prefs.setStringList(
+            globals.prefsFlashcardData, [globals.exampleFileData]);
+
+        //add title and amount of cards
+        _prefs.setStringList(
+            globals.prefsFlashcardTitles, [globals.exampleFileName]);
+        _prefs.setStringList(
+            globals.prefsFlashcardLength, [globals.exampleFileLength]);
+      }
 
       //split from file
       List<String> _currentFlashcards =
@@ -404,11 +440,13 @@ class MyHomePageState extends State<MyHomePage> {
 
   void settingsDarkTheme(bool _darkTheme) {
     try {
-      //set up prefs and save to prefs
-      /*DynamicTheme.of(context)
-          ?.setTheme(/*_darkTheme ? AppThemes.DarkTheme :*/ AppThemes.LightTheme);*/
-      developer.log(_darkTheme ? "Dark": "Light");
-      FlutterDynamicTheme.of(context)?.setBrightness(_darkTheme ? Brightness.dark : Brightness.light);
+      FlutterDynamicTheme.of(context)?.setThemeData(new ThemeData(
+          primarySwatch: Theme.of(context).primaryColor.toMaterialColor(),
+          primaryColor: Theme.of(context).primaryColor,
+          brightness: _darkTheme ? Brightness.dark : Brightness.light,
+          colorScheme: Theme.of(context)
+              .primaryColor
+              .toColorScheme(_darkTheme ? Brightness.dark : Brightness.light)));
     } catch (e) {
       outputErrors(globals.errorSettingsDark, e);
     }
@@ -417,20 +455,23 @@ class MyHomePageState extends State<MyHomePage> {
   void settingsThemeColor() {
     try {
       //local var
-      Color _tempColor = Theme.of(context).primaryColor;
+      //Color _tempColor = Theme.of(context).primaryColor;
+      ColorScheme _tempColor = Theme.of(context).colorScheme;
       showDialog(
           context: context,
           builder: (_) {
             return AlertDialog(
               title: Text(globals.settingsThemeColour),
               content: MaterialColorPicker(
-                selectedColor: _tempColor,
+                selectedColor: _tempColor.primary,
                 allowShades: true,
                 onColorChange: (newColor) {
-                  _tempColor = Color(newColor.value);
+                  setState(() {
+                    _tempColor = _tempColor.copyWith(primary: newColor);
+                  });
                 },
                 onMainColorChange: (newColor) {
-                  _tempColor = Color(newColor!.value);
+                  //_tempColor = ColorScheme.fromSwatch(primarySwatch: newColor);
                 },
               ),
               actions: <Widget>[
@@ -443,12 +484,13 @@ class MyHomePageState extends State<MyHomePage> {
                 TextButton(
                   child: Text(globals.errorOk),
                   onPressed: () {
-                    FlutterDynamicTheme.of(context)?.setThemeData(
-                          new ThemeData(
-                            primarySwatch: _tempColor.toMaterialColor(),
-                            primaryColor: _tempColor,
-
-                          ));
+                    FlutterDynamicTheme.of(context)?.setThemeData(new ThemeData(
+                        primarySwatch: _tempColor.primary.toMaterialColor(),
+                        primaryColor: _tempColor.primary,
+                        brightness: FlutterDynamicTheme.of(context)
+                            ?.themeData
+                            .brightness,
+                        colorScheme: _tempColor));
                     Navigator.of(context).pop();
                   },
                 ),
@@ -775,8 +817,9 @@ class MyHomePageState extends State<MyHomePage> {
     ];
 
     final _appBar = AppBar(
-      title: Text(_tabTitle),
+      title: Text(_tabTitle, style: TextStyle(fontWeight: FontWeight.bold)),
       centerTitle: true,
+      foregroundColor: Theme.of(context).primaryColor,
     );
 
     final bottomNavBar = BottomNavigationBar(
