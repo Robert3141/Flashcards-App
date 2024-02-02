@@ -10,7 +10,7 @@ import 'globals.dart';
 
 //run the app
 Future main() async {
-  runApp(new MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -25,7 +25,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     var routes = <String, WidgetBuilder>{
       EditCards.routeName: (BuildContext context) =>
-          new EditCards(
+          const EditCards(
               currentFileData: ['1', '2'],
               currentFileNo: 0,
           ),
@@ -33,14 +33,14 @@ class _MyAppState extends State<MyApp> {
 
     return FlutterDynamicTheme(
       themedWidgetBuilder: (BuildContext context, ThemeData themeData) {
-        return new MaterialApp(
+        return MaterialApp(
           title: globals.appName,
           theme: themeData,
-          darkTheme: new ThemeData(
+          darkTheme: ThemeData(
             primarySwatch: globals.defaultThemeColor,
             brightness: Brightness.dark,
           ),
-          home: new MyHomePage(
+          home: const MyHomePage(
             title: globals.appName,
           ),
           routes: routes,

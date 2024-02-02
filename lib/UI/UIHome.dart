@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flashcards/UI/UIFlashcards.dart';
@@ -10,13 +9,11 @@ import 'package:flutter_dynamic_theme/flutter_dynamic_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 
-import 'dart:developer' as developer;
-
 extension ColorsExt on Color {
   MaterialColor toMaterialColor() {
     List strengths = <double>[.05];
     Map<int, Color> swatch = {};
-    final int r = this.red, g = this.green, b = this.blue;
+    final int r = red, g = green, b = blue;
 
     for (int i = 1; i < 10; i++) {
       strengths.add(0.1 * i);
@@ -30,13 +27,12 @@ extension ColorsExt on Color {
         1,
       );
     }
-    return MaterialColor(this.value, swatch);
+    return MaterialColor(value, swatch);
   }
 
   ColorScheme toColorScheme(Brightness brightness) {
-    MaterialColor material = this.toMaterialColor();
-    double lum = this.computeLuminance();
-    bool isContrast = (lum > 0.5) ^ (brightness == Brightness.light);
+    MaterialColor material = toMaterialColor();
+    double lum = computeLuminance();
     return ColorScheme(
       brightness: brightness,
       primary: this,
@@ -59,7 +55,7 @@ extension ColorsExt on Color {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -87,16 +83,16 @@ class MyHomePageState extends State<MyHomePage> {
   // FUNCTIONS:
   //
 
-  void outputErrors(String _error, _e) {
+  void outputErrors(String error, e) {
     setState(() {
       showDialog<String>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          title: Text(_error),
-          content: Text(_e.toString()),
+          title: Text(error),
+          content: Text(e.toString()),
           actions: <Widget>[
             TextButton(
-              child: Text(globals.errorOk),
+              child: const Text(globals.errorOk),
               onPressed: () => Navigator.pop(context),
             )
           ],
@@ -118,60 +114,60 @@ class MyHomePageState extends State<MyHomePage> {
       }
 
       //user file prompt:
-      PlatformFile _selectedFile = result.files.first;
+      PlatformFile selectedFile = result.files.first;
 
       //get text from file
-      String _fileText =
-          String.fromCharCodes(_selectedFile.bytes as Iterable<int>);
+      String fileText =
+          String.fromCharCodes(selectedFile.bytes as Iterable<int>);
 
       //get name of text file from file path
-      String _fileName =
-          _selectedFile.name; //splitter(_selectedFile.path.trim(), "/").last;
+      String fileName =
+          selectedFile.name; //splitter(_selectedFile.path.trim(), "/").last;
 
       //get amount of flashcards from file
-      int _fileCards = splitter(_fileText, "&").length;
-      _fileCards = _fileCards ~/ 2;
+      int fileCards = splitter(fileText, "&").length;
+      fileCards = fileCards ~/ 2;
 
       //get SharedPrefs file
-      SharedPreferences _prefs = await SharedPreferences.getInstance();
-      List<String>? _flashcardTitles =
-          _prefs.getStringList(globals.prefsFlashcardTitles);
-      List<String>? _flashcardLengths =
-          _prefs.getStringList(globals.prefsFlashcardLength);
-      List<String>? _flashcardData =
-          _prefs.getStringList(globals.prefsFlashcardData);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      List<String>? flashcardTitles =
+          prefs.getStringList(globals.prefsFlashcardTitles);
+      List<String>? flashcardLengths =
+          prefs.getStringList(globals.prefsFlashcardLength);
+      List<String>? flashcardData =
+          prefs.getStringList(globals.prefsFlashcardData);
 
       //add file to prefs
       // flashcardTitles
-      if (_flashcardTitles != null) {
-        _flashcardTitles.add(_fileName);
+      if (flashcardTitles != null) {
+        flashcardTitles.add(fileName);
       } else {
-        _flashcardTitles = [_fileName];
+        flashcardTitles = [fileName];
       }
       //flashcardLengths
-      if (_flashcardLengths != null) {
-        _flashcardLengths.add('$_fileCards');
+      if (flashcardLengths != null) {
+        flashcardLengths.add('$fileCards');
       } else {
-        _flashcardLengths = [_fileCards.toString()];
+        flashcardLengths = [fileCards.toString()];
       }
       // flashcardData
-      if (_flashcardData != null) {
-        _flashcardData.add(_fileText);
+      if (flashcardData != null) {
+        flashcardData.add(fileText);
       } else {
-        _flashcardData = [_fileText];
+        flashcardData = [fileText];
       }
 
       //save to shared prefs
-      await _prefs.setStringList(globals.prefsFlashcardData, _flashcardData);
-      await _prefs.setStringList(
-          globals.prefsFlashcardTitles, _flashcardTitles);
-      await _prefs.setStringList(
-          globals.prefsFlashcardLength, _flashcardLengths);
+      await prefs.setStringList(globals.prefsFlashcardData, flashcardData);
+      await prefs.setStringList(
+          globals.prefsFlashcardTitles, flashcardTitles);
+      await prefs.setStringList(
+          globals.prefsFlashcardLength, flashcardLengths);
 
       //update UI
       setState(() {
-        globals.flashcardFiles = _flashcardTitles!;
-        globals.flashcardLengths = _flashcardLengths!;
+        globals.flashcardFiles = flashcardTitles!;
+        globals.flashcardLengths = flashcardLengths!;
 
         Navigator.pop(context);
       });
@@ -201,17 +197,18 @@ class MyHomePageState extends State<MyHomePage> {
       }
 
       //user file prompt:
-      PlatformFile _selectedFile = result.files.first;
+      PlatformFile selectedFile = result.files.first;
 
       //get text from file
-      String _fileText =
-          String.fromCharCodes(_selectedFile.bytes as Iterable<int>);
+      String fileText =
+          String.fromCharCodes(selectedFile.bytes as Iterable<int>);
 
       //get list from file
-      List<String> _currentFlashcards = splitter(_fileText, "&");
+      List<String> currentFlashcards = splitter(fileText, "&");
 
       //load flashcards page
-      Navigator.push(context, FlashcardsPage(_currentFlashcards));
+      if (!context.mounted) return;
+      Navigator.push(context, FlashcardsPage(currentFlashcards));
     } catch (e) {
       if (e.runtimeType == MissingPluginException) {
         outputErrors(globals.errorImport, globals.errorDeviceNotSupported);
@@ -224,79 +221,81 @@ class MyHomePageState extends State<MyHomePage> {
   void clickCreateFlashcards() async {
     try {
       // Get file from shared prefs
-      int _newFileNumber = 0;
-      SharedPreferences _prefs = await SharedPreferences.getInstance();
-      List<String>? _flashcardsData =
-          _prefs.getStringList(globals.prefsFlashcardData);
-      List<String>? _flashcardLengths =
-          _prefs.getStringList(globals.prefsFlashcardLength);
-      List<String>? _flashcardTitle =
-          _prefs.getStringList(globals.prefsFlashcardTitles);
+      int newFileNumber = 0;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      List<String>? flashcardsData =
+          prefs.getStringList(globals.prefsFlashcardData);
+      List<String>? flashcardLengths =
+          prefs.getStringList(globals.prefsFlashcardLength);
+      List<String>? flashcardTitle =
+          prefs.getStringList(globals.prefsFlashcardTitles);
 
       //add file to sharedPrefs
       // flashcardData
-      if (_flashcardsData != null) {
-        _flashcardsData.add(globals.exampleFileData);
-        _newFileNumber = _flashcardsData.length - 1;
+      if (flashcardsData != null) {
+        flashcardsData.add(globals.exampleFileData);
+        newFileNumber = flashcardsData.length - 1;
       } else {
-        _flashcardsData = [globals.exampleFileData];
+        flashcardsData = [globals.exampleFileData];
       }
-      await _prefs.setStringList(globals.prefsFlashcardData, _flashcardsData);
+      await prefs.setStringList(globals.prefsFlashcardData, flashcardsData);
       // flashcardLengths
-      if (_flashcardLengths != null) {
-        _flashcardLengths.add(globals.exampleFileLength);
+      if (flashcardLengths != null) {
+        flashcardLengths.add(globals.exampleFileLength);
       } else {
-        _flashcardLengths = [globals.exampleFileLength];
+        flashcardLengths = [globals.exampleFileLength];
       }
-      await _prefs.setStringList(
-          globals.prefsFlashcardLength, _flashcardLengths);
+      await prefs.setStringList(
+          globals.prefsFlashcardLength, flashcardLengths);
       //flashcardTitle
-      if (_flashcardTitle != null) {
-        _flashcardTitle.add(globals.newFileName);
+      if (flashcardTitle != null) {
+        flashcardTitle.add(globals.newFileName);
       } else {
-        _flashcardTitle = [globals.newFileName];
+        flashcardTitle = [globals.newFileName];
       }
-      await _prefs.setStringList(globals.prefsFlashcardTitles, _flashcardTitle);
+      await prefs.setStringList(globals.prefsFlashcardTitles, flashcardTitle);
 
       //split from file
-      List<String> _currentFlashcards = splitter(globals.exampleFileData, "&");
+      List<String> currentFlashcards = splitter(globals.exampleFileData, "&");
 
       //load edit page
+      if (!context.mounted) return;
       Navigator.push(
-          context, EditCardsPage(_currentFlashcards, _newFileNumber));
+          context, EditCardsPage(currentFlashcards, newFileNumber));
     } catch (e) {
       //in case of error output error
       outputErrors(globals.errorCreate, e);
     }
   }
 
-  void clickEditFlashcards(int _fileNumber) async {
+  void clickEditFlashcards(int fileNumber) async {
     try {
       //Get file from shared prefs
-      SharedPreferences _prefs = await SharedPreferences.getInstance();
-      List<String>? _flashcardData =
-          _prefs.getStringList(globals.prefsFlashcardData);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      List<String>? flashcardData =
+          prefs.getStringList(globals.prefsFlashcardData);
 
       //add example file to shared prefs
-      if (_flashcardData == null) {
-        _flashcardData = [globals.exampleFileData];
-        _prefs.setStringList(
+      if (flashcardData == null) {
+        flashcardData = [globals.exampleFileData];
+        prefs.setStringList(
             globals.prefsFlashcardData, [globals.exampleFileData]);
 
         //add title and amount of cards
-        _prefs.setStringList(
+        prefs.setStringList(
             globals.prefsFlashcardTitles, [globals.exampleFileName]);
-        _prefs.setStringList(
+        prefs.setStringList(
             globals.prefsFlashcardLength, [globals.exampleFileLength]);
       }
 
       //split from file
-      List<String> _currentFlashcards =
-          splitter(_flashcardData[_fileNumber], "&");
+      List<String> currentFlashcards =
+          splitter(flashcardData[fileNumber], "&");
 
       //load edit page
+      if (!context.mounted) return;
       await Navigator.push(
-          context, EditCardsPage(_currentFlashcards, _fileNumber));
+          context, EditCardsPage(currentFlashcards, fileNumber));
 
       //update UI
       setState(() {});
@@ -306,73 +305,75 @@ class MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void clickLoadFlashcards(int _fileNumber) async {
+  void clickLoadFlashcards(int fileNumber) async {
     try {
       //Get file from shared prefs
-      SharedPreferences _prefs = await SharedPreferences.getInstance();
-      List<String> _flashcardsData =
-          _prefs.getStringList(globals.prefsFlashcardData) ??
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      List<String> flashcardsData =
+          prefs.getStringList(globals.prefsFlashcardData) ??
               [globals.exampleFileData];
-      List<String> _currentFlashcards =
-          splitter(_flashcardsData[_fileNumber], "&");
+      List<String> currentFlashcards =
+          splitter(flashcardsData[fileNumber], "&");
 
       //load flashcards page
-      Navigator.push(context, FlashcardsPage(_currentFlashcards));
+      if (!context.mounted) return;
+      Navigator.push(context, FlashcardsPage(currentFlashcards));
     } catch (e) {
       //in case of error output error
       outputErrors(globals.errorLoad, e);
     }
   }
 
-  void clickDeleteFlashcards(int _fileNumber) {
+  void clickDeleteFlashcards(int fileNumber) {
     try {
       showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          title: Text(globals.editDelete),
-          content: Text(globals.editDeleting),
+          title: const Text(globals.editDelete),
+          content: const Text(globals.editDeleting),
           actions: <Widget>[
             TextButton(
-              child: Text(globals.errorCancel),
+              child: const Text(globals.errorCancel),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text(globals.errorOk),
+              child: const Text(globals.errorOk),
               onPressed: () async {
                 //load prefs
-                SharedPreferences _prefs =
+                SharedPreferences prefs =
                     await SharedPreferences.getInstance();
 
                 //get from shared prefs
-                List<String>? _flashcardsData =
-                    _prefs.getStringList(globals.prefsFlashcardData);
+                List<String>? flashcardsData =
+                    prefs.getStringList(globals.prefsFlashcardData);
 
                 //check not example file
-                if (_flashcardsData != null) {
+                if (flashcardsData != null) {
                   //get from shared prefs
                   globals.flashcardFiles =
-                      _prefs.getStringList(globals.prefsFlashcardTitles)!;
+                      prefs.getStringList(globals.prefsFlashcardTitles)!;
                   globals.flashcardLengths =
-                      _prefs.getStringList(globals.prefsFlashcardLength)!;
+                      prefs.getStringList(globals.prefsFlashcardLength)!;
 
                   //remove file
-                  _flashcardsData.removeAt(_fileNumber);
-                  _prefs.setStringList(
-                      globals.prefsFlashcardData, _flashcardsData);
+                  flashcardsData.removeAt(fileNumber);
+                  prefs.setStringList(
+                      globals.prefsFlashcardData, flashcardsData);
 
                   //remove title
-                  globals.flashcardFiles.removeAt(_fileNumber);
-                  _prefs.setStringList(
+                  globals.flashcardFiles.removeAt(fileNumber);
+                  prefs.setStringList(
                       globals.prefsFlashcardTitles, globals.flashcardFiles);
 
                   //remove number
-                  globals.flashcardLengths.removeAt(_fileNumber);
-                  _prefs.setStringList(
+                  globals.flashcardLengths.removeAt(fileNumber);
+                  prefs.setStringList(
                       globals.prefsFlashcardLength, globals.flashcardLengths);
 
                   //reload interface
+                  if (!context.mounted) return;
                   Navigator.pop(context);
                   Navigator.pop(context);
                   setState(() {});
@@ -390,19 +391,19 @@ class MyHomePageState extends State<MyHomePage> {
   void loadFromPreferences() async {
     try {
       //variables
-      SharedPreferences _prefs = await SharedPreferences.getInstance();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
 
       //set variables
       globals.flashcardFiles =
-          _prefs.getStringList(globals.prefsFlashcardTitles) ??
+          prefs.getStringList(globals.prefsFlashcardTitles) ??
               [globals.exampleFileName];
       globals.flashcardLengths =
-          _prefs.getStringList(globals.prefsFlashcardLength) ??
+          prefs.getStringList(globals.prefsFlashcardLength) ??
               [globals.exampleFileLength];
-      globals.amountOfCards = _prefs.getInt(globals.prefsAmountOfCards) ??
+      globals.amountOfCards = prefs.getInt(globals.prefsAmountOfCards) ??
           globals.defaultCardAmount;
       _controllerAmountOfCards.text = globals.amountOfCards.toString();
-      globals.cardsOrdered = _prefs.getBool(globals.prefsCardsOrdered) ??
+      globals.cardsOrdered = prefs.getBool(globals.prefsCardsOrdered) ??
           globals.defaultCardsOrdered;
       _cardsAmountEnabled = !globals.cardsOrdered;
     } catch (e) {
@@ -414,39 +415,39 @@ class MyHomePageState extends State<MyHomePage> {
   // PREFERENCE UPDATES
   //
 
-  void settingsOrderedCards(_orderedCard) async {
+  void settingsOrderedCards(orderedCard) async {
     try {
       //set up prefs and save to prefs
-      SharedPreferences _prefs = await SharedPreferences.getInstance();
-      _prefs.setBool(globals.prefsCardsOrdered, _orderedCard);
-      globals.cardsOrdered = _orderedCard;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool(globals.prefsCardsOrdered, orderedCard);
+      globals.cardsOrdered = orderedCard;
       setState(() {
-        globals.cardsOrdered = _orderedCard;
-        _cardsAmountEnabled = !_orderedCard;
+        globals.cardsOrdered = orderedCard;
+        _cardsAmountEnabled = !orderedCard;
       });
     } catch (e) {
       outputErrors(globals.errorSettingsOrdered, e);
     }
   }
 
-  void settingsCardAmount(_cardAmountInput) async {
-    if (num.tryParse(_cardAmountInput.toString()) != null) {
+  void settingsCardAmount(cardAmountInput) async {
+    if (num.tryParse(cardAmountInput.toString()) != null) {
       //set up prefs and save to prefs
-      SharedPreferences _prefs = await SharedPreferences.getInstance();
-      _prefs.setInt(
-          globals.prefsAmountOfCards, int.parse(_cardAmountInput.toString()));
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setInt(
+          globals.prefsAmountOfCards, int.parse(cardAmountInput.toString()));
     }
   }
 
-  void settingsDarkTheme(bool _darkTheme) {
+  void settingsDarkTheme(bool darkTheme) {
     try {
-      FlutterDynamicTheme.of(context)?.setThemeData(new ThemeData(
+      FlutterDynamicTheme.of(context)?.setThemeData(ThemeData(
           primarySwatch: Theme.of(context).primaryColor.toMaterialColor(),
           primaryColor: Theme.of(context).primaryColor,
-          brightness: _darkTheme ? Brightness.dark : Brightness.light,
+          brightness: darkTheme ? Brightness.dark : Brightness.light,
           colorScheme: Theme.of(context)
               .primaryColor
-              .toColorScheme(_darkTheme ? Brightness.dark : Brightness.light)));
+              .toColorScheme(darkTheme ? Brightness.dark : Brightness.light)));
     } catch (e) {
       outputErrors(globals.errorSettingsDark, e);
     }
@@ -456,18 +457,18 @@ class MyHomePageState extends State<MyHomePage> {
     try {
       //local var
       //Color _tempColor = Theme.of(context).primaryColor;
-      ColorScheme _tempColor = Theme.of(context).colorScheme;
+      ColorScheme tempColor = Theme.of(context).colorScheme;
       showDialog(
           context: context,
           builder: (_) {
             return AlertDialog(
-              title: Text(globals.settingsThemeColour),
+              title: const Text(globals.settingsThemeColour),
               content: MaterialColorPicker(
-                selectedColor: _tempColor.primary,
+                selectedColor: tempColor.primary,
                 allowShades: true,
                 onColorChange: (newColor) {
                   setState(() {
-                    _tempColor = _tempColor.copyWith(primary: newColor);
+                    tempColor = tempColor.copyWith(primary: newColor);
                   });
                 },
                 onMainColorChange: (newColor) {
@@ -476,21 +477,21 @@ class MyHomePageState extends State<MyHomePage> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: Text(globals.errorCancel),
+                  child: const Text(globals.errorCancel),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
-                  child: Text(globals.errorOk),
+                  child: const Text(globals.errorOk),
                   onPressed: () {
-                    FlutterDynamicTheme.of(context)?.setThemeData(new ThemeData(
-                        primarySwatch: _tempColor.primary.toMaterialColor(),
-                        primaryColor: _tempColor.primary,
+                    FlutterDynamicTheme.of(context)?.setThemeData(ThemeData(
+                        primarySwatch: tempColor.primary.toMaterialColor(),
+                        primaryColor: tempColor.primary,
                         brightness: FlutterDynamicTheme.of(context)
                             ?.themeData
                             .brightness,
-                        colorScheme: _tempColor));
+                        colorScheme: tempColor));
                     Navigator.of(context).pop();
                   },
                 ),
@@ -502,322 +503,318 @@ class MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  List<String> splitter(String _splitText, String _splitChar) {
+  List<String> splitter(String splitText, String splitChar) {
     //local variables
-    List<String> _fileList = [""];
+    List<String> fileList = [""];
     try {
-      String? _tempString = "";
-      bool _firstTime = true;
+      String? tempString = "";
+      bool firstTime = true;
 
-      for (var i = 0; i < _splitText.length; i++) {
-        if (_splitText[i] == _splitChar) {
-          if (_tempString != null) {
-            if (_firstTime) {
-              _fileList[0] = _tempString;
-              _firstTime = false;
+      for (var i = 0; i < splitText.length; i++) {
+        if (splitText[i] == splitChar) {
+          if (tempString != null) {
+            if (firstTime) {
+              fileList[0] = tempString;
+              firstTime = false;
             } else {
-              _fileList.add(_tempString);
+              fileList.add(tempString);
             }
           }
-          _tempString = null;
+          tempString = null;
         } else {
-          if (_tempString == null) {
-            _tempString = _splitText[i];
+          if (tempString == null) {
+            tempString = splitText[i];
           } else {
-            _tempString += _splitText[i];
+            tempString += splitText[i];
           }
         }
       }
 
-      if (_tempString != null) {
-        _fileList.add(_tempString);
+      if (tempString != null) {
+        fileList.add(tempString);
       }
     } catch (e) {
       outputErrors(globals.errorSplitString, e);
     }
 
-    return _fileList;
+    return fileList;
   }
 
   @override
   Widget build(BuildContext context) {
     //build the page with the flashcards
     loadFromPreferences();
-    final _tabPages = <Widget>[
+    final tabPages = <Widget>[
       //Main Tab
-      Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Card(
-              child: Container(
-                height: globals.cardHeight,
-                child: InkWell(
-                  splashColor: Theme.of(context).primaryColor,
-                  onTap: () {
-                    setState(() {
-                      //Add Cards dialog
-                      showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) => SimpleDialog(
-                          title: Text(globals.addNewCards),
-                          children: <Widget>[
-                            ListTile(
-                              leading: Icon(Icons.folder_open),
-                              title: Text(globals.importFlashcards),
-                              onTap: () {
-                                clickImportFlashcards();
-                              },
-                            ),
-                            ListTile(
-                              leading: Icon(Icons.library_books),
-                              title: Text(globals.openFlashcardsFile),
-                              onTap: () {
-                                clickOpenFlashcards();
-                              },
-                            ),
-                            ListTile(
-                              leading: Icon(Icons.control_point),
-                              title: Text(globals.createFlashcards),
-                              onTap: () {
-                                clickCreateFlashcards();
-                              },
-                            ),
-                          ],
-                        ),
-                      );
-                    });
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(globals.paddingAsText + globals.addNewCards,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      Icon(Icons.add),
-                    ],
-                  ),
+      Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Card(
+            child: SizedBox(
+              height: globals.cardHeight,
+              child: InkWell(
+                splashColor: Theme.of(context).primaryColor,
+                onTap: () {
+                  setState(() {
+                    //Add Cards dialog
+                    showDialog<String>(
+                      context: context,
+                      builder: (BuildContext context) => SimpleDialog(
+                        title: const Text(globals.addNewCards),
+                        children: <Widget>[
+                          ListTile(
+                            leading: const Icon(Icons.folder_open),
+                            title: const Text(globals.importFlashcards),
+                            onTap: () {
+                              clickImportFlashcards();
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.library_books),
+                            title: const Text(globals.openFlashcardsFile),
+                            onTap: () {
+                              clickOpenFlashcards();
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.control_point),
+                            title: const Text(globals.createFlashcards),
+                            onTap: () {
+                              clickCreateFlashcards();
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  });
+                },
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(globals.paddingAsText + globals.addNewCards,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Icon(Icons.add),
+                  ],
                 ),
               ),
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: globals.flashcardFiles.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Card(
-                    child: Container(
-                      height: globals.cardHeight,
-                      child: InkWell(
-                        splashColor: Theme.of(context).primaryColor,
-                        onTap: () {
-                          //open cards dialog
-                          setState(() {
-                            //Add Cards dialog
-                            showDialog<String>(
-                              context: context,
-                              builder: (BuildContext context) => SimpleDialog(
-                                title: Text(globals.flashcardFiles[index]),
-                                children: <Widget>[
-                                  ListTile(
-                                    leading: Icon(Icons.edit),
-                                    title: Text(globals.editFlashcards),
-                                    onTap: () {
-                                      clickEditFlashcards(index);
-                                    },
-                                  ),
-                                  ListTile(
-                                    leading: Icon(Icons.content_copy),
-                                    title: Text(globals.loadFlashcards),
-                                    onTap: () {
-                                      clickLoadFlashcards(index);
-                                    },
-                                  ),
-                                  ListTile(
-                                    leading: Icon(Icons.delete_forever),
-                                    title: Text(globals.deleteFlashcards),
-                                    onTap: () {
-                                      clickDeleteFlashcards(index);
-                                    },
-                                  )
-                                ],
-                              ),
-                            );
-                          });
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Flexible(
-                              child: Container(
-                                padding: EdgeInsets.only(right: 4.0),
-                                child: Text(
-                                    globals.paddingAsText +
-                                        globals.flashcardFiles[index],
-                                    overflow: TextOverflow.ellipsis,
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                              ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: globals.flashcardFiles.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Card(
+                  child: SizedBox(
+                    height: globals.cardHeight,
+                    child: InkWell(
+                      splashColor: Theme.of(context).primaryColor,
+                      onTap: () {
+                        //open cards dialog
+                        setState(() {
+                          //Add Cards dialog
+                          showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) => SimpleDialog(
+                              title: Text(globals.flashcardFiles[index]),
                               children: <Widget>[
-                                Text(globals.flashcardLengths[index],
-                                    overflow: TextOverflow.ellipsis),
-                                Icon(Icons.content_copy),
+                                ListTile(
+                                  leading: const Icon(Icons.edit),
+                                  title: const Text(globals.editFlashcards),
+                                  onTap: () {
+                                    clickEditFlashcards(index);
+                                  },
+                                ),
+                                ListTile(
+                                  leading: const Icon(Icons.content_copy),
+                                  title: const Text(globals.loadFlashcards),
+                                  onTap: () {
+                                    clickLoadFlashcards(index);
+                                  },
+                                ),
+                                ListTile(
+                                  leading: const Icon(Icons.delete_forever),
+                                  title: const Text(globals.deleteFlashcards),
+                                  onTap: () {
+                                    clickDeleteFlashcards(index);
+                                  },
+                                )
                               ],
                             ),
-                          ],
-                        ),
+                          );
+                        });
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Flexible(
+                            child: Container(
+                              padding: const EdgeInsets.only(right: 4.0),
+                              child: Text(
+                                  globals.paddingAsText +
+                                      globals.flashcardFiles[index],
+                                  overflow: TextOverflow.ellipsis,
+                                  style:
+                                      const TextStyle(fontWeight: FontWeight.bold)),
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(globals.flashcardLengths[index],
+                                  overflow: TextOverflow.ellipsis),
+                              const Icon(Icons.content_copy),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
 
       //Settings Tab
-      Container(
-        child: ListView(
-          children: <Widget>[
-            // Cards Ordered
-            InkWell(
-              splashColor: Theme.of(context).primaryColor,
-              onTap: () {
-                settingsOrderedCards(!globals.cardsOrdered);
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(left: globals.defaultPadding),
-                      ),
-                      Icon(Icons.reorder),
-                      Text(
-                        globals.paddingAsText + globals.settingsCardsOrdered,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                  Switch(
-                    value: globals.cardsOrdered,
-                    onChanged: settingsOrderedCards,
-                  ),
-                ],
-              ),
+      ListView(
+        children: <Widget>[
+          // Cards Ordered
+          InkWell(
+            splashColor: Theme.of(context).primaryColor,
+            onTap: () {
+              settingsOrderedCards(!globals.cardsOrdered);
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(left: globals.defaultPadding),
+                    ),
+                    Icon(Icons.reorder),
+                    Text(
+                      globals.paddingAsText + globals.settingsCardsOrdered,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                Switch(
+                  value: globals.cardsOrdered,
+                  onChanged: settingsOrderedCards,
+                ),
+              ],
             ),
-            Divider(),
-            //Cards to show
-            InkWell(
-              splashColor: Theme.of(context).primaryColor,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(left: globals.defaultPadding),
-                      ),
-                      Icon(Icons.shuffle),
-                      Text(
-                        globals.paddingAsText + globals.settingsAmountOfCards,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.all(globals.defaultPadding),
-                      child: TextField(
-                        decoration: InputDecoration(
-                            contentPadding:
-                                EdgeInsets.all(globals.defaultPadding)),
-                        enabled: _cardsAmountEnabled,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
-                        onChanged: settingsCardAmount,
-                        controller: _controllerAmountOfCards,
-                      ),
+          ),
+          const Divider(),
+          //Cards to show
+          InkWell(
+            splashColor: Theme.of(context).primaryColor,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(left: globals.defaultPadding),
+                    ),
+                    Icon(Icons.shuffle),
+                    Text(
+                      globals.paddingAsText + globals.settingsAmountOfCards,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(globals.defaultPadding),
+                    child: TextField(
+                      decoration: const InputDecoration(
+                          contentPadding:
+                              EdgeInsets.all(globals.defaultPadding)),
+                      enabled: _cardsAmountEnabled,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly
+                      ],
+                      onChanged: settingsCardAmount,
+                      controller: _controllerAmountOfCards,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            Divider(),
-            //set brightness
-            InkWell(
-              splashColor: Theme.of(context).primaryColor,
-              onTap: () {
-                settingsDarkTheme(
-                    Theme.of(context).brightness == Brightness.light);
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(left: globals.defaultPadding),
-                      ),
-                      Icon(Icons.brightness_3),
-                      Text(
-                        globals.paddingAsText + globals.settingsDarkTheme,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                  Switch(
-                    value: Theme.of(context).brightness == Brightness.dark,
-                    onChanged: settingsDarkTheme,
-                  ),
-                ],
-              ),
+          ),
+          const Divider(),
+          //set brightness
+          InkWell(
+            splashColor: Theme.of(context).primaryColor,
+            onTap: () {
+              settingsDarkTheme(
+                  Theme.of(context).brightness == Brightness.light);
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(left: globals.defaultPadding),
+                    ),
+                    Icon(Icons.brightness_3),
+                    Text(
+                      globals.paddingAsText + globals.settingsDarkTheme,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                Switch(
+                  value: Theme.of(context).brightness == Brightness.dark,
+                  onChanged: settingsDarkTheme,
+                ),
+              ],
             ),
-            Divider(),
-            //set theme
-            InkWell(
-              splashColor: Theme.of(context).primaryColor,
-              onTap: () {
-                settingsThemeColor();
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(left: globals.defaultPadding),
-                      ),
-                      Icon(Icons.color_lens),
-                      Text(
-                        globals.paddingAsText + globals.settingsThemeColour,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                  CircleAvatar(
-                    backgroundColor: Theme.of(context).primaryColor,
-                  ),
-                ],
-              ),
+          ),
+          const Divider(),
+          //set theme
+          InkWell(
+            splashColor: Theme.of(context).primaryColor,
+            onTap: () {
+              settingsThemeColor();
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(left: globals.defaultPadding),
+                    ),
+                    Icon(Icons.color_lens),
+                    Text(
+                      globals.paddingAsText + globals.settingsThemeColour,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                CircleAvatar(
+                  backgroundColor: Theme.of(context).primaryColor,
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     ];
 
-    final _appBar = AppBar(
-      title: Text(_tabTitle, style: TextStyle(fontWeight: FontWeight.bold)),
+    final appBar = AppBar(
+      title: Text(_tabTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
       centerTitle: true,
       foregroundColor: Theme.of(context).primaryColor,
     );
@@ -826,7 +823,7 @@ class MyHomePageState extends State<MyHomePage> {
       currentIndex: _currentTabIndex,
       selectedItemColor: Theme.of(context).primaryColor,
       type: BottomNavigationBarType.fixed,
-      items: <BottomNavigationBarItem>[
+      items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(Icons.content_copy),
           label: globals.tabTitleFlashcards,
@@ -852,9 +849,9 @@ class MyHomePageState extends State<MyHomePage> {
     );
 
     return Scaffold(
-      body: _tabPages[_currentTabIndex],
+      body: tabPages[_currentTabIndex],
       bottomNavigationBar: bottomNavBar,
-      appBar: _appBar,
+      appBar: appBar,
     );
   }
 }

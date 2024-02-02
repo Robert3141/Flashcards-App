@@ -2,21 +2,21 @@ library flashcards.globals;
 
 import 'package:flutter/material.dart';
 
-final cardHeight = 100.0;
-final cardWidth = 0.9;
-final defaultPadding = 12.0;
-final defaultCardAmount = 50;
-final defaultCardsOrdered = false;
-final defaultThemeColor = Colors.blue;
-final defaultBrightness = Brightness.light;
+const cardHeight = 100.0;
+const cardWidth = 0.9;
+const defaultPadding = 12.0;
+const defaultCardAmount = 50;
+const defaultCardsOrdered = false;
+const defaultThemeColor = Colors.blue;
+const defaultBrightness = Brightness.light;
 
 //prefs for flashcards page
 int amountOfCards = 0;
 bool cardsOrdered = true;
 
 //GLOBAL VARS
-List<String> flashcardFiles = ['$exampleFileName'];
-List<String> flashcardLengths = ['$exampleFileLength'];
+List<String> flashcardFiles = [exampleFileName];
+List<String> flashcardLengths = [exampleFileLength];
 
 //British strings:
 

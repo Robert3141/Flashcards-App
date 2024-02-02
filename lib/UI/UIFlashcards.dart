@@ -4,28 +4,28 @@ import 'package:flutter/material.dart';
 import 'package:flashcards/globals.dart' as globals;
 import 'package:flip_card/flip_card.dart';
 
-class FlashcardsPage extends MaterialPageRoute<Null> {
-  FlashcardsPage(List<String> _currentFileData)
+class FlashcardsPage extends MaterialPageRoute<void> {
+  FlashcardsPage(List<String> currentFileData)
       : super(builder: (BuildContext context) {
           //set variables for class
-          List<String> _cardFront = [""];
-          List<String> _cardRear = [""];
-          double _screenWidth = MediaQuery.of(context).size.width;
-          ScrollController _scrollControl = new ScrollController();
+          List<String> cardFront = [""];
+          List<String> cardRear = [""];
+          double screenWidth = MediaQuery.of(context).size.width;
+          ScrollController scrollControl = ScrollController();
 
           //
           // FUNCTIONS
           //
 
-          void outputErrors(String _error, _e) {
+          void outputErrors(String error, e) {
             showDialog<String>(
               context: context,
               builder: (BuildContext context) => AlertDialog(
-                title: Text(_error),
-                content: Text(_e.toString()),
+                title: Text(error),
+                content: Text(e.toString()),
                 actions: <Widget>[
                   TextButton(
-                    child: Text(globals.errorOk),
+                    child: const Text(globals.errorOk),
                     onPressed: () => Navigator.pop(context),
                   )
                 ],
@@ -40,32 +40,32 @@ class FlashcardsPage extends MaterialPageRoute<Null> {
                 //Cards need to be displayed in an ordered fashion
 
                 //loop through array and add the flashcards
-                _cardFront[0] = _currentFileData[0];
-                _cardRear[0] = _currentFileData[1];
-                for (var i = 2; i < _currentFileData.length; i++) {
+                cardFront[0] = currentFileData[0];
+                cardRear[0] = currentFileData[1];
+                for (var i = 2; i < currentFileData.length; i++) {
                   //add to front if even and rear if odd
                   if (i % 2 == 0) {
-                    _cardFront.add(_currentFileData[i]);
+                    cardFront.add(currentFileData[i]);
                   } else {
-                    _cardRear.add(_currentFileData[i]);
+                    cardRear.add(currentFileData[i]);
                   }
                 }
               } else {
                 //Cards can be outputted randomly with a limit
 
                 //generate random
-                Random _rng = new Random();
-                int _randomNumber = 0;
-                int _amountOfFlashcards = _currentFileData.length ~/ 2;
+                Random rng = Random();
+                int randomNumber = 0;
+                int amountOfFlashcards = currentFileData.length ~/ 2;
 
                 // make random flashcard as next in list
-                _randomNumber = _rng.nextInt(_amountOfFlashcards) * 2;
-                _cardFront[0] = _currentFileData[_randomNumber];
-                _cardRear[0] = _currentFileData[_randomNumber + 1];
+                randomNumber = rng.nextInt(amountOfFlashcards) * 2;
+                cardFront[0] = currentFileData[randomNumber];
+                cardRear[0] = currentFileData[randomNumber + 1];
                 for (var i = 1; i < globals.amountOfCards; i++) {
-                  _randomNumber = _rng.nextInt(_amountOfFlashcards) * 2;
-                  _cardFront.add(_currentFileData[_randomNumber]);
-                  _cardRear.add(_currentFileData[_randomNumber + 1]);
+                  randomNumber = rng.nextInt(amountOfFlashcards) * 2;
+                  cardFront.add(currentFileData[randomNumber]);
+                  cardRear.add(currentFileData[randomNumber + 1]);
                 }
               }
             } catch (e) {
@@ -79,7 +79,7 @@ class FlashcardsPage extends MaterialPageRoute<Null> {
           newCard();
           return Scaffold(
             appBar: AppBar(
-              title: Text(globals.tabTitleFlashcards),
+              title: const Text(globals.tabTitleFlashcards),
               elevation: 1.0,
             ),
             body: Builder(
@@ -97,10 +97,10 @@ class FlashcardsPage extends MaterialPageRoute<Null> {
                           PointerDeviceKind.mouse,
                         }),
                         child: ListView.builder(
-                          itemCount: _cardFront
+                          itemCount: cardFront
                               .length, //currentFileData.length ~/2 -1,
                           scrollDirection: Axis.horizontal,
-                          controller: _scrollControl,
+                          controller: scrollControl,
                           physics: const AlwaysScrollableScrollPhysics(),
                           itemBuilder: (BuildContext context, int index) {
                             return FlipCard(
@@ -110,8 +110,8 @@ class FlashcardsPage extends MaterialPageRoute<Null> {
                               front: InkWell(
                                 child: Card(
                                   child: Container(
-                                    width: _screenWidth * globals.cardWidth,
-                                    decoration: BoxDecoration(
+                                    width: screenWidth * globals.cardWidth,
+                                    decoration: const BoxDecoration(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(8.0))),
                                     child: Column(
@@ -119,9 +119,9 @@ class FlashcardsPage extends MaterialPageRoute<Null> {
                                           MainAxisAlignment.center,
                                       children: <Widget>[
                                         Padding(
-                                          padding: EdgeInsets.all(
+                                          padding: const EdgeInsets.all(
                                               globals.defaultPadding),
-                                          child: Text(_cardFront[index]),
+                                          child: Text(cardFront[index]),
                                         ),
                                       ],
                                     ),
@@ -131,8 +131,8 @@ class FlashcardsPage extends MaterialPageRoute<Null> {
                               back: InkWell(
                                 child: Card(
                                   child: Container(
-                                    width: _screenWidth * globals.cardWidth,
-                                    decoration: BoxDecoration(
+                                    width: screenWidth * globals.cardWidth,
+                                    decoration: const BoxDecoration(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(8.0))),
                                     child: Column(
@@ -140,9 +140,9 @@ class FlashcardsPage extends MaterialPageRoute<Null> {
                                           MainAxisAlignment.center,
                                       children: <Widget>[
                                         Padding(
-                                          padding: EdgeInsets.all(
+                                          padding: const EdgeInsets.all(
                                               globals.defaultPadding),
-                                          child: Text(_cardRear[index]),
+                                          child: Text(cardRear[index]),
                                         ),
                                       ],
                                     ),
