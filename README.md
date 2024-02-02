@@ -14,7 +14,7 @@ Permissions:
 ### Download
 | [![Play Store](http://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=uk.co.ariesfamily.flashcards) | [![Github](https://github.githubassets.com/pinned-octocat.svg)](https://github.com/Robert3141/Flashcards-App/releases) |
 | :---: | :---: |
-| Flutter Version (6.2+) | Github (6.2+) |
+| Flutter Version (6.3+) | Github (6.3+) |
 
 ### Contribute
 You can contribute to this project in many ways:
