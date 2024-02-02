@@ -33,23 +33,14 @@ extension ColorsExt on Color {
   ColorScheme toColorScheme(Brightness brightness) {
     MaterialColor material = toMaterialColor();
     double lum = computeLuminance();
-    return ColorScheme(
-      brightness: brightness,
+    scheme(Brightness b) => b == Brightness.light
+        ? const ColorScheme.light()
+        : const ColorScheme.dark();
+    return scheme(brightness).copyWith(
       primary: this,
       onPrimary: lum > 0.5 ? material.shade600 : material.shade50,
       secondary: material.shade700,
       onSecondary: material.shade100,
-      error: Colors.red,
-      onError: Colors.black,
-      background: brightness == Brightness.light ? Colors.white : Colors.black,
-      onBackground:
-          brightness == Brightness.light ? Colors.black : Colors.white,
-      surface: brightness == Brightness.light
-          ? material.shade100
-          : material.shade700,
-      onSurface: brightness == Brightness.light
-          ? Colors.white
-          : Colors.black, //Text Color
     );
   }
 }
@@ -159,10 +150,8 @@ class MyHomePageState extends State<MyHomePage> {
 
       //save to shared prefs
       await prefs.setStringList(globals.prefsFlashcardData, flashcardData);
-      await prefs.setStringList(
-          globals.prefsFlashcardTitles, flashcardTitles);
-      await prefs.setStringList(
-          globals.prefsFlashcardLength, flashcardLengths);
+      await prefs.setStringList(globals.prefsFlashcardTitles, flashcardTitles);
+      await prefs.setStringList(globals.prefsFlashcardLength, flashcardLengths);
 
       //update UI
       setState(() {
@@ -245,8 +234,7 @@ class MyHomePageState extends State<MyHomePage> {
       } else {
         flashcardLengths = [globals.exampleFileLength];
       }
-      await prefs.setStringList(
-          globals.prefsFlashcardLength, flashcardLengths);
+      await prefs.setStringList(globals.prefsFlashcardLength, flashcardLengths);
       //flashcardTitle
       if (flashcardTitle != null) {
         flashcardTitle.add(globals.newFileName);
@@ -260,8 +248,7 @@ class MyHomePageState extends State<MyHomePage> {
 
       //load edit page
       if (!context.mounted) return;
-      Navigator.push(
-          context, EditCardsPage(currentFlashcards, newFileNumber));
+      Navigator.push(context, EditCardsPage(currentFlashcards, newFileNumber));
     } catch (e) {
       //in case of error output error
       outputErrors(globals.errorCreate, e);
@@ -289,8 +276,7 @@ class MyHomePageState extends State<MyHomePage> {
       }
 
       //split from file
-      List<String> currentFlashcards =
-          splitter(flashcardData[fileNumber], "&");
+      List<String> currentFlashcards = splitter(flashcardData[fileNumber], "&");
 
       //load edit page
       if (!context.mounted) return;
@@ -342,8 +328,7 @@ class MyHomePageState extends State<MyHomePage> {
               child: const Text(globals.errorOk),
               onPressed: () async {
                 //load prefs
-                SharedPreferences prefs =
-                    await SharedPreferences.getInstance();
+                SharedPreferences prefs = await SharedPreferences.getInstance();
 
                 //get from shared prefs
                 List<String>? flashcardsData =
@@ -400,8 +385,8 @@ class MyHomePageState extends State<MyHomePage> {
       globals.flashcardLengths =
           prefs.getStringList(globals.prefsFlashcardLength) ??
               [globals.exampleFileLength];
-      globals.amountOfCards = prefs.getInt(globals.prefsAmountOfCards) ??
-          globals.defaultCardAmount;
+      globals.amountOfCards =
+          prefs.getInt(globals.prefsAmountOfCards) ?? globals.defaultCardAmount;
       _controllerAmountOfCards.text = globals.amountOfCards.toString();
       globals.cardsOrdered = prefs.getBool(globals.prefsCardsOrdered) ??
           globals.defaultCardsOrdered;
@@ -654,8 +639,8 @@ class MyHomePageState extends State<MyHomePage> {
                                   globals.paddingAsText +
                                       globals.flashcardFiles[index],
                                   overflow: TextOverflow.ellipsis,
-                                  style:
-                                      const TextStyle(fontWeight: FontWeight.bold)),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold)),
                             ),
                           ),
                           Row(
@@ -814,7 +799,8 @@ class MyHomePageState extends State<MyHomePage> {
     ];
 
     final appBar = AppBar(
-      title: Text(_tabTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
+      title:
+          Text(_tabTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
       centerTitle: true,
       foregroundColor: Theme.of(context).primaryColor,
     );
